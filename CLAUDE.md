@@ -74,6 +74,7 @@
 2. Commit on the feature branch (pre-commit must be green).
 3. Push and open a PR with base `develop` (`gh pr create --base develop`).
 4. **Never merge directly** — not from the CLI, not from the API. Every feature lands via PR so it gets reviewed; the user performs the merge.
+5. PRs must be green before merge: CI (`.github/workflows/ci.yml`) runs `lint` (ruff check + format check) and `test` (pytest) on every PR to `develop`/`main`. Never rely only on local pre-commit.
 
 ### 8. Development Flow (SPEC → TDD → TASK → CODING → REFACTOR → LINTER → SAFETY → SESSION)
 

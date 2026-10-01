@@ -1,5 +1,7 @@
 # LinkedIn Job Classifier
 
+[![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
+
 MVP local para:
 
 1. buscar vagas no **LinkedIn** (browser local, Patchright) e no **GeekHunter**
