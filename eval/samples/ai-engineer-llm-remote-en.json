@@ -1,0 +1,7 @@
+{
+  "title": "Senior AI Engineer",
+  "company": "Parallax Labs",
+  "location": "Brazil (remote)",
+  "remote": true,
+  "description": "Take our LLM features from prototype to production. You will build RAG pipelines with LangChain and LangGraph, orchestrate agents with CrewAI and keep prompt evaluations in CI. Services are Python on AWS EKS (Kubernetes), provisioned with Terraform, deployed via GitHub Actions and observed with Prometheus and Grafana. We care about LLM cost and latency budgets. 7+ years engineering, at least two shipped LLM products."
+}

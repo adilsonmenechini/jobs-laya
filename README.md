@@ -237,6 +237,37 @@ Rodar manualmente sobre tudo:
 uv run pre-commit run --all-files
 ```
 
+## 10. Avaliação (eval)
+
+```bash
+make eval
+# equivalente a: uv run python eval/evaluate.py
+```
+
+O eval roda os **três screeners** sobre as 18 vagas fictícias rotuladas à mão em
+`eval/samples/` (12 EN, 6 PT; 7 high, 5 medium, 6 low) e escreve
+`eval/evaluation.md` + `eval/results/{backend}.json`:
+
+| Screener | O que é |
+|---|---|
+| Heuristics only | `LayaInspiredClassifier` puro (keywords e sinais) |
+| Laya only | score só com as respostas do modelo (`role_family`, `remote`, `skill_fit`, `seniority`), pesos renormalizados |
+| Combined policy | `LayaJobClassifier` atual (a política sobre as duas partes) |
+
+A tabela por vaga marca com ✗ os vereditos divergentes do rótulo, e as colunas
+`high/medium/low` mostram os acertos por classe esperada. Backends:
+
+```bash
+uv run python eval/evaluate.py --backend fake       # FakeEngine, sem download
+uv run python eval/evaluate.py --backend heuristic  # só a heurística, sem modelo
+uv run python eval/evaluate.py --device cpu         # fixar device
+```
+
+Os rótulos em `eval/samples/labels.json` são escolhas de política sobre
+vagas fictícias — calibrados no mesmo dataset, exatamente como os thresholds
+(80/60). Rotule suas próprias vagas e refita antes de confiar em um veredito.
+O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
+
 ## Estrutura
 
 ```text
@@ -248,6 +279,11 @@ uv run pre-commit run --all-files
 ├── .env.example
 ├── data/
 │   └── profile.json
+├── eval/
+│   ├── evaluate.py        # ablação: heuristics only / laya only / combined
+│   ├── evaluation.md      # relatório gerado
+│   ├── results/           # rows brutos por backend
+│   └── samples/           # 18 vagas fictícias + labels.json
 ├── app/
 │   ├── main.py
 │   ├── config.py

@@ -1,0 +1,470 @@
+[
+  {
+    "file": "senior-sre-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "caso limpo: cargo, skills e remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 88.5
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 60.43
+    },
+    "combined": {
+      "match": "medium",
+      "score": 72.17
+    },
+    "model": "english",
+    "laya_ms": 386.1,
+    "laya_answers": {
+      "role_family": "other",
+      "remote": 0.651,
+      "skill_fit": 0.752,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "staff-platform-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "plataforma/IaC dentro do perfil",
+    "heuristics_only": {
+      "match": "high",
+      "score": 87.25
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 88.36
+    },
+    "combined": {
+      "match": "high",
+      "score": 80.07
+    },
+    "model": "english",
+    "laya_ms": 362.1,
+    "laya_answers": {
+      "role_family": "platform_cloud",
+      "remote": 0.719,
+      "skill_fit": 0.784,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "principal-reliability-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "reliability no título do perfil, remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 89.75
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 81.33
+    },
+    "combined": {
+      "match": "medium",
+      "score": 77.76
+    },
+    "model": "english",
+    "laya_ms": 355.8,
+    "laya_answers": {
+      "role_family": "site_reliability",
+      "remote": 0.501,
+      "skill_fit": 0.608,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "ai-engineer-llm-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "AI Engineer + RAG/LLM no perfil",
+    "heuristics_only": {
+      "match": "high",
+      "score": 93.5
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 77.68
+    },
+    "combined": {
+      "match": "high",
+      "score": 80.56
+    },
+    "model": "english",
+    "laya_ms": 364.4,
+    "laya_answers": {
+      "role_family": "ai_ml",
+      "remote": 0.543,
+      "skill_fit": 0.517,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "devops-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "cargo do perfil com stack completa",
+    "heuristics_only": {
+      "match": "high",
+      "score": 87.25
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 87.56
+    },
+    "combined": {
+      "match": "medium",
+      "score": 79.89
+    },
+    "model": "english",
+    "laya_ms": 367.7,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.73,
+      "skill_fit": 0.764,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "cloud-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "cloud adjacente: cargo fora da lista de títulos, sem senioridade",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 69.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 90.07
+    },
+    "combined": {
+      "match": "medium",
+      "score": 70.76
+    },
+    "model": "english",
+    "laya_ms": 348.7,
+    "laya_answers": {
+      "role_family": "platform_cloud",
+      "remote": 0.623,
+      "skill_fit": 0.827,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "mlops-remote-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "ai_ml do perfil mas sem senioridade sênior",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 69.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 87.84
+    },
+    "combined": {
+      "match": "medium",
+      "score": 71.08
+    },
+    "model": "english",
+    "laya_ms": 342.2,
+    "laya_answers": {
+      "role_family": "ai_ml",
+      "remote": 0.739,
+      "skill_fit": 0.771,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "devops-hybrid-london-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "cargo perfeito mas híbrido falha com remote_required",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 75.5
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 72.12
+    },
+    "combined": {
+      "match": "medium",
+      "score": 75.14
+    },
+    "model": "english",
+    "laya_ms": 384.4,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.36,
+      "skill_fit": 0.711,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "devops-sales-engineer-en.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "hard case: 'DevOps' no título e skills cloud na descrição, mas a vaga é comercial",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 63.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 85.55
+    },
+    "combined": {
+      "match": "medium",
+      "score": 65.3
+    },
+    "model": "english",
+    "laya_ms": 351.7,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.597,
+      "skill_fit": 0.714,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "product-marketing-cloud-keywords-en.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "hard case: keyword spam de cloud em vaga de marketing",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 72.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 81.91
+    },
+    "combined": {
+      "match": "medium",
+      "score": 69.18
+    },
+    "model": "english",
+    "laya_ms": 366.5,
+    "laya_answers": {
+      "role_family": "platform_cloud",
+      "remote": 0.622,
+      "skill_fit": 0.623,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "sales-manager-remote-en.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "remota mas nada de infra",
+    "heuristics_only": {
+      "match": "low",
+      "score": 29.75
+    },
+    "laya_only": {
+      "match": "low",
+      "score": 34.85
+    },
+    "combined": {
+      "match": "low",
+      "score": 30.67
+    },
+    "model": "english",
+    "laya_ms": 326.4,
+    "laya_answers": {
+      "role_family": "other",
+      "remote": 0.66,
+      "skill_fit": 0.113,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "frontend-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "senior e remota, stack fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 42.25
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 77.28
+    },
+    "combined": {
+      "match": "low",
+      "score": 55.87
+    },
+    "model": "english",
+    "laya_ms": 314.0,
+    "laya_answers": {
+      "role_family": "platform_cloud",
+      "remote": 0.814,
+      "skill_fit": 0.507,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "engenheiro-devops-senior-remoto-pt.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "PT-BR limpo: cargo do perfil, skills completas, remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 91.0
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 73.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 78.51
+    },
+    "model": "multilingual",
+    "laya_ms": 3172.3,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.764,
+      "skill_fit": 0.825,
+      "seniority": 0
+    }
+  },
+  {
+    "file": "sre-plataforma-remoto-pt.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE no título, plataforma e remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 88.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 88.77
+    },
+    "combined": {
+      "match": "high",
+      "score": 82.0
+    },
+    "model": "multilingual",
+    "laya_ms": 160.7,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.771,
+      "skill_fit": 0.794,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "engenheiro-cloud-remoto-pt.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "cloud remoto sem cargo exato do perfil e sem senioridade",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 72.5
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 91.44
+    },
+    "combined": {
+      "match": "medium",
+      "score": 73.99
+    },
+    "model": "multilingual",
+    "laya_ms": 159.3,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.744,
+      "skill_fit": 0.861,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "devops-pleno-remoto-pt.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "cargo e skills casam, senioridade pleno abaixo do perfil",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 76.0
+    },
+    "laya_only": {
+      "match": "high",
+      "score": 90.6
+    },
+    "combined": {
+      "match": "medium",
+      "score": 74.93
+    },
+    "model": "multilingual",
+    "laya_ms": 154.8,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.871,
+      "skill_fit": 0.84,
+      "seniority": 1
+    }
+  },
+  {
+    "file": "devops-junior-remoto-pt.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "hard case: cargo e keywords casam mas júnior não atende o perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 55.5
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 76.21
+    },
+    "combined": {
+      "match": "low",
+      "score": 58.63
+    },
+    "model": "multilingual",
+    "laya_ms": 137.0,
+    "laya_answers": {
+      "role_family": "devops",
+      "remote": 0.93,
+      "skill_fit": 0.905,
+      "seniority": 0
+    }
+  },
+  {
+    "file": "estagio-contabilidade-presencial-pt.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "controle: nada a ver com o perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 19.75
+    },
+    "laya_only": {
+      "match": "medium",
+      "score": 77.98
+    },
+    "combined": {
+      "match": "low",
+      "score": 45.34
+    },
+    "model": "multilingual",
+    "laya_ms": 142.5,
+    "laya_answers": {
+      "role_family": "site_reliability",
+      "remote": 0.109,
+      "skill_fit": 0.858,
+      "seniority": 1
+    }
+  }
+]

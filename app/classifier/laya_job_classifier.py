@@ -1,9 +1,9 @@
 """Laya-backed classifier: the model reads the text, heuristics read the facts,
 a small policy combines both — same output contract as the heuristic classifier.
 
-Follows gabe-santana/laya-classifier: Laya answers typed questions (choice,
-noul, score) in one forward pass; deterministic signals (matched skills,
-seniority hits, remote flag) stay in code; the policy merges them into
+Laya answers typed questions (choice, noul, score) in one forward pass;
+deterministic signals (matched skills, seniority hits, remote flag) stay in
+code; the policy merges them into
 `{match, score, decision{choice,score,noul}, reasons, gaps}` so API, storage
 and tests do not care which engine produced the verdict.
 """

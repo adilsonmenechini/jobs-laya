@@ -14,9 +14,12 @@ wheels/
 # Secrets / local config
 .env
 .claude/settings.local.json
+settings.local.json
+.opencode/
 
 # Local database
 data/*.db
 data/*.sqlite
 data/*.sqlite3
 !data/profile.json
+.opencode
