@@ -1,7 +1,0 @@
-{
-  "title": "Engenheiro DevOps Senior (Remoto)",
-  "company": "Alpina Sistemas",
-  "location": "Brasil (remoto)",
-  "remote": true,
-  "description": "Vaga remota para atuar em plataforma: manter pipelines de CI/CD e infraestrutura como código com Terraform em AWS e EKS (Kubernetes), configuração com Ansible e releases com Helm e ArgoCD, entregas via GitHub Actions e observabilidade com Prometheus e Grafana. Automação com Docker e scripts Python, participação no on-call de produção. Procuramos 7+ anos em ambientes cloud e vivência em melhoria contínua."
-}

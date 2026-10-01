@@ -1,7 +1,0 @@
-{
-  "title": "Senior SRE",
-  "company": "Northwind Digital",
-  "location": "Brazil (remote)",
-  "remote": true,
-  "description": "Own reliability for our customer-facing platform: SLOs, on-call, incident review and capacity planning. You will run Kubernetes on AWS with Terraform and ArgoCD, build Prometheus and Grafana dashboards and keep observability costs in check with Loki and Datadog. Day to day: Python and Go automation, GitHub Actions pipelines and Docker image hardening. We want 8+ years in infrastructure or reliability roles, deep troubleshooting skills and experience with on-call in a distributed system."
-}

@@ -1,7 +1,0 @@
-{
-  "title": "Senior DevOps Engineer",
-  "company": "Adventure Works",
-  "location": "Brazil (remote)",
-  "remote": true,
-  "description": "Own the delivery chain end to end: GitHub Actions and ArgoCD for continuous delivery, Terraform for infrastructure as code on AWS EKS, Ansible for configuration and Helm for releases. You will keep the clusters healthy with Prometheus and Grafana alerts, harden Docker images and script the boring parts in Python. Production on-call in rotation, 6+ years in DevOps or SRE roles and a strong incident response culture."
-}
