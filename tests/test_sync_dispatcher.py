@@ -141,6 +141,26 @@ def test_sync_single_source_failure_is_reported(db):
     assert "geekhunter" in outcome.errors
 
 
+def test_sync_all_isolates_expired_linkedin_session(db):
+    """An expired LinkedIn session (ToolError) must degrade only that source:
+    the GeekHunter half of `all` still runs, and the login hint is reported."""
+    from app.linkedin.errors import ToolError
+    from app.sources.linkedin import LinkedInSource
+
+    class ExpiredClient:
+        async def search_jobs(self, *args, **kwargs):
+            raise ToolError("LinkedIn session not found — run `make login` first")
+
+    linkedin = LinkedInSource(client=ExpiredClient())
+    geekhunter = FakeSource("geekhunter", [gh_item("2")])
+
+    outcome = run(db, "all", {"linkedin": linkedin, "geekhunter": geekhunter})
+
+    assert outcome.count == 1  # geekhunter delivered
+    assert "make login" in outcome.errors["linkedin"]
+    assert [job.source for job in db.scalars(select(Job)).all()] == ["geekhunter"]
+
+
 def test_sync_unknown_source_fails_loudly(db):
     with pytest.raises(SourceUnavailableError):
         run(db, "geekhunter", {"linkedin": FakeSource("linkedin", [])})
