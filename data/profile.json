@@ -1,0 +1,57 @@
+{
+  "name": "Candidate",
+  "titles": [
+    "SRE",
+    "DevOps",
+    "Platform Engineer",
+    "Reliability Engineer",
+    "AI Engineer"
+  ],
+  "seniority": [
+    "Senior",
+    "Staff",
+    "Principal"
+  ],
+  "locations": [
+    "Brazil",
+    "Brasil"
+  ],
+  "remote_required": true,
+  "skills": [
+    "AWS",
+    "Azure",
+    "Kubernetes",
+    "Docker",
+    "Terraform",
+    "Terragrunt",
+    "Helm",
+    "ArgoCD",
+    "Kustomize",
+    "Prometheus",
+    "Grafana",
+    "Loki",
+    "Datadog",
+    "Python",
+    "Go",
+    "GitHub Actions",
+    "Azure DevOps",
+    "Ansible",
+    "Packer",
+    "OPA",
+    "Gatekeeper",
+    "Kyverno",
+    "RAG",
+    "LangChain",
+    "LangGraph",
+    "CrewAI",
+    "LLM"
+  ],
+  "focus": [
+    "SRE",
+    "DevOps",
+    "Platform",
+    "Reliability",
+    "AI",
+    "Cloud"
+  ]
+}

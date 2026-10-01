@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3080:3080"
+    volumes:
+      - ./data:/app/data
+      - ${HOME}/.linkedin-laya:/root/.linkedin-laya
+    environment:
+      PROFILE_PATH: /app/data/profile.json
+      APP_DATABASE_URL: sqlite:////app/data/jobs.db
+      LINKEDIN_PROFILE_DIR: /root/.linkedin-laya/profile
+      LINKEDIN_HEADLESS: "true"
+    restart: unless-stopped

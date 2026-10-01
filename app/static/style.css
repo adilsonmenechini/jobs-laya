@@ -1,0 +1,167 @@
+:root {
+  --bg: #0e1117;
+  --panel: #161b22;
+  --card: #1c2230;
+  --border: #2a3142;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #4d9fec;
+  --high: #2ea043;
+  --medium: #d29922;
+  --low: #f85149;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar h1 { font-size: 18px; margin: 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.docs-link { color: var(--accent); text-decoration: none; font-size: 13px; }
+
+.badge {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.badge.ok { color: var(--high); border-color: var(--high); }
+.badge.warn { color: var(--medium); border-color: var(--medium); }
+.badge.bad { color: var(--low); border-color: var(--low); }
+.badge.neutral { color: var(--muted); }
+
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 16px 22px 0;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+input, select, button {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+button {
+  cursor: pointer;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #04121f;
+  font-weight: 600;
+}
+button:disabled { opacity: 0.6; cursor: wait; }
+.filters button { background: var(--card); color: var(--text); border-color: var(--border); }
+
+.status { color: var(--muted); font-size: 13px; }
+
+#jobs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+  padding: 18px 22px 40px;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 0;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.card h2 { font-size: 15px; margin: 0; }
+.card h2 a { color: var(--text); text-decoration: none; }
+.card h2 a:hover { color: var(--accent); }
+
+.match {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.match.high { background: rgba(46, 160, 67, 0.18); color: var(--high); }
+.match.medium { background: rgba(210, 153, 34, 0.18); color: var(--medium); }
+.match.low, .match.unknown { background: rgba(248, 81, 73, 0.15); color: var(--low); }
+
+.meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+.score-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.score-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.score-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--low), var(--medium) 60%, var(--high));
+}
+.score-row b { font-size: 13px; min-width: 38px; text-align: right; }
+
+.probs { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.prob {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.prob.high { color: var(--high); }
+.prob.medium { color: var(--medium); }
+.prob.low { color: var(--low); }
+
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+details h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 12px 0 4px;
+}
+details ul { margin: 0; padding-left: 18px; font-size: 13px; }
+details .reasons li { color: var(--text); }
+details .gaps li { color: var(--medium); }
+.laya { color: var(--muted); font-size: 12px; margin: 10px 0 0; }

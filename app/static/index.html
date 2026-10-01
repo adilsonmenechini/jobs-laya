@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LinkedIn Job Classifier</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>LinkedIn Job Classifier</h1>
+    <div class="topbar-right">
+      <span id="backend" class="badge neutral">…</span>
+      <a href="/docs" class="docs-link">API</a>
+    </div>
+  </header>
+
+  <section class="panel">
+    <form id="sync-form">
+      <input id="keywords" size="36" placeholder="keywords (separadas por vírgula)"
+             value="SRE, DevOps, Platform Engineer">
+      <input id="location" size="14" placeholder="local" value="Brazil">
+      <input id="limit" type="number" min="1" max="100" value="10" title="limite">
+      <button type="submit" id="sync-btn">Buscar e classificar</button>
+      <span id="sync-status" class="status"></span>
+    </form>
+  </section>
+
+  <section class="panel filters">
+    <select id="f-match">
+      <option value="">match: todos</option>
+      <option value="high">high</option>
+      <option value="medium">medium</option>
+      <option value="low">low</option>
+    </select>
+    <select id="f-remote">
+      <option value="">remoto: todos</option>
+      <option value="true">somente remoto</option>
+      <option value="false">presencial/híbrido</option>
+    </select>
+    <input id="f-score" type="number" min="0" max="100" placeholder="score mín.">
+    <input id="f-query" placeholder="buscar no texto…">
+    <button type="button" id="f-apply">Filtrar</button>
+    <span id="total" class="status"></span>
+  </section>
+
+  <main id="jobs" aria-live="polite"></main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
