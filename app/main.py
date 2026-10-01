@@ -40,7 +40,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="LinkedIn Job Classifier",
+    title="Job Classifier",
     version="0.1.0",
     lifespan=lifespan,
 )

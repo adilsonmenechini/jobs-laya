@@ -1,4 +1,4 @@
-/* LinkedIn Job Classifier dashboard — vanilla JS, no build step. */
+/* Job Classifier dashboard — vanilla JS, no build step. */
 
 const $ = (sel) => document.querySelector(sel);
 

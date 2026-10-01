@@ -11,7 +11,7 @@ def test_index_serves_dashboard():
 
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
-    assert "LinkedIn Job Classifier" in response.text
+    assert "Job Classifier" in response.text
     assert 'id="jobs"' in response.text
 
 

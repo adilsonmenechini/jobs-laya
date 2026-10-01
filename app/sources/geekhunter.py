@@ -230,7 +230,7 @@ class GeekHunterSource:
             base_url=self._config.geekhunter_base_url,
             timeout=self._config.geekhunter_timeout_s,
             follow_redirects=True,
-            headers={"User-Agent": "linkedin-laya/0.1.0 (job research; read-only)"},
+            headers={"User-Agent": "job-classifier/0.1.0 (job research; read-only)"},
         )
 
     async def _get(self, url: str, params: dict | None = None) -> str:

@@ -1,4 +1,4 @@
-# LinkedIn Job Classifier
+# Job Classifier
 
 [![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
 
