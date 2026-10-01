@@ -1,4 +1,4 @@
-/* LinkedIn Job Classifier dashboard — vanilla JS, no build step. */
+/* Job Classifier dashboard — vanilla JS, no build step. */
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -34,7 +34,9 @@ async function loadHealth() {
         ? `Laya · ${classifier.device}`
         : "Laya · carregando modelo…";
     }
-    badge.textContent = label;
+    const sources = (health.sources || []).join(", ");
+    badge.textContent = sources ? `${label} · ${sources}` : label;
+    badge.title = sources ? `fontes: ${sources}` : "";
     badge.className = "badge " + (classifier.backend === "heuristic" ? "warn" : "ok");
   } catch (err) {
     badge.textContent = "API offline";
@@ -44,10 +46,12 @@ async function loadHealth() {
 
 function filterQuery() {
   const params = new URLSearchParams({ limit: "100" });
+  const source = $("#f-source").value;
   const match = $("#f-match").value;
   const remote = $("#f-remote").value;
   const score = $("#f-score").value;
   const query = $("#f-query").value.trim();
+  if (source) params.set("source", source);
   if (match) params.set("match", match);
   if (remote) params.set("remote", remote);
   if (score !== "") params.set("min_score", score);
@@ -91,9 +95,9 @@ function card(job) {
       }</h2>
       <span class="match ${esc(job.match || "unknown")}">${esc(job.match || "?")}</span>
     </div>
-    <div class="meta">${esc(job.company || "—")} · ${esc(job.location || "—")}${
-      job.remote ? " · remoto" : ""
-    }</div>
+    <div class="meta"><span class="source-chip" data-source="${esc(job.source || "linkedin")}">${esc(job.source || "linkedin")}</span> ${esc(job.company || "—")} · ${esc(job.location || "—")}${
+    job.remote ? " · remoto" : ""
+  }</div>
     <div class="score-row">
       <div class="score-bar"><span style="width:${Math.max(0, Math.min(100, score || 0))}%"></span></div>
       <b>${scoreLabel}</b>
@@ -133,25 +137,33 @@ async function runSync(event) {
   event.preventDefault();
   const button = $("#sync-btn");
   const status = $("#sync-status");
+  const source = $("#source").value;
   const keywords = $("#keywords").value
     .split(",")
     .map((word) => word.trim())
     .filter(Boolean);
+  const sourceLabel = $("#source").selectedOptions[0].textContent;
 
   button.disabled = true;
-  status.textContent = "Buscando no LinkedIn… (browser + classificação)";
+  status.textContent = `Buscando em ${sourceLabel}… (coleta + classificação)`;
   try {
     const result = await getJSON("/jobs/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        source,
         keywords,
         location: $("#location").value || "Brazil",
         limit: Number($("#limit").value) || 10,
         fetch_details: true,
       }),
     });
-    status.textContent = `${result.synced} vaga(s) sincronizada(s)`;
+    const failed = Object.entries(result.errors || {});
+    status.textContent =
+      `${result.synced} vaga(s) sincronizada(s)` +
+      (failed.length
+        ? ` · falha em ${failed.map(([name]) => name).join(", ")}`
+        : "");
     await loadJobs();
   } catch (err) {
     status.textContent = `Erro: ${err.message}`;
@@ -162,6 +174,7 @@ async function runSync(event) {
 
 $("#sync-form").addEventListener("submit", runSync);
 $("#f-apply").addEventListener("click", loadJobs);
+$("#f-source").addEventListener("change", loadJobs);
 $("#f-match").addEventListener("change", loadJobs);
 $("#f-remote").addEventListener("change", loadJobs);
 $("#f-score").addEventListener("change", loadJobs);

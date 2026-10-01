@@ -1,0 +1,66 @@
+# CI — PR checks: linter (ruff) e testes (pytest).
+# Branch protection em `develop` deve exigir os checks `lint` e `test`.
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      # No uv cache here: the test job owns it (same uv.lock key would
+      # collide with a 409 on save) and ruff is the only tool needed.
+      - uses: astral-sh/setup-uv@v10.1.0
+        with:
+          enable-cache: false
+
+      # Pin ruff to the version in uv.lock so CI, pre-commit and local
+      # dev can never drift apart (format results included).
+      - name: Ruff version (from uv.lock)
+        id: ruff
+        run: |
+          version=$(grep -A1 '^name = "ruff"$' uv.lock | sed -n 's/^version = "\(.*\)"/\1/p')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: ruff check
+        run: uvx "ruff==${{ steps.ruff.outputs.version }}" check .
+
+      - name: ruff format --check
+        run: uvx "ruff==${{ steps.ruff.outputs.version }}" format --check .
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v10.1.0
+        with:
+          python-version: "3.13"
+          enable-cache: true
+          cache-python: true
+
+      # --locked fails the build when pyproject.toml and uv.lock drift.
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+
+      # Tests are hermetic: temp DB (conftest), FakeEngine, local fixtures,
+      # httpx.MockTransport — no network and no model download.
+      - name: pytest
+        run: uv run --frozen pytest -q

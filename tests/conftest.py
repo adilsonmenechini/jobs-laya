@@ -8,5 +8,5 @@ import os
 import tempfile
 from pathlib import Path
 
-_tmp_dir = tempfile.mkdtemp(prefix="linkedin-laya-test-")
+_tmp_dir = tempfile.mkdtemp(prefix="job-classifier-test-")
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{Path(_tmp_dir) / 'test.db'}")
