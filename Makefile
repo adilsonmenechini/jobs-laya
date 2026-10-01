@@ -6,6 +6,9 @@ install:
 test:
 	uv run pytest -q
 
+eval:
+	uv run python eval/evaluate.py
+
 lint:
 	uv run ruff check --fix .
 	uv run ruff format .

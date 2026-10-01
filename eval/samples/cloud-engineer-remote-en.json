@@ -1,0 +1,7 @@
+{
+  "title": "Cloud Engineer",
+  "company": "Tailwind Retail",
+  "location": "Brazil (remote)",
+  "remote": true,
+  "description": "Migrate legacy workloads to AWS and Azure and keep the landing zone tidy. Day to day: Terraform modules, Kubernetes cluster upkeep with Docker workloads, cost governance and network hardening. You will also automate routine operations in Python with Ansible. 3-5 years in cloud roles; this is a tooling position without on-call, focused on migration projects rather than product reliability."
+}

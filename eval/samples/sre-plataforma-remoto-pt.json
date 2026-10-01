@@ -1,0 +1,7 @@
+{
+  "title": "SRE Senior (Remoto)",
+  "company": "Serie A Fintech",
+  "location": "Brasil (remoto)",
+  "remote": true,
+  "description": "Atuação em confiabilidade: SLOs, on-call e resposta a incidentes em cluster Kubernetes rodando em AWS. Infraestrutura como código com Terraform e Kustomize, deploy contínuo com ArgoCD, métricas em Prometheus e Grafana e logs em Loki. Automação em Python e Go, imagens Docker e pipelines GitHub Actions. 8+ anos em infraestrutura ou operações, inglesse técnico para ler documentação e postmortems."
+}

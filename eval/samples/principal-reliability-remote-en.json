@@ -1,0 +1,7 @@
+{
+  "title": "Principal Reliability Engineer",
+  "company": "Contoso Payments",
+  "location": "Portugal (remote)",
+  "remote": true,
+  "description": "Lead the reliability programme across a business unit: define the SLO framework, review postmortems and design for failure. The stack is AWS with Kubernetes and Terraform, observability in Prometheus, Grafana and Datadog, automation in Python and Go, plus Ansible and Packer for node management. We expect principal-level judgement: 12+ years, architecture review, executive communication and hands-on incident command."
+}
