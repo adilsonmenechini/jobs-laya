@@ -1,7 +1,7 @@
 [project]
-name = "linkedin-job-classifier"
+name = "job-classifier"
 version = "0.1.0"
-description = "Local LinkedIn job collector and Laya-inspired classifier"
+description = "Multi-source job collector (LinkedIn, GeekHunter) and Laya-inspired classifier"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.115,<1",
@@ -22,9 +22,6 @@ dev = [
     "ruff>=0.11,<1",
     "pre-commit>=4,<5",
 ]
-
-[project.scripts]
-linkedin-laya = "linkedin_laya:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
