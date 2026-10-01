@@ -24,6 +24,7 @@ from app.schemas import (
     ToolSearchRequest,
 )
 from app.services.jobs import list_jobs, load_profile, sync_jobs
+from app.sources import SourceUnavailableError, source_names
 
 DbSession = Annotated[Session, Depends(get_db)]
 ToolsService = Annotated[LinkedInTools, Depends(get_tools)]
@@ -50,6 +51,7 @@ def health():
     engine = peek_engine()
     return {
         "status": "ok",
+        "sources": source_names(),
         "classifier": {
             "backend": settings.classifier_backend,
             "laya_ready": engine.ready if engine else None,
@@ -70,15 +72,21 @@ def profile():
 
 @app.post("/jobs/sync")
 async def sync(request: JobSearchRequest, db: DbSession):
-    count = await sync_jobs(
-        db=db,
-        keywords=request.keywords,
-        location=request.location,
-        limit=request.limit,
-        fetch_details=request.fetch_details,
-        profile_path=settings.profile_path,
-    )
-    return {"synced": count}
+    try:
+        outcome = await sync_jobs(
+            db=db,
+            keywords=request.keywords,
+            location=request.location,
+            limit=request.limit,
+            fetch_details=request.fetch_details,
+            profile_path=settings.profile_path,
+            source=request.source,
+        )
+    except SourceUnavailableError as exc:
+        # Requested a source the registry does not have (e.g. geekhunter
+        # without config): explicit 503, never silently sync another provider.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"synced": outcome.count, "errors": outcome.errors}
 
 
 @app.get("/jobs", response_model=JobList)
@@ -88,10 +96,11 @@ def jobs(
     remote: bool | None = None,
     query: str | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
+    source: Annotated[str | None, Query(pattern="^(linkedin|geekhunter)$")] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):
-    items, total = list_jobs(db, match, remote, query, min_score, limit, offset)
+    items, total = list_jobs(db, match, remote, query, min_score, source, limit, offset)
     return {"total": total, "items": items}
 
 

@@ -34,3 +34,52 @@ def test_dashboard_never_triggers_the_model():
     assert health["classifier"]["backend"] == "laya"
     # engine not instantiated yet: no download happened during startup/tests
     assert health["classifier"]["laya_ready"] is None
+
+
+def test_health_lists_sources():
+    with TestClient(app) as client:
+        health = client.get("/health").json()
+
+    assert health["sources"] == ["linkedin", "geekhunter"]
+
+
+def test_health_does_not_build_source_clients():
+    """`/health` is polled every 30s: names only, no client construction."""
+    from app.sources import source_names
+
+    names = source_names()
+    assert names == ["linkedin", "geekhunter"]
+
+
+def test_sync_form_has_source_select():
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    assert 'id="source"' in html
+    for value in ("linkedin", "geekhunter", "all"):
+        assert f'value="{value}"' in html
+
+
+def test_filters_have_source_select():
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    assert 'id="f-source"' in html
+
+
+def test_app_js_sends_source_and_renders_chip():
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    # sync payload includes the selected source
+    assert "source" in js
+    assert 'params.set("source"' in js or '"source",' in js or "source:" in js
+    # card renders the job's source chip
+    assert "job.source" in js
+
+
+def test_style_css_has_source_chip():
+    with TestClient(app) as client:
+        css = client.get("/static/style.css").text
+
+    assert ".source-chip" in css

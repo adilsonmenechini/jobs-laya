@@ -2,7 +2,8 @@
 
 MVP local para:
 
-1. buscar vagas no LinkedIn com browser local (Patchright);
+1. buscar vagas no **LinkedIn** (browser local, Patchright) e no **GeekHunter**
+   (HTTP público, sem login);
 2. obter detalhes;
 3. normalizar e deduplicar;
 4. classificar contra um perfil profissional;
@@ -67,8 +68,9 @@ Dashboard (frontend estático servido pela própria API):
 <http://localhost:3080/>
 
 Ele lista as vagas classificadas com score, probabilidades, motivos e gaps,
-filtros (match/remoto/score/texto) e o formulário **Buscar e classificar**
-que dispara o sync. O badge no topo mostra o backend do classifier.
+filtros (fonte/match/remoto/score/texto) e o formulário **Buscar e classificar**
+que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter ou todas).
+O badge no topo mostra o backend do classifier.
 
 Swagger:
 
@@ -101,7 +103,41 @@ Perguntas do Laya (todas em um passe, em `app/classifier/questions.py`):
 `GET /health` mostra `{backend, laya_ready, device}` — o modelo só carrega no
 primeiro uso, nunca no startup (mantém boot e testes sem download).
 
-## 5. Buscar vagas
+## 5. Fontes (LinkedIn e GeekHunter)
+
+O sync suporta `source: "linkedin" | "geekhunter" | "all"` (default `linkedin`):
+
+| Fonte | Backend | Login | Notas |
+|---|---|---|---|
+| `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
+| `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
+| `all` | roda as duas | — | falha de uma fonte não derruba a outra; o response traz `errors` por fonte |
+
+```bash
+curl -X POST http://localhost:3080/jobs/sync \
+  -H 'Content-Type: application/json' \
+  -d '{"keywords": ["SRE"], "source": "geekhunter", "limit": 10}'
+# {"synced": 10, "errors": {}}
+```
+
+Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
+atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
+no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
+
+Config do GeekHunter (`.env`):
+
+```text
+GEEKHUNTER_BASE_URL=https://www.geekhunter.com
+GEEKHUNTER_DELAY_SECONDS=1.0
+GEEKHUNTER_PAGE_SIZE=25
+GEEKHUNTER_TIMEOUT_S=30.0
+```
+
+Os dados vêm do JSON-LD das páginas públicas (`ItemList` na listagem,
+`JobPosting` no detalhe), com fallback para o DOM renderizado. Somente
+leitura: nenhuma tool de escrita em nenhuma fonte.
+
+## 6. Buscar vagas
 
 ```bash
 curl -X POST http://localhost:3080/jobs/sync \
@@ -114,9 +150,14 @@ curl -X POST http://localhost:3080/jobs/sync \
   }'
 ```
 
-A resposta informa quantas vagas foram coletadas e classificadas.
+A resposta informa quantas vagas foram coletadas e classificadas, mais um
+mapa `errors` por fonte (vazio quando tudo funcionou):
 
-## 6. Listar
+```json
+{"synced": 25, "errors": {}}
+```
+
+## 7. Listar
 
 ```bash
 curl "http://localhost:3080/jobs?match=high&limit=20"
@@ -130,12 +171,13 @@ GET /jobs?match=medium
 GET /jobs?remote=true
 GET /jobs?query=kubernetes
 GET /jobs?min_score=70
+GET /jobs?source=geekhunter
 GET /jobs/{job_id}
 GET /profile
 GET /health
 ```
 
-## 7. Tools locais do LinkedIn (read-only)
+## 8. Tools locais do LinkedIn (read-only)
 
 A API expõe uma camada de *tools* locais modelada no catálogo do
 [`stickerdaniel/linkedin-mcp-server`](https://github.com/stickerdaniel/linkedin-mcp-server),
@@ -167,7 +209,7 @@ Comportamento de erro: `422` entrada inválida, `404` vaga inexistente,
 Os tools são puros (não gravam no SQLite) — para persistir e classificar, use
 `POST /jobs/sync`.
 
-## 8. Testes, linter e pre-commit
+## 9. Testes, linter e pre-commit
 
 ```bash
 make test
@@ -225,8 +267,13 @@ uv run pre-commit run --all-files
 │   │   ├── parsing.py
 │   │   ├── scrape.py
 │   │   └── tools.py
+│   ├── sources/               # providers pluggables (Protocol JobSource)
+│   │   ├── __init__.py        # build_sources (registry injetável)
+│   │   ├── base.py            # JobSource + SourceUnavailableError
+│   │   ├── linkedin.py        # adapter do LinkedInBrowserClient
+│   │   └── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
 │   └── services/
-│       └── jobs.py
+│       └── jobs.py            # sync dispatcher por fonte + listagem
 └── tests/
     ├── fixtures/            # HTML de exemplo dos parsers
     ├── test_classifier.py
@@ -236,6 +283,12 @@ uv run pre-commit run --all-files
     ├── test_tools.py
     ├── test_api_tools.py
     ├── test_scrape.py
+    ├── test_sources.py
+    ├── test_geekhunter.py
+    ├── test_geekhunter_source.py
+    ├── test_jobs_source.py
+    ├── test_sync_dispatcher.py
+    ├── test_db_migration.py
     └── test_browser_client.py
 ```
 
@@ -243,10 +296,14 @@ uv run pre-commit run --all-files
 
 - A integração LinkedIn depende de uma sessão autenticada do usuário
   (`make login`); o perfil da sessão vive fora do repo em `~/.linkedin-laya/`.
+  O GeekHunter não precisa de login (HTTP público).
 - O LinkedIn proíbe acesso automatizado — use com moderação e por conta própria.
+  O GeekHunter também é acessado com delay configurável
+  (`GEEKHUNTER_DELAY_SECONDS`); respeite o robots/termos de uso.
 - O classifier usa o modelo Laya real quando `CLASSIFIER_BACKEND=laya` (default),
   com fallback automático para a heurística local; os thresholds (80/60) são
   escolhas de política, não probabilidades calibradas para contratação.
 - O score é aderência ao perfil configurado — não é garantia de contratação.
-- Não há candidatura automática.
-- Não há frontend neste primeiro pacote; a API já está pronta para Next.js.
+- Conteúdo do GeekHunter é em PT-BR: skills/sênioridade podem mapear
+  diferente do LinkedIn para o mesmo perfil.
+- Não há candidatura automática (nenhuma fonte tem tool de escrita).
