@@ -200,9 +200,7 @@ make eval
 # equivalente a: uv run python eval/evaluate.py
 ```
 
-O eval replica a estrutura do
-[gabe-santana/laya-classifier](https://github.com/gabe-santana/laya-classifier):
-roda os **três screeners** sobre as 18 vagas fictícias rotuladas à mão em
+O eval roda os **três screeners** sobre as 18 vagas fictícias rotuladas à mão em
 `eval/samples/` (12 EN, 6 PT; 7 high, 5 medium, 6 low) e escreve
 `eval/evaluation.md` + `eval/results/{backend}.json`:
 

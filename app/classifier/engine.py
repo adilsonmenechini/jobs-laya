@@ -1,6 +1,6 @@
 """The Laya side: one forward pass answers every typed question about a job.
 
-Pattern taken from gabe-santana/laya-classifier: an `Engine` protocol with a
+An `Engine` protocol with a
 real `LayaEngine` (Router + background warm-up + lock) and a deterministic
 `FakeEngine` used by tests and by CLASSIFIER_BACKEND=fake — the test suite
 never imports torch or downloads a checkpoint.
