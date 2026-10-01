@@ -1,0 +1,7 @@
+{
+  "title": "Staff Platform Engineer",
+  "company": "Cobalt Foundry",
+  "location": "Brazil (remote)",
+  "remote": true,
+  "description": "Build the internal developer platform our product teams deploy on. You will own the Kubernetes clusters, the Terraform modules and the delivery chain: ArgoCD, Helm, Kustomize and policy as code with OPA, Gatekeeper and Kyverno. Services are written in Go, CI runs on GitHub Actions and golden signals land in Prometheus. Staff level: 10+ years, experience setting standards across teams and mentoring senior engineers."
+}
