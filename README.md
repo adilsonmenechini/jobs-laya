@@ -1,8 +1,11 @@
-# LinkedIn Job Classifier
+# Job Classifier
+
+[![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
 
 MVP local para:
 
-1. buscar vagas no LinkedIn com browser local (Patchright);
+1. buscar vagas no **LinkedIn** (browser local, Patchright), no **GeekHunter**
+   e na **Gupy** (HTTP público, sem login) e no **Glassdoor** (browser local);
 2. obter detalhes;
 3. normalizar e deduplicar;
 4. classificar contra um perfil profissional;
@@ -67,8 +70,10 @@ Dashboard (frontend estático servido pela própria API):
 <http://localhost:3080/>
 
 Ele lista as vagas classificadas com score, probabilidades, motivos e gaps,
-filtros (match/remoto/score/texto) e o formulário **Buscar e classificar**
-que dispara o sync. O badge no topo mostra o backend do classifier.
+filtros (fonte/match/remoto/score/texto) e o formulário **Buscar e classificar**
+que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter, Gupy,
+Glassdoor ou todas).
+O badge no topo mostra o backend do classifier.
 
 Swagger:
 
@@ -101,7 +106,68 @@ Perguntas do Laya (todas em um passe, em `app/classifier/questions.py`):
 `GET /health` mostra `{backend, laya_ready, device}` — o modelo só carrega no
 primeiro uso, nunca no startup (mantém boot e testes sem download).
 
-## 5. Buscar vagas
+## 5. Fontes (LinkedIn, GeekHunter, Gupy e Glassdoor)
+
+O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "glassdoor" | "all"`
+(default `linkedin`):
+
+| Fonte | Backend | Login | Notas |
+|---|---|---|---|
+| `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
+| `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
+| `gupy` | HTTP público (`httpx`) + API JSON | não precisa | sem browser; pagina por `offset` |
+| `glassdoor` | browser local (Patchright) | não precisa | HTTP direto dá 403 (Cloudflare) |
+| `all` | roda todas | — | falha de uma fonte não derruba as outras; o response traz `errors` por fonte |
+
+```bash
+curl -X POST http://localhost:3080/jobs/sync \
+  -H 'Content-Type: application/json' \
+  -d '{"keywords": ["SRE"], "source": "geekhunter", "limit": 10}'
+# {"synced": 10, "errors": {}}
+```
+
+Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
+atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
+no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
+
+Config das fontes novas (`.env`):
+
+```text
+GUPY_BASE_URL=https://portal.gupy.io
+GUPY_DELAY_SECONDS=1.0
+GUPY_PAGE_SIZE=10
+GUPY_TIMEOUT_S=30.0
+
+# Glassdoor só via browser local: HTTP direto responde 403 (Cloudflare).
+# Nesta máquina o headless cai no desafio "Um momento…", então headless=false.
+GLASSDOOR_BASE_URL=https://www.glassdoor.com
+GLASSDOOR_DELAY_SECONDS=2.0
+GLASSDOOR_TIMEOUT_MS=30000
+GLASSDOOR_HEADLESS=false
+```
+
+**Gupy** — API pública `GET /api/job-search/jobs` (`jobName`, `limit`,
+`offset`), sem login e sem browser. `location` é mapeado com cuidado:
+`remoto`/`remote` vira `workplaceType=remote` (nunca `city=remoto`), nome
+completo de estado vira `state=` (ex.: `Bahia`), qualquer outra coisa vira
+`city=`; `Brazil`/`brasil` não manda filtro. A descrição completa já vem na
+busca; `details()` só consulta a página SSR (`__NEXT_DATA__`) quando ela
+veio vazia.
+
+**Glassdoor** — a SERP abre via browser local (Patchright) e é parseada pelos
+cards (`data-test="job-title"`, `compactEmployerName`, `emp-location`,
+`descSnippet`) mais o `jl=` da URL. `location` é **ignorado** (a busca cobre
+o Brasil inteiro) e `details()` é no-op documentado: todas as rotas de
+detalhe caem no desafio do Cloudflare no browser local (spec Non-Goals) — v1
+guarda o snippet + linha de `Habilidades:` da SERP. Desafio detectado
+(`Um momento…` / `Somente humanos`) vira `SourceUnavailableError`, então o
+sync responde 200 com `errors["glassdoor"]` sem derrubar as outras fontes.
+
+Os dados do GeekHunter vêm do JSON-LD das páginas públicas (`ItemList` na
+listagem, `JobPosting` no detalhe), com fallback para o DOM renderizado.
+Somente leitura: nenhuma tool de escrita em nenhuma fonte.
+
+## 6. Buscar vagas
 
 ```bash
 curl -X POST http://localhost:3080/jobs/sync \
@@ -114,9 +180,14 @@ curl -X POST http://localhost:3080/jobs/sync \
   }'
 ```
 
-A resposta informa quantas vagas foram coletadas e classificadas.
+A resposta informa quantas vagas foram coletadas e classificadas, mais um
+mapa `errors` por fonte (vazio quando tudo funcionou):
 
-## 6. Listar
+```json
+{"synced": 25, "errors": {}}
+```
+
+## 7. Listar
 
 ```bash
 curl "http://localhost:3080/jobs?match=high&limit=20"
@@ -130,12 +201,13 @@ GET /jobs?match=medium
 GET /jobs?remote=true
 GET /jobs?query=kubernetes
 GET /jobs?min_score=70
+GET /jobs?source=geekhunter
 GET /jobs/{job_id}
 GET /profile
 GET /health
 ```
 
-## 7. Tools locais do LinkedIn (read-only)
+## 8. Tools locais do LinkedIn (read-only)
 
 A API expõe uma camada de *tools* locais modelada no catálogo do
 [`stickerdaniel/linkedin-mcp-server`](https://github.com/stickerdaniel/linkedin-mcp-server),
@@ -167,7 +239,7 @@ Comportamento de erro: `422` entrada inválida, `404` vaga inexistente,
 Os tools são puros (não gravam no SQLite) — para persistir e classificar, use
 `POST /jobs/sync`.
 
-## 8. Testes, linter e pre-commit
+## 9. Testes, linter e pre-commit
 
 ```bash
 make test
@@ -193,6 +265,37 @@ Rodar manualmente sobre tudo:
 uv run pre-commit run --all-files
 ```
 
+## 10. Avaliação (eval)
+
+```bash
+make eval
+# equivalente a: uv run python eval/evaluate.py
+```
+
+O eval roda os **três screeners** sobre as 18 vagas fictícias rotuladas à mão em
+`eval/samples/` (12 EN, 6 PT; 7 high, 5 medium, 6 low) e escreve
+`eval/evaluation.md` + `eval/results/{backend}.json`:
+
+| Screener | O que é |
+|---|---|
+| Heuristics only | `LayaInspiredClassifier` puro (keywords e sinais) |
+| Laya only | score só com as respostas do modelo (`role_family`, `remote`, `skill_fit`, `seniority`), pesos renormalizados |
+| Combined policy | `LayaJobClassifier` atual (a política sobre as duas partes) |
+
+A tabela por vaga marca com ✗ os vereditos divergentes do rótulo, e as colunas
+`high/medium/low` mostram os acertos por classe esperada. Backends:
+
+```bash
+uv run python eval/evaluate.py --backend fake       # FakeEngine, sem download
+uv run python eval/evaluate.py --backend heuristic  # só a heurística, sem modelo
+uv run python eval/evaluate.py --device cpu         # fixar device
+```
+
+Os rótulos em `eval/samples/labels.json` são escolhas de política sobre
+vagas fictícias — calibrados no mesmo dataset, exatamente como os thresholds
+(80/60). Rotule suas próprias vagas e refita antes de confiar em um veredito.
+O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
+
 ## Estrutura
 
 ```text
@@ -204,6 +307,11 @@ uv run pre-commit run --all-files
 ├── .env.example
 ├── data/
 │   └── profile.json
+├── eval/
+│   ├── evaluate.py        # ablação: heuristics only / laya only / combined
+│   ├── evaluation.md      # relatório gerado
+│   ├── results/           # rows brutos por backend
+│   └── samples/           # 18 vagas fictícias + labels.json
 ├── app/
 │   ├── main.py
 │   ├── config.py
@@ -225,8 +333,15 @@ uv run pre-commit run --all-files
 │   │   ├── parsing.py
 │   │   ├── scrape.py
 │   │   └── tools.py
+│   ├── sources/               # providers pluggables (Protocol JobSource)
+│   │   ├── __init__.py        # build_sources (registry injetável)
+│   │   ├── base.py            # JobSource + SourceUnavailableError
+│   │   ├── linkedin.py        # adapter do LinkedInBrowserClient
+│   │   ├── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
+│   │   ├── gupy.py            # httpx + API JSON pública (sem login)
+│   │   └── glassdoor.py       # browser + parser da SERP (Cloudflare)
 │   └── services/
-│       └── jobs.py
+│       └── jobs.py            # sync dispatcher por fonte + listagem
 └── tests/
     ├── fixtures/            # HTML de exemplo dos parsers
     ├── test_classifier.py
@@ -236,6 +351,14 @@ uv run pre-commit run --all-files
     ├── test_tools.py
     ├── test_api_tools.py
     ├── test_scrape.py
+    ├── test_sources.py
+    ├── test_geekhunter.py
+    ├── test_geekhunter_source.py
+    ├── test_gupy_source.py
+    ├── test_glassdoor_source.py
+    ├── test_jobs_source.py
+    ├── test_sync_dispatcher.py
+    ├── test_db_migration.py
     └── test_browser_client.py
 ```
 
@@ -243,10 +366,18 @@ uv run pre-commit run --all-files
 
 - A integração LinkedIn depende de uma sessão autenticada do usuário
   (`make login`); o perfil da sessão vive fora do repo em `~/.linkedin-laya/`.
+  O GeekHunter, a Gupy e o Glassdoor não precisam de login.
 - O LinkedIn proíbe acesso automatizado — use com moderação e por conta própria.
+  As demais fontes também são acessadas com delay configurável
+  (`GEEKHUNTER_DELAY_SECONDS`, `GUPY_DELAY_SECONDS`, `GLASSDOOR_DELAY_SECONDS`);
+  respeite o robots/termos de uso.
+- O Glassdoor bloqueia HTTP direto (Cloudflare 403), então a coleta usa o
+  browser local; as rotas de detalhe caem no desafio e v1 guarda só o snippet
+  da SERP, com `location` ignorado (busca Brasil-a-brasil).
 - O classifier usa o modelo Laya real quando `CLASSIFIER_BACKEND=laya` (default),
   com fallback automático para a heurística local; os thresholds (80/60) são
   escolhas de política, não probabilidades calibradas para contratação.
 - O score é aderência ao perfil configurado — não é garantia de contratação.
-- Não há candidatura automática.
-- Não há frontend neste primeiro pacote; a API já está pronta para Next.js.
+- Conteúdo do GeekHunter é em PT-BR: skills/sênioridade podem mapear
+  diferente do LinkedIn para o mesmo perfil.
+- Não há candidatura automática (nenhuma fonte tem tool de escrita).

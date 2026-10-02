@@ -1,0 +1,7 @@
+{
+  "title": "MLOps Engineer",
+  "company": "Fulcrum ML",
+  "location": "Brazil (remote)",
+  "remote": true,
+  "description": "Run the ML platform behind our products: training pipelines, model serving on Kubernetes in AWS, infrastructure as code with Terraform, containerization with Docker and orchestration of workflows. Monitoring in Prometheus and Grafana, serving LLM endpoints with sane latency budgets. Everything is Python. 4-6 years in data or platform engineering; ML background is a plus but not required."
+}

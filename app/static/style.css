@@ -126,6 +126,24 @@ button:disabled { opacity: 0.6; cursor: wait; }
 
 .meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
 
+.source-chip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 1px 7px;
+  margin-right: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: 1px;
+}
+.source-chip[data-source="geekhunter"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .score-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .score-bar {
   flex: 1;

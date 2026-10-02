@@ -1,0 +1,128 @@
+[
+  {
+    "file": "senior-sre-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "profile": "default",
+    "note": "caso limpo: cargo, skills e remoto"
+  },
+  {
+    "file": "staff-platform-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "profile": "default",
+    "note": "plataforma/IaC dentro do perfil"
+  },
+  {
+    "file": "principal-reliability-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "profile": "default",
+    "note": "reliability no título do perfil, remoto"
+  },
+  {
+    "file": "ai-engineer-llm-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "profile": "default",
+    "note": "AI Engineer + RAG/LLM no perfil"
+  },
+  {
+    "file": "devops-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "high",
+    "profile": "default",
+    "note": "cargo do perfil com stack completa"
+  },
+  {
+    "file": "cloud-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "profile": "default",
+    "note": "cloud adjacente: cargo fora da lista de títulos, sem senioridade"
+  },
+  {
+    "file": "mlops-remote-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "profile": "default",
+    "note": "ai_ml do perfil mas sem senioridade sênior"
+  },
+  {
+    "file": "devops-hybrid-london-en.json",
+    "lang": "en",
+    "expected": "medium",
+    "profile": "default",
+    "note": "cargo perfeito mas híbrido falha com remote_required"
+  },
+  {
+    "file": "devops-sales-engineer-en.json",
+    "lang": "en",
+    "expected": "low",
+    "profile": "default",
+    "note": "hard case: 'DevOps' no título e skills cloud na descrição, mas a vaga é comercial"
+  },
+  {
+    "file": "product-marketing-cloud-keywords-en.json",
+    "lang": "en",
+    "expected": "low",
+    "profile": "default",
+    "note": "hard case: keyword spam de cloud em vaga de marketing"
+  },
+  {
+    "file": "sales-manager-remote-en.json",
+    "lang": "en",
+    "expected": "low",
+    "profile": "default",
+    "note": "remota mas nada de infra"
+  },
+  {
+    "file": "frontend-engineer-remote-en.json",
+    "lang": "en",
+    "expected": "low",
+    "profile": "default",
+    "note": "senior e remota, stack fora do perfil"
+  },
+  {
+    "file": "engenheiro-devops-senior-remoto-pt.json",
+    "lang": "pt",
+    "expected": "high",
+    "profile": "default",
+    "note": "PT-BR limpo: cargo do perfil, skills completas, remoto"
+  },
+  {
+    "file": "sre-plataforma-remoto-pt.json",
+    "lang": "pt",
+    "expected": "high",
+    "profile": "default",
+    "note": "SRE no título, plataforma e remoto"
+  },
+  {
+    "file": "engenheiro-cloud-remoto-pt.json",
+    "lang": "pt",
+    "expected": "medium",
+    "profile": "default",
+    "note": "cloud remoto sem cargo exato do perfil e sem senioridade"
+  },
+  {
+    "file": "devops-pleno-remoto-pt.json",
+    "lang": "pt",
+    "expected": "medium",
+    "profile": "default",
+    "note": "cargo e skills casam, senioridade pleno abaixo do perfil"
+  },
+  {
+    "file": "devops-junior-remoto-pt.json",
+    "lang": "pt",
+    "expected": "low",
+    "profile": "default",
+    "note": "hard case: cargo e keywords casam mas júnior não atende o perfil"
+  },
+  {
+    "file": "estagio-contabilidade-presencial-pt.json",
+    "lang": "pt",
+    "expected": "low",
+    "profile": "default",
+    "note": "controle: nada a ver com o perfil"
+  }
+]

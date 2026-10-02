@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, Float, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, Float, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -8,9 +8,11 @@ from app.db import Base
 
 class Job(Base):
     __tablename__ = "jobs"
+    __table_args__ = (UniqueConstraint("source", "source_id", name="uq_jobs_source_source_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    linkedin_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    source: Mapped[str] = mapped_column(String(32), default="linkedin", index=True)
+    source_id: Mapped[str] = mapped_column(String(128), index=True)
     title: Mapped[str] = mapped_column(String(500), index=True)
     company: Mapped[str | None] = mapped_column(String(500), nullable=True, index=True)
     location: Mapped[str | None] = mapped_column(String(500), nullable=True)

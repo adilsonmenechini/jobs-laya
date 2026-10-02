@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -6,13 +8,15 @@ class JobSearchRequest(BaseModel):
     location: str = "Brazil"
     limit: int = Field(default=25, ge=1, le=100)
     fetch_details: bool = True
+    source: Literal["linkedin", "geekhunter", "gupy", "glassdoor", "all"] = "linkedin"
 
 
 class JobOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    linkedin_id: str
+    source: str
+    source_id: str
     title: str
     company: str | None
     location: str | None

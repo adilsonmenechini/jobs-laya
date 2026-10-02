@@ -1,0 +1,7 @@
+{
+  "title": "Engenheiro de Cloud",
+  "company": "Nuvem Clara Tecnologia",
+  "location": "Brasil (remoto)",
+  "remote": true,
+  "description": "Vaga remota para migração e operação de workloads em AWS e Azure usando Terraform, clusters Kubernetes (EKS/AKS) com Docker e automação de operações em Python. Suporte aos times de produto com provisão de ambientes, governança de custos e redes. Monitoramento com Prometheus e Grafana. 4-6 anos em cloud; a posição foca em ferramentas e migrações, sem participação em on-call de produto."
+}
