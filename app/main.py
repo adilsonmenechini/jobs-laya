@@ -96,7 +96,7 @@ def jobs(
     remote: bool | None = None,
     query: str | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
-    source: Annotated[str | None, Query(pattern="^(linkedin|geekhunter)$")] = None,
+    source: Annotated[str | None, Query(pattern="^(linkedin|geekhunter|gupy|glassdoor)$")] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):

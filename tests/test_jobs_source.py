@@ -102,7 +102,7 @@ def test_job_search_request_source_defaults_to_linkedin():
 
 
 def test_job_search_request_accepts_all_sources():
-    for source in ("linkedin", "geekhunter", "all"):
+    for source in ("linkedin", "geekhunter", "gupy", "glassdoor", "all"):
         assert JobSearchRequest(keywords=["SRE"], source=source).source == source
 
 
@@ -143,3 +143,12 @@ def test_jobs_endpoint_rejects_unknown_source():
         response = client.get("/jobs", params={"source": "indeed"})
 
     assert response.status_code == 422
+
+
+def test_jobs_endpoint_accepts_the_new_sources():
+    """The `source` path regex must validate gupy and glassdoor (spec FR-3)."""
+    with TestClient(app) as client:
+        for source in ("gupy", "glassdoor"):
+            response = client.get("/jobs", params={"source": source})
+            assert response.status_code == 200, source
+            assert response.json()["total"] == 0

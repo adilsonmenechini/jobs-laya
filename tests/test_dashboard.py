@@ -40,7 +40,7 @@ def test_health_lists_sources():
     with TestClient(app) as client:
         health = client.get("/health").json()
 
-    assert health["sources"] == ["linkedin", "geekhunter"]
+    assert health["sources"] == ["linkedin", "geekhunter", "gupy", "glassdoor"]
 
 
 def test_health_does_not_build_source_clients():
@@ -48,7 +48,7 @@ def test_health_does_not_build_source_clients():
     from app.sources import source_names
 
     names = source_names()
-    assert names == ["linkedin", "geekhunter"]
+    assert names == ["linkedin", "geekhunter", "gupy", "glassdoor"]
 
 
 def test_sync_form_has_source_select():
@@ -56,7 +56,7 @@ def test_sync_form_has_source_select():
         html = client.get("/").text
 
     assert 'id="source"' in html
-    for value in ("linkedin", "geekhunter", "all"):
+    for value in ("linkedin", "geekhunter", "gupy", "glassdoor", "all"):
         assert f'value="{value}"' in html
 
 
@@ -65,6 +65,8 @@ def test_filters_have_source_select():
         html = client.get("/").text
 
     assert 'id="f-source"' in html
+    for value in ("linkedin", "geekhunter", "gupy", "glassdoor"):
+        assert html.count(f'value="{value}"') >= 2  # sync form + filter form
 
 
 def test_app_js_sends_source_and_renders_chip():

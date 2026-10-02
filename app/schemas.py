@@ -8,7 +8,7 @@ class JobSearchRequest(BaseModel):
     location: str = "Brazil"
     limit: int = Field(default=25, ge=1, le=100)
     fetch_details: bool = True
-    source: Literal["linkedin", "geekhunter", "all"] = "linkedin"
+    source: Literal["linkedin", "geekhunter", "gupy", "glassdoor", "all"] = "linkedin"
 
 
 class JobOut(BaseModel):

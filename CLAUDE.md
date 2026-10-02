@@ -1,99 +1,241 @@
 # CLAUDE.md
 
-## Core Principles
+Instruções persistentes para o agente neste repositório. Leia no início de cada sessão.
 
-- **Simplicity First:** Make every change as simple as possible. Minimal surface area and impact on existing code.
-- **Root-Cause Focus:** No temporary band-aids or superficial fixes. Debug deeply and solve at the root.
-- **High Standards:** Act with Staff-level engineering rigor, ownership, and zero tolerance for laziness.
+Convenção: **NUNCA** e **SEMPRE** aparecem apenas em regras inegociáveis. As demais são diretrizes que exigem julgamento.
 
-## Workflow Orchestration
+---
 
-### 1. Plan Mode Default
+## 1. Princípios
 
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions).
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing.
-- Use plan mode for verification steps, not just building.
-- Write detailed specs upfront to reduce ambiguity.
+- **Simplicidade primeiro:** a menor mudança que resolve o problema. Não refatore, renomeie ou "melhore" código fora do escopo pedido.
+- **Causa raiz:** não entregue paliativos. Reproduza o problema, identifique a origem e corrija nela. Se só for possível um paliativo, diga isso explicitamente e registre a pendência.
+- **Evidência antes de afirmar:** nada é "pronto" sem prova (teste passando, log, saída de comando). Se não rodou, diga que não rodou.
+- **Mudança sem teste não está completa:** toda alteração de comportamento vem com teste que falha antes e passa depois.
+- **Sem pendências escondidas:** nenhum `TODO`/`FIXME` sem referência a uma issue ou a um item em `plan/tasks/`.
 
-### 2. Subagent Strategy
+---
 
-- Use subagents liberally to keep the main context window clean.
-- Offload research, exploration, and parallel analysis to subagents.
-- For complex problems, throw more compute at it via subagents.
-- One task per subagent for focused execution.
+## 2. Comandos do projeto
 
-### 3. Self-Improvement Loop
+Use sempre os comandos abaixo. Não os descubra por tentativa. Preencha uma vez por projeto.
 
-- After ANY correction from the user: update `plan/tasks/lessons-<YYYYMMDDHHmm>.md` with the pattern.
-- Write rules for yourself that prevent the same mistake.
-- Ruthlessly iterate on these lessons until mistake rate drops.
-- Review lessons at session start for the relevant project.
+| Ação | Comando |
+|---|---|
+| Lint | `<preencher>` |
+| Verificar formatação | `<preencher>` |
+| Type check (se houver) | `<preencher>` |
+| Testes | `<preencher>` |
+| **Verificação completa** (equivale ao CI) | `<preencher>` |
 
-### 4. Verification Before Done
+Se esta tabela não estiver preenchida, descubra os comandos lendo `Makefile`, `justfile`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod` ou `.github/workflows/`, preencha a tabela e peça confirmação ao usuário.
 
-- Never mark a task complete without proving it works.
-- Diff behavior between main and your changes when relevant.
-- Ask yourself: "Would a Staff engineer approve this?"
-- Run tests, check logs, and demonstrate correctness.
+O CI (`.github/workflows/`) roda lint e testes em todo PR para `develop` e `main`. O pre-commit local **não substitui** o CI.
 
-### 5. Demand Elegance (Balanced)
+---
 
-- For non-trivial changes: pause and ask, "Is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution."
-- Skip this for simple, obvious fixes — don't over-engineer.
-- Challenge your own work before presenting it.
+## 3. Quando usar o fluxo completo
 
-### 6. Autonomous Bug Fixing
+### Tarefa trivial (caminho rápido)
 
-- When given a bug report: just fix it. Don't ask for hand-holding.
-- Point at logs, errors, and failing tests — then resolve them.
-- Zero context switching required from the user.
-- Go fix failing CI tests without being told how.
+Aplica-se quando **todas** as condições forem verdadeiras:
 
-### 7. AI Memory & Session Tracking
+- toca no máximo 2 arquivos;
+- não altera interface pública, schema, infraestrutura ou CI;
+- a causa é óbvia e o comportamento esperado é inequívoco.
 
-- **Always use AI Memory** for project memory, context, decisions, lessons, and relevant persistent knowledge.
-- Follow the AI Memory documentation and workflow: https://github.com/akitaonrails/ai-memory/tree/main/docs
-- Before starting relevant work, check existing AI Memory context instead of assuming prior decisions or rediscovering information.
-- After meaningful corrections, architectural decisions, discoveries, or reusable lessons, update the AI Memory accordingly.
-- Keep project memory organized, concise, and focused on information that will be useful in future sessions.
+Nesse caso: faça a mudança, escreva ou ajuste o teste, rode a verificação completa e siga para o Git. **Não** crie artefatos em `plan/`.
 
-## Task & Session Management
+### Tarefa não trivial (fluxo completo)
 
-1. **Plan First:** Write the spec to `plan/sdd/spec-<YYYYMMDDHHmm>.md` and the tasks to `plan/tasks/todo-<YYYYMMDDHHmm>.md` with checkable items.
-2. **Verify Plan:** Check in before starting implementation.
-3. **Track Progress:** Mark items complete as you go.
-4. **Explain Changes:** Provide a high-level summary at each step.
-5. **Document Results:** Add a review section to `plan/tasks/todo-<YYYYMMDDHHmm>.md`.
-6. **Capture Lessons:** Update `plan/tasks/lessons-<YYYYMMDDHHmm>.md` and AI Memory after corrections.
-7. **Save Session:** Before finishing or switching tasks, save session logs, summary, and status to `plan/sessions/session-<YYYYMMDDHHmm>.md`.
+Aplica-se quando **qualquer** condição for verdadeira:
 
-### Git Workflow (Gitflow)
+- toca mais de 2 arquivos;
+- altera interface pública, schema de dados, infraestrutura, dependências ou CI;
+- envolve decisão arquitetural;
+- a causa de um bug não é óbvia;
+- você tem dúvida real sobre o escopo.
 
-1. Branch from `develop`: `feature/<slug>` (e.g. `feature/geekhunter-source`).
-2. Commit on the feature branch (pre-commit must be green).
-3. Push and open a PR with base `develop` (`gh pr create --base develop`).
-4. **Never merge directly** — not from the CLI, not from the API. Every feature lands via PR so it gets reviewed; the user performs the merge.
-5. PRs must be green before merge: CI (`.github/workflows/ci.yml`) runs `lint` (ruff check + format check) and `test` (pytest) on every PR to `develop`/`main`. Never rely only on local pre-commit.
+Nesse caso, siga a seção 4.
 
-### 8. Development Flow (SPEC → TDD → TASK → CODING → REFACTOR → LINTER → SAFETY → SESSION)
+### Autonomia versus confirmação
 
-For any non-trivial task (3+ steps or architectural decisions), strictly follow this sequential flow:
+- **Autônomo:** bug com causa clara e escopo contido; CI quebrado; testes falhando. Corrija sem pedir orientação.
+- **Confirmar antes:** mudança de escopo, decisão arquitetural, nova dependência, alteração de CI, qualquer operação destrutiva (ver seção 9).
+- Se algo sair do planejado no meio da execução, **pare e replaneje** em vez de insistir.
 
-1. **SPEC:** Define requirements, constraints, assumptions, and acceptance criteria.
-   - Save to: `plan/sdd/spec-<YYYYMMDDHHmm>.md`
-2. **TDD:** Write or update tests expressing expected behaviors and edge cases *before* implementing.
-3. **TASK:** Break work into small, checkable items.
-   - Save to: `plan/tasks/todo-<YYYYMMDDHHmm>.md`
-4. **CODING:** Implement the minimal correct solution to satisfy specs and tests.
-5. **REFACTOR:** Clean up code structure, duplication, and readability without changing behavior.
-6. **LINTER:** Run formatters, linters, static analysis, and type checkers. Fix issues directly — never suppress without justification.
-7. **SAFETY:** Audit security, input validation, permissions, data handling, and destructive operations.
-8. **SESSION:** Summarize changes made, test results, decisions taken, and remaining items.
-   - Save to: `plan/sessions/session-<YYYYMMDDHHmm>.md`
+---
 
-### File Naming Rules
+## 4. Fluxo completo
 
-- Timestamps must follow 24h format: `YYYYMMDDHHmm` (e.g., `202610011234`).
-- SPEC, TASK, and SESSION files created for the same iteration **must share the exact same timestamp**.
-- **Forbidden filenames:** Never use generic paths like `tasks/todo.md`, `spec.md`, or `session.md`. Always create new timestamped files for new iterations.
+Sequência obrigatória para tarefas não triviais:
+
+**SPEC → TASK → TDD → CODING → REFACTOR → LINTER → SAFETY → REVIEW → SESSION**
+
+| Etapa | O que fazer | Artefato |
+|---|---|---|
+| 1. SPEC | Requisitos, restrições, premissas, critérios de aceite, fora de escopo. **Peça confirmação ao usuário antes de seguir.** | `plan/sdd/spec-<TS>.md` |
+| 2. TASK | Quebre em itens pequenos e verificáveis (checklist). Marque conforme avança. | `plan/tasks/todo-<TS>.md` |
+| 3. TDD | Escreva ou atualize testes para o comportamento esperado e casos de borda **antes** de implementar. Confirme que falham pelo motivo certo. | testes no repositório |
+| 4. CODING | Implementação mínima que satisfaz spec e testes. | código |
+| 5. REFACTOR | Melhore estrutura, duplicação e legibilidade **sem alterar comportamento**. Testes continuam verdes. | código |
+| 6. LINTER | Rode formatador, linter e type checker. Corrija. Nunca suprima um aviso sem justificativa no código. | código |
+| 7. SAFETY | Audite validação de entrada, permissões, tratamento de segredos, dados sensíveis e operações destrutivas. | notas na REVIEW |
+| 8. REVIEW | Avalie criticamente contra a spec, os critérios de aceite e os casos de borda. Anexe a saída da verificação completa. Veredito: PASS, FAIL-IMPL ou FAIL-SPEC. | `plan/reviews/review-<TS>.md` |
+| 9. SESSION | Resumo do que mudou, resultados de teste, decisões, pendências. Salve também ao trocar de tarefa ou encerrar a sessão. | `plan/sessions/session-<TS>.md` |
+
+Antes da etapa 1 e antes da etapa 4, **verifique as skills disponíveis** (seção 10).
+
+Durante o fluxo:
+
+- Explique as mudanças em alto nível a cada etapa, sem despejar diff.
+- Antes de apresentar um trabalho não trivial, pergunte-se se existe uma solução mais simples ou mais clara. Para correções simples e óbvias, pule isso.
+- Ao concluir o REVIEW com PASS, escreva um **checklist de verificação** na review com os comandos executados e seus resultados.
+
+---
+
+## 5. Tratamento de falha no REVIEW
+
+O veredito determina para onde voltar. Não reinicie tudo por causa de um erro pequeno.
+
+| Veredito | Situação | Ação |
+|---|---|---|
+| **PASS** | Critérios de aceite atendidos, verificação completa verde, SAFETY sem pendências | Salve SESSION, depois commit, push e PR (seção 6). **Não** faça merge. |
+| **FAIL-IMPL** | Defeito de implementação: teste quebrado, lint, caso de borda não coberto, bug no código | Volte ao **CODING** (ou ao TDD, se faltar teste). Mantenha o mesmo timestamp. |
+| **FAIL-SPEC** | Requisito errado, incompleto ou ambíguo; falha arquitetural | Volte ao **SPEC** com **novo timestamp**. Registre na nova spec o que a anterior errou. |
+
+**Limite de iterações:** após 3 ciclos FAIL na mesma tarefa, **pare e escale para o usuário** com um resumo do que foi tentado, do que falhou e das hipóteses restantes. Não continue em loop.
+
+---
+
+## 6. Git e Pull Requests
+
+Modelo: Gitflow.
+
+1. **Branches** sempre a partir de `develop`, com prefixo:
+   - `feature/<slug>`: nova funcionalidade
+   - `fix/<slug>`: correção
+   - `bug/<slug>`: correção de bug reportado
+   - `chore/<slug>`: manutenção, dependências, configuração
+2. **Commits** seguem Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`, `test:`, `docs:`). Um commit por mudança lógica. O pre-commit deve estar verde.
+3. **Push e PR** contra `develop`: `gh pr create --base develop`.
+4. **Descrição do PR** inclui: resumo da mudança, caminho da spec (`plan/sdd/spec-<TS>.md`), caminho da review, e como foi verificado.
+5. **PR pequeno e focado:** se a mudança crescer além do escopo da spec, divida em PRs separados.
+6. **NUNCA faça merge** pela CLI ou pela API. Crie o PR e deixe o merge para o usuário, para garantir revisão humana.
+7. O PR só está pronto quando o CI (`lint` e `test`) está verde.
+
+---
+
+## 7. Memória: AI Memory e `plan/`
+
+### Divisão de responsabilidades
+
+| Onde | O que guardar | Papel |
+|---|---|---|
+| **AI Memory** | Decisões arquiteturais, lições reutilizáveis, descobertas e convenções que valem para sessões futuras | **Fonte da verdade** para conhecimento persistente |
+| **`plan/`** | Specs, tasks, reviews e sessões da iteração em andamento | Registro de trabalho e rastreabilidade |
+| **`plan/tasks/lessons-<TS>.md`** | Lição bruta após uma correção do usuário | Rascunho. Promova para o AI Memory e mantenha só a referência. |
+
+### Regras de uso
+
+- **Antes** de começar um trabalho relevante, consulte o AI Memory. Não assuma decisões anteriores nem redescubra o que já foi registrado.
+- **Depois** de correção do usuário, decisão arquitetural, descoberta ou lição reutilizável: registre no AI Memory e crie `plan/tasks/lessons-<TS>.md` com o padrão do erro e a regra para evitá-lo.
+- Seja conciso. Registre apenas o que ajudará em sessões futuras. Não registre logs, saídas de comando ou detalhes que o código já mostra.
+- No início da sessão, revise as lições relevantes ao projeto.
+- Documentação de referência: https://github.com/akitaonrails/ai-memory/tree/main/docs
+
+### Fallback se o AI Memory estiver indisponível
+
+1. Avise o usuário em uma linha.
+2. Registre o que seria gravado em `plan/memory-pending-<TS>.md`.
+3. Continue o trabalho normalmente.
+4. Quando o serviço voltar, sincronize o conteúdo pendente e apague o arquivo.
+
+---
+
+## 8. Subagentes e nomenclatura de arquivos
+
+### Quando usar subagentes
+
+**Use** para:
+
+- pesquisa ou exploração em muitos arquivos;
+- análises independentes que podem rodar em paralelo;
+- tarefas que poluiriam o contexto principal com saída volumosa.
+
+**Evite** para:
+
+- edições pequenas ou sequenciais, em que cada passo depende do anterior;
+- tarefas em que o custo de repassar contexto supera o ganho.
+
+Uma tarefa por subagente, com objetivo e formato de retorno definidos.
+
+### Nomenclatura
+
+- Timestamp: `YYYYMMDDHHmm`, 24h (exemplo: `202610011234`).
+- **SPEC, TASK, REVIEW e SESSION da mesma iteração compartilham o mesmo timestamp.** Um novo timestamp só nasce com um novo SPEC (FAIL-SPEC ou nova iniciativa).
+- `lessons-<TS>` usa o timestamp do momento da correção.
+- **Proibido** usar nomes genéricos como `todo.md`, `spec.md`, `review.md` ou `session.md`.
+
+### Estrutura de `plan/`
+
+```
+plan/
+├── sdd/        spec-<TS>.md
+├── tasks/      todo-<TS>.md, lessons-<TS>.md
+├── reviews/    review-<TS>.md
+└── sessions/   session-<TS>.md
+```
+
+### Retenção
+
+`plan/` é **versionado** no repositório, pois dá rastreabilidade ao PR. Arquivos de iterações concluídas há mais de 90 dias podem ser movidos para `plan/archive/` mediante confirmação do usuário. Nunca apague artefatos sem confirmar.
+
+---
+
+## 9. Proibições de segurança
+
+**NUNCA**, sem autorização explícita do usuário na conversa atual:
+
+- `git push --force` (inclusive `--force-with-lease`) em `develop` ou `main`;
+- reescrever histórico já publicado (`rebase`, `reset --hard`, `commit --amend` em commits enviados);
+- `rm -rf` fora de diretórios temporários criados na própria tarefa;
+- alterar `.github/workflows/`, configuração de CI, hooks ou permissões sem avisar e explicar o motivo;
+- commitar `.env`, chaves, tokens, credenciais ou qualquer segredo. Se encontrar um segredo no repositório, avise o usuário em vez de corrigir em silêncio;
+- imprimir segredos em logs, saídas ou descrições de PR;
+- instalar dependências novas sem confirmar;
+- executar migrações ou comandos destrutivos em bancos de dados ou ambientes que não sejam locais de teste;
+- desativar testes, lint ou checagens do CI para fazer algo passar.
+
+Em caso de dúvida sobre se uma operação é destrutiva ou irreversível, **pergunte antes**.
+
+---
+
+## 10. Skills
+
+Skills são instruções especializadas em `.claude/skills/<nome>/SKILL.md` (do projeto) e `~/.claude/skills/<nome>/SKILL.md` (pessoais). Cada uma tem um `description` que diz quando se aplica.
+
+### Quando verificar
+
+- **Antes do SPEC:** liste as skills disponíveis e identifique as que se aplicam à tarefa.
+- **Antes do CODING:** releia as skills aplicáveis. Se o escopo mudou durante o SPEC ou TASK, repita a busca.
+- **No REVIEW:** confirme que as skills aplicáveis foram seguidas.
+
+### Como verificar
+
+1. Liste os diretórios em `.claude/skills/` e `~/.claude/skills/`.
+2. Leia o `description` de cada `SKILL.md`. Não leia o corpo de todas.
+3. Para cada skill cujo `description` combine com a tarefa, leia o `SKILL.md` completo e siga as instruções **antes** de agir.
+4. Se mais de uma se aplica, leia todas. Em conflito, a skill do projeto prevalece sobre a pessoal, e este CLAUDE.md prevalece sobre ambas.
+
+### Registro
+
+- Na SPEC, inclua a seção **Skills aplicáveis** com os nomes das skills usadas (ou "nenhuma").
+- Na REVIEW, marque se cada skill listada foi seguida. Se alguma foi ignorada, justifique.
+
+### Regras
+
+- Não invente skills. Se nenhuma se aplica, siga em frente sem comentar.
+- Não carregue skills irrelevantes só por precaução: isso gasta contexto.
+- Se uma skill contradiz uma proibição da seção 9, a seção 9 prevalece. Avise o usuário.
+- Se identificar uma tarefa repetitiva que merece virar skill, sugira ao usuário em vez de criar sozinho.
