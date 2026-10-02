@@ -17,6 +17,8 @@ def source_names(config: Settings | None = None) -> list[str]:
         names.append("geekhunter")
     if cfg.gupy_base_url:
         names.append("gupy")
+    if cfg.indeed_base_url:
+        names.append("indeed")
     if cfg.glassdoor_base_url:
         names.append("glassdoor")
     return names
@@ -40,6 +42,10 @@ def build_sources(config: Settings | None = None) -> dict[str, JobSource]:
         from app.sources.gupy import GupySource  # noqa: PLC0415
 
         sources["gupy"] = GupySource(cfg)
+    if cfg.indeed_base_url:
+        from app.sources.indeed import IndeedSource  # noqa: PLC0415
+
+        sources["indeed"] = IndeedSource(cfg)
     if cfg.glassdoor_base_url:
         from app.sources.glassdoor import GlassdoorSource  # noqa: PLC0415
 

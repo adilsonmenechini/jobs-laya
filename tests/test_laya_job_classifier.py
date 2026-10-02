@@ -101,6 +101,43 @@ def test_engine_failure_falls_back_to_heuristic_contract():
     assert any("heurística" in reason for reason in result["reasons"])
 
 
+EXCLUSION_PROFILE = {**PROFILE, "exclusions": ["inglês fluente"]}
+
+ENGLISH_JOB = {
+    "title": "Senior SRE",
+    "company": "Acme",
+    "location": "Brazil",
+    "remote": True,
+    "description": (
+        "Senior SRE with AWS Kubernetes Terraform Prometheus Python. Requer inglês fluente."
+    ),
+}
+
+
+def test_exclusion_survives_model_merge():
+    """Even with a high FakeEngine verdict, a dealbreaker forces low."""
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    result = classifier.classify(ENGLISH_JOB)
+
+    assert result["match"] == "low"
+    assert result["score"] <= 49.0
+    assert result["decision"]["excluded"]["value"] is True
+    assert result["decision"]["excluded"]["terms"] == ["inglês fluente"]
+    assert any("Dealbreaker" in gap for gap in result["gaps"])
+    assert any("Exclusão" in reason for reason in result["reasons"])
+    # contract stays intact after the veto
+    assert result["decision"]["choice"]["value"] == "low"
+    assert abs(sum(result["decision"]["choice"]["probabilities"].values()) - 1.0) < 1e-6
+
+
+def test_no_exclusion_keeps_model_verdict():
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    result = classifier.classify(HIGH_JOB)
+
+    assert result["match"] == "high"
+    assert result["decision"]["excluded"]["value"] is False
+
+
 def test_seniority_score_maps_to_profile_expectation():
     view = LayaView(
         role_family="site_reliability",

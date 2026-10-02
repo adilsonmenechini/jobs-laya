@@ -18,16 +18,24 @@
   <section class="panel">
     <form id="sync-form">
       <select id="source" title="fonte das vagas">
+        <option value="all" selected>Todas as fontes</option>
         <option value="linkedin">LinkedIn</option>
         <option value="geekhunter">GeekHunter</option>
         <option value="gupy">Gupy</option>
+        <option value="indeed">Indeed</option>
         <option value="glassdoor">Glassdoor</option>
-        <option value="all">Todas as fontes</option>
       </select>
       <input id="keywords" size="36" placeholder="keywords (separadas por vírgula)"
              value="SRE, DevOps, Platform Engineer">
       <input id="location" size="14" placeholder="local" value="Brazil">
       <input id="limit" type="number" min="1" max="100" value="10" title="limite">
+      <select id="hours-old" title="janela de recência: só vagas publicadas neste período">
+        <option value="24">1 dia</option>
+        <option value="72">72 horas</option>
+        <option value="168">7 dias</option>
+        <option value="720" selected>30 dias</option>
+        <option value="0">sem filtro</option>
+      </select>
       <button type="submit" id="sync-btn">Buscar e classificar</button>
       <span id="sync-status" class="status"></span>
     </form>
@@ -39,6 +47,7 @@
       <option value="linkedin">LinkedIn</option>
       <option value="geekhunter">GeekHunter</option>
       <option value="gupy">Gupy</option>
+      <option value="indeed">Indeed</option>
       <option value="glassdoor">Glassdoor</option>
     </select>
     <select id="f-match">

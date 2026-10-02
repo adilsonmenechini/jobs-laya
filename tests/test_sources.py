@@ -29,6 +29,26 @@ def test_settings_gupy_defaults():
     assert s.gupy_timeout_s == 30.0
 
 
+def test_settings_indeed_defaults():
+    s = Settings(_env_file=None)
+    assert s.indeed_base_url == "https://apis.indeed.com"
+    assert s.indeed_delay_seconds == 1.0
+    assert s.indeed_page_size == 25
+    assert s.indeed_timeout_s == 30.0
+    assert s.indeed_max_retries == 2
+    assert s.indeed_backoff_seconds == 5.0
+    # credential/market live in .env only — never a code default
+    assert s.indeed_api_key == ""
+    assert s.indeed_country == "BR"
+    assert s.indeed_locale == "pt-BR"
+
+
+def test_settings_sync_defaults():
+    s = Settings(_env_file=None)
+    assert s.hours_old == 720  # recency window: 30 days (front can override)
+    assert s.sync_delay_seconds == 1.0  # politeness pause between sources
+
+
 def test_settings_glassdoor_defaults():
     s = Settings(_env_file=None)
     assert s.glassdoor_base_url == "https://www.glassdoor.com"
@@ -51,7 +71,7 @@ def test_source_unavailable_is_exception():
 def test_source_names_lists_every_configured_source():
     config = Settings(_env_file=None)
 
-    assert source_names(config) == ["linkedin", "geekhunter", "gupy", "glassdoor"]
+    assert source_names(config) == ["linkedin", "geekhunter", "gupy", "indeed", "glassdoor"]
 
 
 def test_source_names_omits_sources_with_an_empty_base_url():
@@ -59,6 +79,7 @@ def test_source_names_omits_sources_with_an_empty_base_url():
         _env_file=None,
         geekhunter_base_url="",
         gupy_base_url="",
+        indeed_base_url="",
         glassdoor_base_url="",
     )
 
@@ -70,8 +91,9 @@ def test_build_sources_registers_the_new_sources():
 
     registry = build_sources(config)
 
-    assert list(registry) == ["linkedin", "geekhunter", "gupy", "glassdoor"]
+    assert list(registry) == ["linkedin", "geekhunter", "gupy", "indeed", "glassdoor"]
     assert registry["gupy"].name == "gupy"
+    assert registry["indeed"].name == "indeed"
     assert registry["glassdoor"].name == "glassdoor"
 
 
@@ -85,13 +107,14 @@ def test_build_sources_never_starts_a_browser():
     assert registry["glassdoor"]._engine is None
 
 
-def test_gupy_and_glassdoor_implement_the_protocol():
+def test_gupy_glassdoor_and_indeed_implement_the_protocol():
     from app.sources.glassdoor import GlassdoorSource
     from app.sources.gupy import GupySource
+    from app.sources.indeed import IndeedSource
 
     # class-level contract: no client is constructed here (no leak, no network)
-    for cls in (GupySource, GlassdoorSource):
-        assert cls.name in {"gupy", "glassdoor"}
+    for cls in (GupySource, IndeedSource, GlassdoorSource):
+        assert cls.name in {"gupy", "indeed", "glassdoor"}
         assert hasattr(cls, "search") and hasattr(cls, "details")
 
 
