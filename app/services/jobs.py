@@ -1,4 +1,6 @@
+import asyncio
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import NamedTuple, Protocol
 
@@ -6,6 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.classifier import build_classifier
+from app.config import settings
 from app.models import Job
 from app.sources import JobSource, SourceUnavailableError, build_sources
 
@@ -80,6 +83,25 @@ def resolve_sources(source: str, registry: dict[str, JobSource] | None) -> list[
     return [registry[name] for name in wanted]
 
 
+def is_fresh(posted_at: str | None, hours_old: int, now: datetime | None = None) -> bool:
+    """True when the posting is inside the recency window — or undatable.
+
+    `hours_old <= 0` disables the window. Missing (`None`/blank) and
+    unparseable dates are KEPT: sources emit relative text
+    ("Publicada há 5 dias") and dropping a job we cannot date is worse than
+    keeping a stale one. `posted_at` is day-granular, so the boundary lands
+    anywhere inside the last day of the window (lenient by design).
+    """
+    if hours_old <= 0 or not posted_at:
+        return True
+    try:
+        posted = datetime.strptime(posted_at[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return True
+    reference = now or datetime.now()
+    return posted >= (reference - timedelta(hours=hours_old)).date()
+
+
 class SyncOutcome(NamedTuple):
     """Result of a sync run: how many jobs landed and what failed upstream."""
 
@@ -94,22 +116,32 @@ async def sync_jobs(
     limit: int,
     fetch_details: bool,
     profile_path: str,
-    source: str = "linkedin",
+    source: str = "all",
     sources: dict[str, JobSource] | None = None,
+    hours_old: int | None = None,
+    delay_seconds: float | None = None,
 ) -> SyncOutcome:
     profile = load_profile(profile_path)
     classifier = build_classifier(profile)
     active = resolve_sources(source, sources)
+    window = settings.hours_old if hours_old is None else hours_old
+    pause = settings.sync_delay_seconds if delay_seconds is None else delay_seconds
     count = 0
     errors: dict[str, str] = {}
 
     per_keyword = max(1, limit // len(keywords))
-    for provider in active:
+    for index, provider in enumerate(active):
+        if index and pause:
+            # Politeness between providers: a burst of back-to-back sources
+            # from one IP is what gets throttled (JobSpy-style site spacing).
+            await asyncio.sleep(pause)
         try:
             for keyword in keywords:
                 items = await provider.search(keyword, location, per_keyword)
                 for normalized in items[:per_keyword]:
                     normalized = to_source_item(normalized, source=provider.name)
+                    if not is_fresh(normalized.get("posted_at"), window):
+                        continue  # outside the recency window — skip early
                     if fetch_details:
                         try:
                             normalized = await provider.details(normalized)
@@ -157,7 +189,7 @@ def list_jobs(
         count_stmt = count_stmt.where(condition)
 
     stmt = (
-        stmt.order_by(Job.score.desc().nullslast(), Job.created_at.desc())
+        stmt.order_by(Job.created_at.desc().nullslast(), Job.score.desc().nullslast())
         .offset(offset)
         .limit(limit)
     )

@@ -40,7 +40,7 @@ def test_health_lists_sources():
     with TestClient(app) as client:
         health = client.get("/health").json()
 
-    assert health["sources"] == ["linkedin", "geekhunter", "gupy", "glassdoor"]
+    assert health["sources"] == ["linkedin", "geekhunter", "gupy", "indeed", "glassdoor"]
 
 
 def test_health_does_not_build_source_clients():
@@ -48,7 +48,7 @@ def test_health_does_not_build_source_clients():
     from app.sources import source_names
 
     names = source_names()
-    assert names == ["linkedin", "geekhunter", "gupy", "glassdoor"]
+    assert names == ["linkedin", "geekhunter", "gupy", "indeed", "glassdoor"]
 
 
 def test_sync_form_has_source_select():
@@ -56,7 +56,7 @@ def test_sync_form_has_source_select():
         html = client.get("/").text
 
     assert 'id="source"' in html
-    for value in ("linkedin", "geekhunter", "gupy", "glassdoor", "all"):
+    for value in ("linkedin", "geekhunter", "gupy", "indeed", "glassdoor", "all"):
         assert f'value="{value}"' in html
 
 
@@ -65,7 +65,7 @@ def test_filters_have_source_select():
         html = client.get("/").text
 
     assert 'id="f-source"' in html
-    for value in ("linkedin", "geekhunter", "gupy", "glassdoor"):
+    for value in ("linkedin", "geekhunter", "gupy", "indeed", "glassdoor"):
         assert html.count(f'value="{value}"') >= 2  # sync form + filter form
 
 
@@ -78,6 +78,32 @@ def test_app_js_sends_source_and_renders_chip():
     assert 'params.set("source"' in js or '"source",' in js or "source:" in js
     # card renders the job's source chip
     assert "job.source" in js
+
+
+def test_app_js_renders_posted_at():
+    """The card shows the posting date so the recency window is visible."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "job.posted_at" in js
+
+
+def test_sync_form_has_hours_old_select():
+    """The recency window is chosen in the front: 1d · 72h · 7d · 30d · todas."""
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    assert 'id="hours-old"' in html
+    for value in ("24", "72", "168", "720", "0"):
+        assert f'<option value="{value}"' in html
+    assert '<option value="720" selected' in html  # default: 30 dias
+
+
+def test_app_js_sends_hours_old():
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "hours_old" in js  # payload carries the selected window
 
 
 def test_style_css_has_source_chip():

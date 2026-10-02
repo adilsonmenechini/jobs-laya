@@ -17,6 +17,13 @@
     "Brasil"
   ],
   "remote_required": true,
+  "exclusions": [
+    "inglês fluente",
+    "inglês avançado",
+    "fluent english",
+    "advanced english",
+    "english fluency"
+  ],
   "skills": [
     "AWS",
     "Azure",

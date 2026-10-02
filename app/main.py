@@ -81,6 +81,7 @@ async def sync(request: JobSearchRequest, db: DbSession):
             fetch_details=request.fetch_details,
             profile_path=settings.profile_path,
             source=request.source,
+            hours_old=request.hours_old,
         )
     except SourceUnavailableError as exc:
         # Requested a source the registry does not have (e.g. geekhunter
@@ -96,7 +97,9 @@ def jobs(
     remote: bool | None = None,
     query: str | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
-    source: Annotated[str | None, Query(pattern="^(linkedin|geekhunter|gupy|glassdoor)$")] = None,
+    source: Annotated[
+        str | None, Query(pattern="^(linkedin|geekhunter|gupy|indeed|glassdoor)$")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):

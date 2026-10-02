@@ -97,7 +97,7 @@ function card(job) {
     </div>
     <div class="meta"><span class="source-chip" data-source="${esc(job.source || "linkedin")}">${esc(job.source || "linkedin")}</span> ${esc(job.company || "—")} · ${esc(job.location || "—")}${
     job.remote ? " · remoto" : ""
-  }</div>
+  }${job.posted_at ? " · " + esc(job.posted_at) : ""}</div>
     <div class="score-row">
       <div class="score-bar"><span style="width:${Math.max(0, Math.min(100, score || 0))}%"></span></div>
       <b>${scoreLabel}</b>
@@ -155,6 +155,7 @@ async function runSync(event) {
         keywords,
         location: $("#location").value || "Brazil",
         limit: Number($("#limit").value) || 10,
+        hours_old: Number($("#hours-old").value),
         fetch_details: true,
       }),
     });

@@ -1,4 +1,5 @@
 import re
+import unicodedata
 from dataclasses import dataclass
 
 
@@ -34,10 +35,31 @@ class LayaInspiredClassifier:
         self.skills = {self._norm(x) for x in profile.get("skills", [])}
         self.titles = {self._norm(x) for x in profile.get("titles", [])}
         self.seniority = {self._norm(x) for x in profile.get("seniority", [])}
+        # Dealbreakers ("inglês fluente", "híbrido", …): matched accent-insensitively.
+        self.exclusions = [
+            (original, folded)
+            for original in profile.get("exclusions", [])
+            if (folded := self._fold(original))
+        ]
 
     @staticmethod
     def _norm(value: str) -> str:
         return re.sub(r"\s+", " ", value.lower().strip())
+
+    @staticmethod
+    def _fold(value: str) -> str:
+        """Lowercase + strip accents so "inglês fluente" matches "ingles fluente"."""
+        stripped = unicodedata.normalize("NFKD", value.lower().strip())
+        return re.sub(r"\s+", " ", "".join(c for c in stripped if not unicodedata.combining(c)))
+
+    def exclusion_hits(self, text: str) -> list[str]:
+        """Exclusion terms present in `text` (word-boundary, accent-insensitive)."""
+        folded = self._fold(text)
+        return [
+            original
+            for original, term in self.exclusions
+            if re.search(rf"\b{re.escape(term)}\b", folded)
+        ]
 
     @staticmethod
     def _contains(text: str, term: str) -> bool:
@@ -82,6 +104,8 @@ class LayaInspiredClassifier:
         remote = bool(job.get("remote")) or "remote" in text or "remoto" in text
         remote_score = 100 if (remote or not self.profile.get("remote_required", False)) else 0
 
+        excluded = self.exclusion_hits(text)
+
         components = {
             "title": round(title_score, 2),
             "seniority": round(seniority_score, 2),
@@ -93,6 +117,9 @@ class LayaInspiredClassifier:
         }
 
         score = round(sum(components[k] * self.WEIGHTS[k] for k in components), 2)
+        if excluded:
+            # Dealbreaker found: no score can rescue it — veto to low.
+            score = min(score, 49.0)
         match = "high" if score >= 80 else "medium" if score >= 60 else "low"
 
         reasons = []
@@ -106,8 +133,12 @@ class LayaInspiredClassifier:
             reasons.append("Vaga indica trabalho remoto")
         if ai_hits:
             reasons.append(f"AI/LLM relacionado: {', '.join(ai_hits[:8])}")
+        if excluded:
+            reasons.append(f"Exclusão do perfil atingida: {', '.join(excluded)}")
 
         gaps = []
+        if excluded:
+            gaps.append(f"Dealbreaker presente na vaga: {', '.join(excluded)}")
         if not matched_skills:
             gaps.append("Nenhuma skill do perfil foi encontrada na descrição")
         elif len(matched_skills) < 4:
@@ -133,6 +164,10 @@ class LayaInspiredClassifier:
                 "value": remote,
                 "confidence": 1.0 if "remote" in text or "remoto" in text else 0.6,
                 "probability_true": 1.0 if remote else 0.0,
+            },
+            "excluded": {
+                "value": bool(excluded),
+                "terms": excluded,
             },
         }
 

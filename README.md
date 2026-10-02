@@ -27,7 +27,8 @@
 O pipeline faz seis coisas:
 
 1. buscar vagas no **LinkedIn** (browser local, Patchright), no **GeekHunter**
-   e na **Gupy** (HTTP público, sem login) e no **Glassdoor** (browser local);
+   e na **Gupy** (HTTP público, sem login), no **Indeed** (API GraphQL
+   pública) e no **Glassdoor** (browser local);
 2. obter detalhes;
 3. normalizar e deduplicar;
 4. classificar contra um perfil profissional;
@@ -43,7 +44,7 @@ política local — probabilidades calibradas em vez de geração livre.
 
 | Feature | Descrição |
 | --- | --- |
-| **4 fontes + `all`** | LinkedIn e Glassdoor via browser local (Patchright); GeekHunter e Gupy via HTTP público, sem login |
+| **5 fontes + `all`** | LinkedIn e Glassdoor via browser local (Patchright); GeekHunter, Gupy e Indeed via HTTP público, sem login |
 | **Classifier Laya** | 4 perguntas tipadas num único forward pass + sinais heurísticos, com fallback automático para heurística |
 | **Deduplicação** | Por `(source, source_id)` — re-sincronizar atualiza, nunca duplica |
 | **API + dashboard** | FastAPI com filtros, `/health`, Swagger e frontend estático servido pela própria API |
@@ -106,7 +107,7 @@ Dashboard (frontend estático servido pela própria API):
 Ele lista as vagas classificadas com score, probabilidades, motivos e gaps,
 filtros (fonte/match/remoto/score/texto) e o formulário **Buscar e classificar**
 que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter, Gupy,
-Glassdoor ou todas).
+Indeed, Glassdoor ou todas).
 O badge no topo mostra o backend do classifier.
 
 Swagger:
@@ -116,22 +117,23 @@ Swagger:
 ## Como funciona
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                 POST /jobs/sync                              │
-│     source: linkedin · geekhunter · gupy · glassdoor · all   │
-└───────────────────────────┬──────────────────────────────────┘
-                            │
-      ┌─────────────┬───────┴───────┬──────────────┐
-      │ LinkedIn    │ GeekHunter    │ Gupy         │ Glassdoor
-      │ Patchright  │ httpx+JSON-LD │ httpx+API    │ Patchright
-      │ (browser,   │ (sem login)   │ (sem login)  │ (HTTP direto
-      │  make login)│               │              │  = 403)
-      └──────┬──────┴───────┬───────┴──────┬───────┘
-             │              │              │
-             ▼              ▼              ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                     POST /jobs/sync                                  │
+│  source: linkedin · geekhunter · gupy · indeed · glassdoor · all     │
+└──────────────────────────────┬───────────────────────────────────────┘
+                               │
+  ┌──────────┬──────────┬──────┴─────┬──────────┬──────────┐
+  │ LinkedIn │GeekHunter│    Gupy    │  Indeed  │ Glassdoor│
+  │Patchright│ httpx    │   httpx    │  httpx   │Patchright│
+  │ (browser)│ +JSON-LD │   +API     │ +GraphQL │ (browser)│
+  │make login│ sem login│  sem login │ sem login│ sem login│
+  └────┬─────┴────┬─────┴─────┬─────┴────┬─────┴────┬─────┘
+       │          │           │          │          │
+       └──────────┴─────┬─────┴──────────┴──────────┘
+                        ▼
       normalizar → dedup por (source, source_id) → SQLite
-                            │
-                            ▼
+                        │
+                        ▼
       ┌─────────────────────────────────────────────┐
       │ Classifier (CLASSIFIER_BACKEND)             │
       │  laya: 4 perguntas tipadas · 1 forward pass │
@@ -160,6 +162,20 @@ mostra `{backend, laya_ready, device}` e mantém boot e testes sem download.
 
 O perfil padrão está em `data/profile.json`. Altere os títulos, senioridade,
 skills, cloud e preferências de remoto.
+
+#### Exclusões (dealbreakers)
+
+O campo `exclusions` lista termos que **vetam a vaga** — se aparecerem no
+título ou descrição, o `match` é forçado para `low` (score ≤ 49) e o motivo
+fica em `gaps`/`reasons` e `decision.excluded`:
+
+```json
+"exclusions": ["inglês fluente", "inglês avançado", "fluent english"]
+```
+
+O matching é case-insensitive, ignora acentos e usa fronteira de palavra
+(`"ingles"` não casa em `"inglesa"`). Vale nos três backends (`laya`, `fake`,
+`heuristic`) — no `laya`, o veto é reaplicado depois do merge com o modelo.
 
 ### Backend do classifier
 
@@ -209,26 +225,57 @@ GUPY_DELAY_SECONDS=1.0
 GUPY_PAGE_SIZE=10
 GUPY_TIMEOUT_S=30.0
 
+# Indeed (API GraphQL pública; credencial e mercado vêm do .env)
+INDEED_API_KEY=
+INDEED_CO=BR
+INDEED_LOCALE=pt-BR
+INDEED_BASE_URL=https://apis.indeed.com
+INDEED_DELAY_SECONDS=1.0
+INDEED_PAGE_SIZE=25
+INDEED_TIMEOUT_S=30.0
+INDEED_MAX_RETRIES=2
+INDEED_BACKOFF_SECONDS=5.0
+
 # Glassdoor só via browser local: HTTP direto responde 403 (Cloudflare).
 # Nesta máquina o headless cai no desafio "Um momento…", então headless=false.
 GLASSDOOR_BASE_URL=https://www.glassdoor.com
 GLASSDOOR_DELAY_SECONDS=2.0
 GLASSDOOR_TIMEOUT_MS=30000
 GLASSDOOR_HEADLESS=false
+
+# Sync: janela de recência e pausa de cortesia entre fontes
+HOURS_OLD=720
+SYNC_DELAY_SECONDS=1.0
 ```
 
 ## Fontes
 
-O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "glassdoor" | "all"`
-(default `linkedin`):
+O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "indeed" | "glassdoor" | "all"`
+(default `all`):
 
 | Fonte | Backend | Login | Notas |
 |---|---|---|---|
 | `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
 | `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
 | `gupy` | HTTP público (`httpx`) + API JSON | não precisa | sem browser; pagina por `offset` |
+| `indeed` | HTTP público (`httpx`) + API GraphQL | não precisa | sem browser; descrição e data já vêm na busca; pagina por `cursor` |
 | `glassdoor` | browser local (Patchright) | não precisa | HTTP direto dá 403 (Cloudflare) |
 | `all` | roda todas | — | falha de uma fonte não derruba as outras; o response traz `errors` por fonte |
+
+Comportamento do sync (vale para qualquer fonte):
+
+- **Recência:** publicações com `posted_at` mais antigo que a janela são
+  descartadas antes de salvar. A janela vem do form do dashboard
+  (**1 dia · 72 horas · 7 dias · 30 dias (default) · sem filtro**), enviada
+  como `hours_old` no `POST /jobs/sync` (`0` = mantém tudo; o default do
+  `.env` é `HOURS_OLD=720`). Sem data ou com data não parseável
+  ("Publicada há 5 dias"), a vaga é **mantida** — nunca se descarta o que
+  não se consegue datar.
+- **Cortesia entre fontes:** o sync `all` espera `SYNC_DELAY_SECONDS`
+  (default 1s, `0` desliga) entre uma fonte e a próxima, para não bater todas
+  de uma vez do mesmo IP.
+- **Ordem da lista:** o dashboard sempre ordena do **mais novo pro mais
+  velho** (`created_at` desc), com o **score maior** quebrando o empate.
 
 ### Buscar e classificar
 
@@ -277,6 +324,30 @@ login e sem browser. `location` é mapeado com cuidado: `remoto`/`remote` vira
 `state=` (ex.: `Bahia`), qualquer outra coisa vira `city=`; `Brazil`/`brasil`
 não manda filtro. A descrição completa já vem na busca; `details()` só
 consulta a página SSR (`__NEXT_DATA__`) quando ela veio vazia.
+
+### Indeed
+
+API GraphQL pública `POST /graphql` (a mesma que o JobSpy usa), sem login e
+sem browser. Foi escolhida de propósito: a SERP em HTML **não traz descrição
+nem data de publicação**, e o classifier pontua as duas. Uma única requisição
+já devolve título, empresa, local, descrição completa (HTML), skills
+(`attributes`) e a URL de candidatura; `details()` é no-op documentado.
+
+`location` vira o clause `where:` — `Brazil`/`brasil` não manda filtro e
+`remoto` viaja como valor de local (o Indeed BR reporta vagas remotas com
+`city: "Remoto"`, daí o `remote: true`). `posted_at` usa `dateOnIndeed`
+(quando a vaga entrou no Indeed) com fallback para `datePublished`.
+Pagina por `cursor` até `indeed_page_size`, parando em página vazia ou sem
+cursor. Os headers de mercado `indeed-co` / `indeed-locale` (`INDEED_CO` /
+`INDEED_LOCALE`) selecionam o país — sem eles o Indeed responde outro.
+
+A credencial **nunca fica no código**: `INDEED_API_KEY` vive só no `.env`
+(chave pública do app oficial da Indeed). Sem ela a fonte recusa a busca
+antes de qualquer requisição e o sync reporta o erro apenas pra `indeed`.
+Falha de transporte (timeout, 5xx, conexão) é **repetida** com backoff
+exponencial + jitter — `indeed_max_retries` tentativas depois da primeira,
+base `indeed_backoff_seconds`. Erros permanentes (GraphQL `errors`, resposta
+não-JSON) não são repetidos: o endpoint já respondeu.
 
 ### Glassdoor
 
@@ -470,6 +541,7 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 │   │   ├── linkedin.py        # adapter do LinkedInBrowserClient
 │   │   ├── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
 │   │   ├── gupy.py            # httpx + API JSON pública (sem login)
+│   │   ├── indeed.py          # httpx + API GraphQL pública (sem login)
 │   │   └── glassdoor.py       # browser + parser da SERP (Cloudflare)
 │   └── services/
 │       └── jobs.py            # sync dispatcher por fonte + listagem
@@ -489,6 +561,7 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
     ├── test_geekhunter.py
     ├── test_geekhunter_source.py
     ├── test_gupy_source.py
+    ├── test_indeed_source.py
     ├── test_glassdoor_source.py
     ├── test_jobs_source.py
     ├── test_sync_dispatcher.py
@@ -500,11 +573,11 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 
 - A integração LinkedIn depende de uma sessão autenticada do usuário
   (`make login`); o perfil da sessão vive fora do repo em `~/.linkedin-laya/`.
-  O GeekHunter, a Gupy e o Glassdoor não precisam de login.
+  O GeekHunter, a Gupy, o Indeed e o Glassdoor não precisam de login.
 - O LinkedIn proíbe acesso automatizado — use com moderação e por conta própria.
   As demais fontes também são acessadas com delay configurável
-  (`GEEKHUNTER_DELAY_SECONDS`, `GUPY_DELAY_SECONDS`, `GLASSDOOR_DELAY_SECONDS`);
-  respeite o robots/termos de uso.
+  (`GEEKHUNTER_DELAY_SECONDS`, `GUPY_DELAY_SECONDS`, `INDEED_DELAY_SECONDS`,
+  `GLASSDOOR_DELAY_SECONDS`); respeite o robots/termos de uso.
 - O Glassdoor bloqueia HTTP direto (Cloudflare 403), então a coleta usa o
   browser local; as rotas de detalhe caem no desafio e v1 guarda só o snippet
   da SERP, com `location` ignorado (busca Brasil-a-brasil).

@@ -76,7 +76,19 @@ class LayaJobClassifier:
         if view.seniority == 0:
             gaps.append("Laya: senioridade abaixo do esperado")
 
+        # Dealbreaker veto survives the model merge: exclusions are absolute.
+        excluded_block = base["decision"].get("excluded") or {"value": False, "terms": []}
+        if excluded_block.get("value"):
+            gaps.append(f"Dealbreaker presente na vaga: {', '.join(excluded_block['terms'])}")
+
         probabilities = LayaInspiredClassifier._match_probabilities(score)
+
+        if excluded_block.get("value"):
+            score = min(score, 49.0)
+            match = "low"
+            probabilities = LayaInspiredClassifier._match_probabilities(score)
+            reasons.append(f"Exclusão do perfil atingida: {', '.join(excluded_block['terms'])}")
+
         decision = {
             "choice": {
                 "value": match,
@@ -93,6 +105,7 @@ class LayaJobClassifier:
                 "confidence": round(view.remote_confidence, 4),
                 "probability_true": round(view.remote, 4),
             },
+            "excluded": excluded_block,
             "laya": {
                 "backend": "laya",
                 "model": result.model,
