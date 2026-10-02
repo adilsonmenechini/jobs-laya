@@ -1,8 +1,30 @@
 # Job Classifier
 
-[![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
+**MVP local para buscar vagas em quatro fontes, classificá-las contra um perfil profissional com o modelo Laya (ou fallback heurístico) e servi-las por API + dashboard.**
 
-MVP local para:
+[![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.13%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Ruff](https://img.shields.io/badge/ruff-0.16.9-blue?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
+
+[Visão geral](#visão-geral) •
+[Stack](#stack) •
+[Instalação](#instalação) •
+[Rodando a API](#rodando-a-api) •
+[Como funciona](#como-funciona) •
+[Configuração](#configuração) •
+[Fontes](#fontes) •
+[API](#api) •
+[Tools locais](#tools-locais-read-only) •
+[Avaliação](#avaliação-eval) •
+[Testes, linter e CI](#testes-linter-segurança-e-ci) •
+[Estrutura](#estrutura-do-projeto) •
+[Limitações](#limitações-do-mvp)
+
+---
+
+## Visão geral
+
+O pipeline faz seis coisas:
 
 1. buscar vagas no **LinkedIn** (browser local, Patchright), no **GeekHunter**
    e na **Gupy** (HTTP público, sem login) e no **Glassdoor** (browser local);
@@ -17,6 +39,18 @@ A arquitetura usa **Laya de verdade** (o modelo de decisões tipadas da ConvAI,
 do modelo com sinais determinísticos (skills, senioridade, remoto) numa
 política local — probabilidades calibradas em vez de geração livre.
 
+### O que tem
+
+| Feature | Descrição |
+| --- | --- |
+| **4 fontes + `all`** | LinkedIn e Glassdoor via browser local (Patchright); GeekHunter e Gupy via HTTP público, sem login |
+| **Classifier Laya** | 4 perguntas tipadas num único forward pass + sinais heurísticos, com fallback automático para heurística |
+| **Deduplicação** | Por `(source, source_id)` — re-sincronizar atualiza, nunca duplica |
+| **API + dashboard** | FastAPI com filtros, `/health`, Swagger e frontend estático servido pela própria API |
+| **Tools locais** | Catálogo read-only de vagas no estilo `linkedin-mcp-server`, 100% local, sem MCP |
+| **Avaliação** | Ablação `heuristics only` / `laya only` / `combined` sobre 18 vagas rotuladas |
+| **Segurança** | Somente leitura (nenhuma tool de escrita), credenciais só no navegador, `bandit` + `gitleaks` no pre-commit **e** no CI |
+
 ## Stack
 
 - Python 3.13+
@@ -30,7 +64,7 @@ política local — probabilidades calibradas em vez de geração livre.
 - pytest
 - ruff
 
-## 1. Instalar
+## Instalação
 
 ```bash
 make install
@@ -43,7 +77,7 @@ uv sync --extra dev
 uv run patchright install chromium
 ```
 
-## 2. Login do LinkedIn (uma vez)
+### Login do LinkedIn (uma vez)
 
 O projeto usa um browser local próprio (Patchright). Rode:
 
@@ -58,7 +92,7 @@ A sessão fica salva no perfil persistente `~/.linkedin-laya/profile/` e é
 reusada por todas as chamadas seguintes. Repita o `make login` só se o cookie
 `li_at` expirar.
 
-## 3. Rodar a API
+## Rodando a API
 
 ```bash
 make run
@@ -79,12 +113,57 @@ Swagger:
 
 <http://localhost:3080/docs>
 
-## 4. Perfil e classificador
+## Como funciona
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                 POST /jobs/sync                              │
+│     source: linkedin · geekhunter · gupy · glassdoor · all   │
+└───────────────────────────┬──────────────────────────────────┘
+                            │
+      ┌─────────────┬───────┴───────┬──────────────┐
+      │ LinkedIn    │ GeekHunter    │ Gupy         │ Glassdoor
+      │ Patchright  │ httpx+JSON-LD │ httpx+API    │ Patchright
+      │ (browser,   │ (sem login)   │ (sem login)  │ (HTTP direto
+      │  make login)│               │              │  = 403)
+      └──────┬──────┴───────┬───────┴──────┬───────┘
+             │              │              │
+             ▼              ▼              ▼
+      normalizar → dedup por (source, source_id) → SQLite
+                            │
+                            ▼
+      ┌─────────────────────────────────────────────┐
+      │ Classifier (CLASSIFIER_BACKEND)             │
+      │  laya: 4 perguntas tipadas · 1 forward pass │
+      │        + sinais heurísticos                 │
+      │        ↳ falha? fallback p/ heurística      │
+      │  fake / heuristic: sem modelo               │
+      └─────────────────────┬───────────────────────┘
+                            ▼
+      FastAPI: GET /jobs · /tools · /health · /profile · dashboard
+```
+
+Fluxo de uma chamada:
+
+```
+sync → fonte(s) coletam → normaliza → dedup → classifier decide
+  → high/medium/low + probabilidades + motivos + gaps persistidos
+  → listagem/filtros pela API e pelo dashboard
+```
+
+O modelo só carrega no primeiro uso, nunca no startup — `GET /health`
+mostra `{backend, laya_ready, device}` e mantém boot e testes sem download.
+
+## Configuração
+
+### Perfil
 
 O perfil padrão está em `data/profile.json`. Altere os títulos, senioridade,
 skills, cloud e preferências de remoto.
 
-O backend do classifier é escolhido por `CLASSIFIER_BACKEND`:
+### Backend do classifier
+
+Escolhido por `CLASSIFIER_BACKEND`:
 
 | Valor | O que é |
 |---|---|
@@ -103,36 +182,28 @@ Perguntas do Laya (todas em um passe, em `app/classifier/questions.py`):
 - `seniority` (score): junior/mid → senior → staff/principal
 - `skill_fit` (noul): casa com o perfil de infra/Kubernetes/Terraform/cloud?
 
-`GET /health` mostra `{backend, laya_ready, device}` — o modelo só carrega no
-primeiro uso, nunca no startup (mantém boot e testes sem download).
+### Variáveis de ambiente (`.env`)
 
-## 5. Fontes (LinkedIn, GeekHunter, Gupy e Glassdoor)
-
-O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "glassdoor" | "all"`
-(default `linkedin`):
-
-| Fonte | Backend | Login | Notas |
-|---|---|---|---|
-| `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
-| `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
-| `gupy` | HTTP público (`httpx`) + API JSON | não precisa | sem browser; pagina por `offset` |
-| `glassdoor` | browser local (Patchright) | não precisa | HTTP direto dá 403 (Cloudflare) |
-| `all` | roda todas | — | falha de uma fonte não derruba as outras; o response traz `errors` por fonte |
-
-```bash
-curl -X POST http://localhost:3080/jobs/sync \
-  -H 'Content-Type: application/json' \
-  -d '{"keywords": ["SRE"], "source": "geekhunter", "limit": 10}'
-# {"synced": 10, "errors": {}}
-```
-
-Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
-atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
-no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
-
-Config das fontes novas (`.env`):
+O arquivo `.env.example` traz a lista completa; as principais:
 
 ```text
+DATABASE_URL=sqlite:///./data/jobs.db
+PROFILE_PATH=data/profile.json
+CLASSIFIER_BACKEND=laya
+LAYA_DEVICE=
+
+# LinkedIn (browser local)
+LINKEDIN_PROFILE_DIR=~/.linkedin-laya/profile
+LINKEDIN_HEADLESS=true
+LINKEDIN_DELAY_SECONDS=1.0
+LINKEDIN_NAV_TIMEOUT_MS=30000
+
+# Fontes HTTP (sem login)
+GEEKHUNTER_BASE_URL=https://www.geekhunter.com
+GEEKHUNTER_DELAY_SECONDS=1.0
+GEEKHUNTER_PAGE_SIZE=25
+GEEKHUNTER_TIMEOUT_S=30.0
+
 GUPY_BASE_URL=https://portal.gupy.io
 GUPY_DELAY_SECONDS=1.0
 GUPY_PAGE_SIZE=10
@@ -146,28 +217,20 @@ GLASSDOOR_TIMEOUT_MS=30000
 GLASSDOOR_HEADLESS=false
 ```
 
-**Gupy** — API pública `GET /api/job-search/jobs` (`jobName`, `limit`,
-`offset`), sem login e sem browser. `location` é mapeado com cuidado:
-`remoto`/`remote` vira `workplaceType=remote` (nunca `city=remoto`), nome
-completo de estado vira `state=` (ex.: `Bahia`), qualquer outra coisa vira
-`city=`; `Brazil`/`brasil` não manda filtro. A descrição completa já vem na
-busca; `details()` só consulta a página SSR (`__NEXT_DATA__`) quando ela
-veio vazia.
+## Fontes
 
-**Glassdoor** — a SERP abre via browser local (Patchright) e é parseada pelos
-cards (`data-test="job-title"`, `compactEmployerName`, `emp-location`,
-`descSnippet`) mais o `jl=` da URL. `location` é **ignorado** (a busca cobre
-o Brasil inteiro) e `details()` é no-op documentado: todas as rotas de
-detalhe caem no desafio do Cloudflare no browser local (spec Non-Goals) — v1
-guarda o snippet + linha de `Habilidades:` da SERP. Desafio detectado
-(`Um momento…` / `Somente humanos`) vira `SourceUnavailableError`, então o
-sync responde 200 com `errors["glassdoor"]` sem derrubar as outras fontes.
+O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "glassdoor" | "all"`
+(default `linkedin`):
 
-Os dados do GeekHunter vêm do JSON-LD das páginas públicas (`ItemList` na
-listagem, `JobPosting` no detalhe), com fallback para o DOM renderizado.
-Somente leitura: nenhuma tool de escrita em nenhuma fonte.
+| Fonte | Backend | Login | Notas |
+|---|---|---|---|
+| `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
+| `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
+| `gupy` | HTTP público (`httpx`) + API JSON | não precisa | sem browser; pagina por `offset` |
+| `glassdoor` | browser local (Patchright) | não precisa | HTTP direto dá 403 (Cloudflare) |
+| `all` | roda todas | — | falha de uma fonte não derruba as outras; o response traz `errors` por fonte |
 
-## 6. Buscar vagas
+### Buscar e classificar
 
 ```bash
 curl -X POST http://localhost:3080/jobs/sync \
@@ -187,7 +250,48 @@ mapa `errors` por fonte (vazio quando tudo funcionou):
 {"synced": 25, "errors": {}}
 ```
 
-## 7. Listar
+Exemplo com fonte única:
+
+```bash
+curl -X POST http://localhost:3080/jobs/sync \
+  -H 'Content-Type: application/json' \
+  -d '{"keywords": ["SRE"], "source": "geekhunter", "limit": 10}'
+# {"synced": 10, "errors": {}}
+```
+
+Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
+atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
+no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
+
+### GeekHunter
+
+Os dados vêm do JSON-LD das páginas públicas (`ItemList` na listagem,
+`JobPosting` no detalhe), com fallback para o DOM renderizado.
+Somente leitura: nenhuma tool de escrita em nenhuma fonte.
+
+### Gupy
+
+API pública `GET /api/job-search/jobs` (`jobName`, `limit`, `offset`), sem
+login e sem browser. `location` é mapeado com cuidado: `remoto`/`remote` vira
+`workplaceType=remote` (nunca `city=remoto`), nome completo de estado vira
+`state=` (ex.: `Bahia`), qualquer outra coisa vira `city=`; `Brazil`/`brasil`
+não manda filtro. A descrição completa já vem na busca; `details()` só
+consulta a página SSR (`__NEXT_DATA__`) quando ela veio vazia.
+
+### Glassdoor
+
+A SERP abre via browser local (Patchright) e é parseada pelos cards
+(`data-test="job-title"`, `compactEmployerName`, `emp-location`,
+`descSnippet`) mais o `jl=` da URL. `location` é **ignorado** (a busca cobre
+o Brasil inteiro) e `details()` é no-op documentado: todas as rotas de
+detalhe caem no desafio do Cloudflare no browser local (spec Non-Goals) — v1
+guarda o snippet + linha de `Habilidades:` da SERP. Desafio detectado
+(`Um momento…` / `Somente humanos`) vira `SourceUnavailableError`, então o
+sync responde 200 com `errors["glassdoor"]` sem derrubar as outras fontes.
+
+## API
+
+### Listar
 
 ```bash
 curl "http://localhost:3080/jobs?match=high&limit=20"
@@ -207,7 +311,7 @@ GET /profile
 GET /health
 ```
 
-## 8. Tools locais do LinkedIn (read-only)
+## Tools locais (read-only)
 
 A API expõe uma camada de *tools* locais modelada no catálogo do
 [`stickerdaniel/linkedin-mcp-server`](https://github.com/stickerdaniel/linkedin-mcp-server),
@@ -239,33 +343,7 @@ Comportamento de erro: `422` entrada inválida, `404` vaga inexistente,
 Os tools são puros (não gravam no SQLite) — para persistir e classificar, use
 `POST /jobs/sync`.
 
-## 9. Testes, linter e pre-commit
-
-```bash
-make test
-make lint
-```
-
-`make install` já registra os hooks do git (senão, `make hooks`). A cada
-`git commit` roda, nesta ordem:
-
-1. higiene (`pre-commit-hooks`): whitespace, EOF, yaml/toml válidos,
-   arquivos >500KB, detecção de chave privada;
-2. `ruff check --fix` + `ruff format` (mesma versão do projeto, `v0.16.9`);
-3. `bandit -r app -ll` — análise de segurança estática (achados médios+;
-   neste momento: 0 achados no `app/`);
-4. `gitleaks git --staged --redact` — caça a segredos no diff staged
-   (usa o binário do `brew install gitleaks`; precisa estar no PATH);
-5. `pytest -q` — a suíte roda em ~0.5s (DB temporário e `FakeEngine`,
-   sem download de modelo e sem browser).
-
-Rodar manualmente sobre tudo:
-
-```bash
-uv run pre-commit run --all-files
-```
-
-## 10. Avaliação (eval)
+## Avaliação (eval)
 
 ```bash
 make eval
@@ -296,35 +374,88 @@ vagas fictícias — calibrados no mesmo dataset, exatamente como os thresholds
 (80/60). Rotule suas próprias vagas e refita antes de confiar em um veredito.
 O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
 
-## Estrutura
+## Testes, linter e CI
+
+```bash
+make test
+make lint
+```
+
+### Pre-commit (local)
+
+`make install` já registra os hooks do git (senão, `make hooks`). A cada
+`git commit` roda, nesta ordem:
+
+1. higiene (`pre-commit-hooks`): whitespace, EOF, yaml/toml válidos,
+   arquivos >500KB, detecção de chave privada;
+2. `ruff check --fix` + `ruff format` (mesma versão do projeto, `v0.16.9`);
+3. `bandit -r app -ll` — análise de segurança estática (achados médios+;
+   neste momento: 0 achados no `app/`);
+4. `gitleaks git --staged --redact` — caça a segredos no diff staged
+   (usa o binário do `brew install gitleaks`; precisa estar no PATH);
+5. `pytest -q` — a suíte roda em ~0.5s (DB temporário e `FakeEngine`,
+   sem download de modelo e sem browser).
+
+Rodar manualmente sobre tudo:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+### CI (GitHub Actions)
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda em
+todo `push`/`pull request` para `develop` e `main`, com `permissions: contents: read`,
+`timeout` por job e versões pinadas (ruff lido do `uv.lock`, `uv sync --locked`).
+A branch protection em `develop` deve exigir os três checks.
+
+| Gate | pre-commit (local) | CI |
+| --- | --- | --- |
+| `ruff check` / `ruff format` | ✓ (`--fix`) | ✓ (`--check`, versão do `uv.lock`) |
+| Higiene (whitespace, yaml/toml, >500KB, chave privada) | ✓ | via `pytest` + ruff (higiene local) |
+| `bandit -r app -ll` (segurança estática) | ✓ | ✓ job `security` (`bandit==1.9.4`) |
+| `gitleaks` (segredos) | ✓ (diff staged) | ✓ job `security` (repo inteiro, `v8.30.1`) |
+| `pytest` | ✓ | ✓ job `test` (`uv sync --locked`) |
+
+Os dois jobs de segurança existem justamente para não depender do hook local:
+um `git commit --no-verify` (ou um commit feito por ferramenta) não escapa do
+CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
+
+## Estrutura do projeto
 
 ```text
 .
+├── .github/workflows/ci.yml   # CI: ruff + bandit/gitleaks + pytest
+├── .pre-commit-config.yaml    # hooks locais (higiene, ruff, bandit, gitleaks, pytest)
 ├── CLAUDE.md
 ├── README.md
-├── Makefile
+├── Makefile                   # install / test / lint / hooks / run / login / eval
+├── Dockerfile
+├── docker-compose.yml
 ├── pyproject.toml
-├── .env.example
+├── uv.lock
+├── .env.example               # todas as variáveis de ambiente
 ├── data/
-│   └── profile.json
+│   └── profile.json           # perfil usado pelo classifier
 ├── eval/
-│   ├── evaluate.py        # ablação: heuristics only / laya only / combined
-│   ├── evaluation.md      # relatório gerado
-│   ├── results/           # rows brutos por backend
-│   └── samples/           # 18 vagas fictícias + labels.json
+│   ├── evaluate.py            # ablação: heuristics only / laya only / combined
+│   ├── evaluation.md          # relatório gerado
+│   ├── results/               # rows brutos por backend
+│   └── samples/               # 18 vagas fictícias + labels.json
+├── plan/                      # sdd, sessions, tasks (artefatos de planejamento)
 ├── app/
 │   ├── main.py
 │   ├── config.py
 │   ├── db.py
 │   ├── models.py
 │   ├── schemas.py
-│   ├── static/               # dashboard (index.html, app.js, style.css)
+│   ├── static/                # dashboard (index.html, app.js, style.css)
 │   ├── classifier/
-│   │   ├── __init__.py       # build_classifier (laya | fake | heuristic)
-│   │   ├── laya_classifier.py    # heurístico (fallback)
+│   │   ├── __init__.py        # build_classifier (laya | fake | heuristic)
+│   │   ├── laya_classifier.py # heurístico (fallback)
 │   │   ├── laya_job_classifier.py # política Laya + sinais
-│   │   ├── engine.py         # LayaEngine / FakeEngine (protocol Engine)
-│   │   └── questions.py      # perguntas tipadas choice/noul/score
+│   │   ├── engine.py          # LayaEngine / FakeEngine (protocol Engine)
+│   │   └── questions.py       # perguntas tipadas choice/noul/score
 │   ├── linkedin/
 │   │   ├── browser.py
 │   │   ├── errors.py
@@ -343,7 +474,9 @@ O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
 │   └── services/
 │       └── jobs.py            # sync dispatcher por fonte + listagem
 └── tests/
-    ├── fixtures/            # HTML de exemplo dos parsers
+    ├── conftest.py            # DB temporário (testes herméticos)
+    ├── fixtures_loader.py
+    ├── fixtures/              # HTML de exemplo dos parsers
     ├── test_classifier.py
     ├── test_laya_job_classifier.py
     ├── test_dashboard.py
@@ -351,6 +484,7 @@ O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
     ├── test_tools.py
     ├── test_api_tools.py
     ├── test_scrape.py
+    ├── test_parsing.py
     ├── test_sources.py
     ├── test_geekhunter.py
     ├── test_geekhunter_source.py
