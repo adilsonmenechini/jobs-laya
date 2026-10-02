@@ -1,0 +1,85 @@
+{
+  "data": [
+    {
+      "id": 12650308,
+      "name": "DevOps Engineer",
+      "applicationDeadline": "2026-12-18T00:00:00.000Z",
+      "description": "O que buscamos?Buscamos uma pessoa DevOps Engineer com sólida experiência no ecossistema Microsoft Azure, capaz de estruturar e evoluir plataformas de entrega de software com foco em automação, escalabilidade, segurança, confiabilidade e experiência do desenvolvedor.Procuramos alguém com visão de Platform Engineering, que consiga atuar desde a infraestrutura e os pipelines de CI/CD até observabili",
+      "careerPageName": "SoftDesign",
+      "careerPageLogo": "https://attachments.gupy.io/production/companies/433/career/432/images/2022-08-27_14-41_logo.png",
+      "careerPageUrl": "",
+      "type": "vacancy_type_effective",
+      "publishedDate": "2026-10-01T13:23:13.263Z",
+      "workplaceType": "remote",
+      "city": "",
+      "state": "",
+      "jobUrl": "https://softdesign.gupy.io/job/eyJqb2JJZCI6MTI2NTAzMDgsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "badges": {
+        "friendlyBadge": true,
+        "isPWD": true
+      },
+      "disabilities": true
+    },
+    {
+      "id": 12198836,
+      "name": "ANALISTA DEVOPS SR",
+      "applicationDeadline": "2026-10-19T00:00:00.000Z",
+      "description": "Nosso time é formado por excelentes profissionais da área da tecnologia.Colaboração e comprometimento fazem parte do nosso dia-a-dia, quando desenvolvemos novas funcionalidades, construindo um produto robusto e escalável.Fazendo parte de nossa equipe, seu trabalho irá impactar em milhares de usuários, de algumas das maiores empresas do país, que utilizam nossa solução diariamente.Responsabilidades",
+      "careerPageName": "Globalweb",
+      "careerPageLogo": "https://attachments.gupy.io/production/companies/30945/career/76834/images/2024-04-17_13-29_companyLogoUrl.png",
+      "careerPageUrl": "",
+      "type": "vacancy_type_effective",
+      "publishedDate": "2026-09-29T17:05:41.886Z",
+      "workplaceType": "on-site",
+      "city": "Brasília",
+      "state": "Distrito Federal",
+      "jobUrl": "https://sejaglobalweb.gupy.io/job/eyJqb2JJZCI6MTIxOTg4MzYsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "badges": {
+        "friendlyBadge": true,
+        "isPWD": true
+      },
+      "disabilities": true
+    },
+    {
+      "id": 12607005,
+      "name": "DevOps Semi Senior",
+      "applicationDeadline": "2026-11-24T00:00:00.000Z",
+      "description": "¡Se parte de Stefanini!En Stefanini somos más de 30.000 genios, conectados desde 41 países, haciendo lo que les apasiona y co-creando un futuro mejor.Responsabilidades y atribuciones¡Seguro no te quieres quedar fuera!¡DevOps!¿Por qué te elegiremos? ¡Porque los desafíos que enfrentas reflejan tus ambiciones!Visión: Estamos en un proceso de transformación para pasar de un modelo operativo reactivo a",
+      "careerPageName": "Stefanini Latam",
+      "careerPageLogo": "https://attachments.gupy.io/production/companies/54256/career/114440/images/2025-06-18_21-01_companyLogoUrl.png",
+      "careerPageUrl": "",
+      "type": "vacancy_type_effective",
+      "publishedDate": "2026-09-26T11:42:06.643Z",
+      "workplaceType": "hybrid",
+      "city": "Santiago",
+      "state": "",
+      "jobUrl": "https://stefaninilatam.gupy.io/job/eyJqb2JJZCI6MTI2MDcwMDUsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "disabilities": true
+    },
+    {
+      "id": 12571250,
+      "name": "Coordenador SRE e DevOps",
+      "applicationDeadline": "2026-11-22T00:00:00.000Z",
+      "description": "\nGarantir a confiabilidade, disponibilidade e performance dos serviços críticos de TI, liderando a estratégia e as equipes de Site Reliability Engineering (SRE) e DevOps, com foco em automação, cultura de entrega contínua (CI/CD), observabilidade, gestão de incidentes e crises, e evolução contínua das práticas de engenharia de confiabilidade e DevOps, alinhado aos objetivos do negócio.\n\n  Responsa",
+      "careerPageName": "Unimed CNU",
+      "careerPageLogo": "https://attachments.gupy.io/production/companies/31288/career/258400/images/2026-08-28_14-31_companyLogoUrl.png",
+      "careerPageUrl": "",
+      "type": "vacancy_type_effective",
+      "publishedDate": "2026-09-23T15:06:44.178Z",
+      "workplaceType": "hybrid",
+      "city": "São Paulo",
+      "state": "São Paulo",
+      "jobUrl": "https://unimedcnu.gupy.io/job/eyJqb2JJZCI6MTI1NzEyNTAsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+      "badges": {
+        "friendlyBadge": true,
+        "isPWD": true
+      },
+      "disabilities": true
+    }
+  ],
+  "pagination": {
+    "total": 40,
+    "limit": 10,
+    "offset": 0
+  }
+}

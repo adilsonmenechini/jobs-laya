@@ -15,6 +15,10 @@ def source_names(config: Settings | None = None) -> list[str]:
     names = ["linkedin"]
     if cfg.geekhunter_base_url:
         names.append("geekhunter")
+    if cfg.gupy_base_url:
+        names.append("gupy")
+    if cfg.glassdoor_base_url:
+        names.append("glassdoor")
     return names
 
 
@@ -32,6 +36,16 @@ def build_sources(config: Settings | None = None) -> dict[str, JobSource]:
         from app.sources.geekhunter import GeekHunterSource  # noqa: PLC0415
 
         sources["geekhunter"] = GeekHunterSource(cfg)
+    if cfg.gupy_base_url:
+        from app.sources.gupy import GupySource  # noqa: PLC0415
+
+        sources["gupy"] = GupySource(cfg)
+    if cfg.glassdoor_base_url:
+        from app.sources.glassdoor import GlassdoorSource  # noqa: PLC0415
+
+        # Browser engine stays None until search(): /health and build_sources
+        # must remain cheap and never launch Chromium.
+        sources["glassdoor"] = GlassdoorSource(cfg)
     return sources
 
 

@@ -4,8 +4,8 @@
 
 MVP local para:
 
-1. buscar vagas no **LinkedIn** (browser local, Patchright) e no **GeekHunter**
-   (HTTP público, sem login);
+1. buscar vagas no **LinkedIn** (browser local, Patchright), no **GeekHunter**
+   e na **Gupy** (HTTP público, sem login) e no **Glassdoor** (browser local);
 2. obter detalhes;
 3. normalizar e deduplicar;
 4. classificar contra um perfil profissional;
@@ -71,7 +71,8 @@ Dashboard (frontend estático servido pela própria API):
 
 Ele lista as vagas classificadas com score, probabilidades, motivos e gaps,
 filtros (fonte/match/remoto/score/texto) e o formulário **Buscar e classificar**
-que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter ou todas).
+que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter, Gupy,
+Glassdoor ou todas).
 O badge no topo mostra o backend do classifier.
 
 Swagger:
@@ -105,15 +106,18 @@ Perguntas do Laya (todas em um passe, em `app/classifier/questions.py`):
 `GET /health` mostra `{backend, laya_ready, device}` — o modelo só carrega no
 primeiro uso, nunca no startup (mantém boot e testes sem download).
 
-## 5. Fontes (LinkedIn e GeekHunter)
+## 5. Fontes (LinkedIn, GeekHunter, Gupy e Glassdoor)
 
-O sync suporta `source: "linkedin" | "geekhunter" | "all"` (default `linkedin`):
+O sync suporta `source: "linkedin" | "geekhunter" | "gupy" | "glassdoor" | "all"`
+(default `linkedin`):
 
 | Fonte | Backend | Login | Notas |
 |---|---|---|---|
 | `linkedin` | browser local (Patchright) | `make login` uma vez | mesmo comportamento de sempre |
 | `geekhunter` | HTTP público (`httpx`) + JSON-LD | não precisa | sem browser; delay configurável |
-| `all` | roda as duas | — | falha de uma fonte não derruba a outra; o response traz `errors` por fonte |
+| `gupy` | HTTP público (`httpx`) + API JSON | não precisa | sem browser; pagina por `offset` |
+| `glassdoor` | browser local (Patchright) | não precisa | HTTP direto dá 403 (Cloudflare) |
+| `all` | roda todas | — | falha de uma fonte não derruba as outras; o response traz `errors` por fonte |
 
 ```bash
 curl -X POST http://localhost:3080/jobs/sync \
@@ -126,18 +130,42 @@ Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
 atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
 no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
 
-Config do GeekHunter (`.env`):
+Config das fontes novas (`.env`):
 
 ```text
-GEEKHUNTER_BASE_URL=https://www.geekhunter.com
-GEEKHUNTER_DELAY_SECONDS=1.0
-GEEKHUNTER_PAGE_SIZE=25
-GEEKHUNTER_TIMEOUT_S=30.0
+GUPY_BASE_URL=https://portal.gupy.io
+GUPY_DELAY_SECONDS=1.0
+GUPY_PAGE_SIZE=10
+GUPY_TIMEOUT_S=30.0
+
+# Glassdoor só via browser local: HTTP direto responde 403 (Cloudflare).
+# Nesta máquina o headless cai no desafio "Um momento…", então headless=false.
+GLASSDOOR_BASE_URL=https://www.glassdoor.com
+GLASSDOOR_DELAY_SECONDS=2.0
+GLASSDOOR_TIMEOUT_MS=30000
+GLASSDOOR_HEADLESS=false
 ```
 
-Os dados vêm do JSON-LD das páginas públicas (`ItemList` na listagem,
-`JobPosting` no detalhe), com fallback para o DOM renderizado. Somente
-leitura: nenhuma tool de escrita em nenhuma fonte.
+**Gupy** — API pública `GET /api/job-search/jobs` (`jobName`, `limit`,
+`offset`), sem login e sem browser. `location` é mapeado com cuidado:
+`remoto`/`remote` vira `workplaceType=remote` (nunca `city=remoto`), nome
+completo de estado vira `state=` (ex.: `Bahia`), qualquer outra coisa vira
+`city=`; `Brazil`/`brasil` não manda filtro. A descrição completa já vem na
+busca; `details()` só consulta a página SSR (`__NEXT_DATA__`) quando ela
+veio vazia.
+
+**Glassdoor** — a SERP abre via browser local (Patchright) e é parseada pelos
+cards (`data-test="job-title"`, `compactEmployerName`, `emp-location`,
+`descSnippet`) mais o `jl=` da URL. `location` é **ignorado** (a busca cobre
+o Brasil inteiro) e `details()` é no-op documentado: todas as rotas de
+detalhe caem no desafio do Cloudflare no browser local (spec Non-Goals) — v1
+guarda o snippet + linha de `Habilidades:` da SERP. Desafio detectado
+(`Um momento…` / `Somente humanos`) vira `SourceUnavailableError`, então o
+sync responde 200 com `errors["glassdoor"]` sem derrubar as outras fontes.
+
+Os dados do GeekHunter vêm do JSON-LD das páginas públicas (`ItemList` na
+listagem, `JobPosting` no detalhe), com fallback para o DOM renderizado.
+Somente leitura: nenhuma tool de escrita em nenhuma fonte.
 
 ## 6. Buscar vagas
 
@@ -309,7 +337,9 @@ O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
 │   │   ├── __init__.py        # build_sources (registry injetável)
 │   │   ├── base.py            # JobSource + SourceUnavailableError
 │   │   ├── linkedin.py        # adapter do LinkedInBrowserClient
-│   │   └── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
+│   │   ├── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
+│   │   ├── gupy.py            # httpx + API JSON pública (sem login)
+│   │   └── glassdoor.py       # browser + parser da SERP (Cloudflare)
 │   └── services/
 │       └── jobs.py            # sync dispatcher por fonte + listagem
 └── tests/
@@ -324,6 +354,8 @@ O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
     ├── test_sources.py
     ├── test_geekhunter.py
     ├── test_geekhunter_source.py
+    ├── test_gupy_source.py
+    ├── test_glassdoor_source.py
     ├── test_jobs_source.py
     ├── test_sync_dispatcher.py
     ├── test_db_migration.py
@@ -334,10 +366,14 @@ O eval **não** roda no CI (requer o checkpoint de ~800 MB); rode sob demanda.
 
 - A integração LinkedIn depende de uma sessão autenticada do usuário
   (`make login`); o perfil da sessão vive fora do repo em `~/.linkedin-laya/`.
-  O GeekHunter não precisa de login (HTTP público).
+  O GeekHunter, a Gupy e o Glassdoor não precisam de login.
 - O LinkedIn proíbe acesso automatizado — use com moderação e por conta própria.
-  O GeekHunter também é acessado com delay configurável
-  (`GEEKHUNTER_DELAY_SECONDS`); respeite o robots/termos de uso.
+  As demais fontes também são acessadas com delay configurável
+  (`GEEKHUNTER_DELAY_SECONDS`, `GUPY_DELAY_SECONDS`, `GLASSDOOR_DELAY_SECONDS`);
+  respeite o robots/termos de uso.
+- O Glassdoor bloqueia HTTP direto (Cloudflare 403), então a coleta usa o
+  browser local; as rotas de detalhe caem no desafio e v1 guarda só o snippet
+  da SERP, com `location` ignorado (busca Brasil-a-brasil).
 - O classifier usa o modelo Laya real quando `CLASSIFIER_BACKEND=laya` (default),
   com fallback automático para a heurística local; os thresholds (80/60) são
   escolhas de política, não probabilidades calibradas para contratação.
