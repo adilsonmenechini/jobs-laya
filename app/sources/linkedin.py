@@ -4,8 +4,10 @@ Thin adapter over the existing `LinkedInBrowserClient` so the sync service
 talks to the `JobSource` Protocol instead of a concrete provider.
 """
 
+from app.linkedin.errors import ToolError
 from app.linkedin.local_client import LinkedInBrowserClient
 from app.linkedin.parsing import extract_job_items, merge_job_details
+from app.sources.base import SourceUnavailableError
 
 
 class LinkedInSource:
@@ -15,7 +17,12 @@ class LinkedInSource:
         self._client = client or LinkedInBrowserClient()
 
     async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
-        result = await self._client.search_jobs(keywords, location, limit)
+        try:
+            result = await self._client.search_jobs(keywords, location, limit)
+        except ToolError as exc:
+            # Session expired / authwall: the dispatcher must degrade this
+            # source (errors["linkedin"]) instead of failing the whole sync.
+            raise SourceUnavailableError(f"{self.name}: {exc}") from exc
         items = extract_job_items(result)[:limit]
         for item in items:
             item["source"] = self.name
