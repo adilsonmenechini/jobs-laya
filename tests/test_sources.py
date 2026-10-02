@@ -1,7 +1,16 @@
 """Fase 1 — config and JobSource Protocol are in place and importable."""
 
+import pytest
+
 from app.config import Settings
-from app.sources import JobSource, SourceUnavailableError, build_sources, source_names
+from app.linkedin.errors import ToolError
+from app.sources import (
+    JobSource,
+    SourceUnavailableError,
+    build_sources,
+    source_names,
+)
+from app.sources.linkedin import LinkedInSource
 
 
 def test_settings_geekhunter_defaults():
@@ -84,3 +93,20 @@ def test_gupy_and_glassdoor_implement_the_protocol():
     for cls in (GupySource, GlassdoorSource):
         assert cls.name in {"gupy", "glassdoor"}
         assert hasattr(cls, "search") and hasattr(cls, "details")
+
+
+class ExpiredSessionClient:
+    """LinkedIn client whose session died (`li_at` cookie gone / authwall)."""
+
+    async def search_jobs(self, *args, **kwargs):
+        raise ToolError("LinkedIn session not found — run `make login` first")
+
+
+@pytest.mark.asyncio
+async def test_linkedin_tool_error_is_reported_as_source_unavailable():
+    """ToolError must not escape sync_jobs: it would 500 the whole request
+    and take every other source down with it."""
+    source = LinkedInSource(client=ExpiredSessionClient())
+
+    with pytest.raises(SourceUnavailableError, match="make login"):
+        await source.search("SRE", "Brazil", 10)
