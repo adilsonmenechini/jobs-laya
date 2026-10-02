@@ -67,16 +67,21 @@
 5. **Document Results:** Add a review section to `plan/tasks/todo-<YYYYMMDDHHmm>.md`.
 6. **Capture Lessons:** Update `plan/tasks/lessons-<YYYYMMDDHHmm>.md` and AI Memory after corrections.
 7. **Save Session:** Before finishing or switching tasks, save session logs, summary, and status to `plan/sessions/session-<YYYYMMDDHHmm>.md`.
+8. **Review & Iterate:** Evaluate the full session output. If issues, unmet criteria, or regressions are identified during review, restart the complete development flow from **SPEC** with a new timestamp.
 
 ### Git Workflow (Gitflow)
 
-1. Branch from `develop`: `feature/<slug>` (e.g. `feature/geekhunter-source`).
-2. Commit on the feature branch (pre-commit must be green).
-3. Push and open a PR with base `develop` (`gh pr create --base develop`).
-4. **Never merge directly** — not from the CLI, not from the API. Every feature lands via PR so it gets reviewed; the user performs the merge.
+1. **Branch Naming:** Always branch from `develop` using a clear prefix:
+   - `feature/<slug>` (e.g. `feature/geekhunter-source`)
+   - `chore/<slug>` (e.g. `chore/update-dependencies`)
+   - `fix/<slug>` (e.g. `fix/auth-token-expiration`)
+   - `bug/<slug>` (e.g. `bug/ui-overflow-issue`)
+2. Commit on the appropriate branch (pre-commit must be green).
+3. Push and create a Pull Request against `develop` (e.g., `gh pr create --base develop`).
+4. **Never merge directly:** Do not merge from the CLI or API. Always create the PR and leave the merge action to the user after review.
 5. PRs must be green before merge: CI (`.github/workflows/ci.yml`) runs `lint` (ruff check + format check) and `test` (pytest) on every PR to `develop`/`main`. Never rely only on local pre-commit.
 
-### 8. Development Flow (SPEC → TDD → TASK → CODING → REFACTOR → LINTER → SAFETY → SESSION)
+### 8. Development Flow (SPEC → TDD → TASK → CODING → REFACTOR → LINTER → SAFETY → SESSION → REVIEW)
 
 For any non-trivial task (3+ steps or architectural decisions), strictly follow this sequential flow:
 
@@ -91,9 +96,12 @@ For any non-trivial task (3+ steps or architectural decisions), strictly follow 
 7. **SAFETY:** Audit security, input validation, permissions, data handling, and destructive operations.
 8. **SESSION:** Summarize changes made, test results, decisions taken, and remaining items.
    - Save to: `plan/sessions/session-<YYYYMMDDHHmm>.md`
+9. **REVIEW:** Critically evaluate the entire delivery against original expectations, quality standards, edge cases, and test runs.
+   - **PASS:** Proceed to commit, push, and open PR (e.g., branch `feature/...`, `chore/...`, `fix/...`, or `bug/...` to `develop`). Do NOT merge.
+   - **FAIL / NEEDS CHANGES:** Do not force a patch. Restart the flow completely from step 1 (**SPEC**) with a fresh timestamp to re-evaluate requirements, update tests, and re-architect properly.
 
 ### File Naming Rules
 
 - Timestamps must follow 24h format: `YYYYMMDDHHmm` (e.g., `202610011234`).
-- SPEC, TASK, and SESSION files created for the same iteration **must share the exact same timestamp**.
+- SPEC, TASK, SESSION, and REVIEW references created for the same iteration **must share the exact same timestamp**.
 - **Forbidden filenames:** Never use generic paths like `tasks/todo.md`, `spec.md`, or `session.md`. Always create new timestamped files for new iterations.
