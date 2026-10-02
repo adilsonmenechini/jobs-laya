@@ -1,241 +1,285 @@
 # CLAUDE.md
 
-Instruções persistentes para o agente neste repositório. Leia no início de cada sessão.
+Persistent instructions for the agent in this repository. Read at the start of every session.
 
-Convenção: **NUNCA** e **SEMPRE** aparecem apenas em regras inegociáveis. As demais são diretrizes que exigem julgamento.
-
----
-
-## 1. Princípios
-
-- **Simplicidade primeiro:** a menor mudança que resolve o problema. Não refatore, renomeie ou "melhore" código fora do escopo pedido.
-- **Causa raiz:** não entregue paliativos. Reproduza o problema, identifique a origem e corrija nela. Se só for possível um paliativo, diga isso explicitamente e registre a pendência.
-- **Evidência antes de afirmar:** nada é "pronto" sem prova (teste passando, log, saída de comando). Se não rodou, diga que não rodou.
-- **Mudança sem teste não está completa:** toda alteração de comportamento vem com teste que falha antes e passa depois.
-- **Sem pendências escondidas:** nenhum `TODO`/`FIXME` sem referência a uma issue ou a um item em `plan/tasks/`.
+Convention: **NEVER** and **ALWAYS** appear only in non-negotiable rules. All other rules are guidelines that require judgment.
 
 ---
 
-## 2. Comandos do projeto
+## 1. Principles
 
-Use sempre os comandos abaixo. Não os descubra por tentativa. Preencha uma vez por projeto.
+- **Simplicity first:** the smallest change that solves the problem. Do not refactor, rename, or "improve" code outside the requested scope.
+- **Root cause:** no band-aids. Reproduce the problem, find its origin, and fix it there. If only a workaround is possible, say so explicitly and record the pending item.
+- **Evidence before claims:** nothing is "done" without proof (passing test, log, command output). If you did not run it, say you did not run it.
+- **A change without a test is not complete:** every behavior change comes with a test that fails before and passes after.
+- **No hidden loose ends:** no `TODO`/`FIXME` without a reference to an issue or an item in `plan/tasks/`.
 
-| Ação | Comando |
+---
+
+## 2. Project commands
+
+Always use the commands below. Do not discover them by trial and error. Fill in once per project.
+
+| Action | Command |
 |---|---|
-| Lint | `<preencher>` |
-| Verificar formatação | `<preencher>` |
-| Type check (se houver) | `<preencher>` |
-| Testes | `<preencher>` |
-| **Verificação completa** (equivale ao CI) | `<preencher>` |
+| Lint | `<fill in>` |
+| Check formatting | `<fill in>` |
+| Type check (if any) | `<fill in>` |
+| Tests | `<fill in>` |
+| **Full verification** (equivalent to CI) | `<fill in>` |
 
-Se esta tabela não estiver preenchida, descubra os comandos lendo `Makefile`, `justfile`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod` ou `.github/workflows/`, preencha a tabela e peça confirmação ao usuário.
+If this table is not filled in, find the commands by reading `Makefile`, `justfile`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, or `.github/workflows/`, fill in the table, and ask the user to confirm.
 
-O CI (`.github/workflows/`) roda lint e testes em todo PR para `develop` e `main`. O pre-commit local **não substitui** o CI.
-
----
-
-## 3. Quando usar o fluxo completo
-
-### Tarefa trivial (caminho rápido)
-
-Aplica-se quando **todas** as condições forem verdadeiras:
-
-- toca no máximo 2 arquivos;
-- não altera interface pública, schema, infraestrutura ou CI;
-- a causa é óbvia e o comportamento esperado é inequívoco.
-
-Nesse caso: faça a mudança, escreva ou ajuste o teste, rode a verificação completa e siga para o Git. **Não** crie artefatos em `plan/`.
-
-### Tarefa não trivial (fluxo completo)
-
-Aplica-se quando **qualquer** condição for verdadeira:
-
-- toca mais de 2 arquivos;
-- altera interface pública, schema de dados, infraestrutura, dependências ou CI;
-- envolve decisão arquitetural;
-- a causa de um bug não é óbvia;
-- você tem dúvida real sobre o escopo.
-
-Nesse caso, siga a seção 4.
-
-### Autonomia versus confirmação
-
-- **Autônomo:** bug com causa clara e escopo contido; CI quebrado; testes falhando. Corrija sem pedir orientação.
-- **Confirmar antes:** mudança de escopo, decisão arquitetural, nova dependência, alteração de CI, qualquer operação destrutiva (ver seção 9).
-- Se algo sair do planejado no meio da execução, **pare e replaneje** em vez de insistir.
+CI (`.github/workflows/`) runs lint and tests on every PR to `develop` and `main`. Local pre-commit does **not** replace CI.
 
 ---
 
-## 4. Fluxo completo
+## 3. When to use the full flow
 
-Sequência obrigatória para tarefas não triviais:
+### Trivial task (fast path)
+
+Applies when **all** of the following are true:
+
+- touches at most 2 files;
+- does not change a public interface, data schema, infrastructure, or CI;
+- the cause is obvious and the expected behavior is unambiguous.
+
+In that case: make the change, write or adjust the test, run the full verification, and go on to Git. Do **not** create artifacts in `plan/`.
+
+### Non-trivial task (full flow)
+
+Applies when **any** of the following is true:
+
+- touches more than 2 files;
+- changes a public interface, data schema, infrastructure, dependencies, or CI;
+- involves an architectural decision;
+- the cause of a bug is not obvious;
+- you have real doubt about the scope.
+
+In that case, follow section 4.
+
+### Autonomy versus confirmation
+
+- **Autonomous:** bug with a clear cause and contained scope; broken CI; failing tests. Fix without asking for guidance.
+- **Confirm first:** scope change, architectural decision, new dependency, CI change, any destructive operation (see section 9).
+- If something goes off-plan midway, **stop and re-plan** instead of pushing on.
+
+---
+
+## 4. Full flow
+
+Mandatory sequence for non-trivial tasks:
 
 **SPEC → TASK → TDD → CODING → REFACTOR → LINTER → SAFETY → REVIEW → SESSION**
 
-| Etapa | O que fazer | Artefato |
+| Step | What to do | Artifact |
 |---|---|---|
-| 1. SPEC | Requisitos, restrições, premissas, critérios de aceite, fora de escopo. **Peça confirmação ao usuário antes de seguir.** | `plan/sdd/spec-<TS>.md` |
-| 2. TASK | Quebre em itens pequenos e verificáveis (checklist). Marque conforme avança. | `plan/tasks/todo-<TS>.md` |
-| 3. TDD | Escreva ou atualize testes para o comportamento esperado e casos de borda **antes** de implementar. Confirme que falham pelo motivo certo. | testes no repositório |
-| 4. CODING | Implementação mínima que satisfaz spec e testes. | código |
-| 5. REFACTOR | Melhore estrutura, duplicação e legibilidade **sem alterar comportamento**. Testes continuam verdes. | código |
-| 6. LINTER | Rode formatador, linter e type checker. Corrija. Nunca suprima um aviso sem justificativa no código. | código |
-| 7. SAFETY | Audite validação de entrada, permissões, tratamento de segredos, dados sensíveis e operações destrutivas. | notas na REVIEW |
-| 8. REVIEW | Avalie criticamente contra a spec, os critérios de aceite e os casos de borda. Anexe a saída da verificação completa. Veredito: PASS, FAIL-IMPL ou FAIL-SPEC. | `plan/reviews/review-<TS>.md` |
-| 9. SESSION | Resumo do que mudou, resultados de teste, decisões, pendências. Salve também ao trocar de tarefa ou encerrar a sessão. | `plan/sessions/session-<TS>.md` |
+| 1. SPEC | Requirements, constraints, assumptions, acceptance criteria, out of scope. **Ask the user to confirm before moving on.** | `plan/sdd/spec-<TS>.md` |
+| 2. TASK | Break into small, verifiable items (checklist). Mark them as you go. | `plan/tasks/todo-<TS>.md` |
+| 3. TDD | Write or update tests for the expected behavior and edge cases **before** implementing. Confirm they fail for the right reason. | tests in the repository |
+| 4. CODING | Minimal implementation that satisfies the spec and tests. | code |
+| 5. REFACTOR | Improve structure, duplication, and readability **without changing behavior**. Tests stay green. | code |
+| 6. LINTER | Run formatter, linter, and type checker. Fix issues. Never suppress a warning without a justification in the code. | code |
+| 7. SAFETY | Audit input validation, permissions, secret handling, sensitive data, and destructive operations. | notes in REVIEW |
+| 8. REVIEW | Critically evaluate against the spec, acceptance criteria, and edge cases. Attach the full verification output. Verdict: PASS, FAIL-IMPL, or FAIL-SPEC. | `plan/reviews/review-<TS>.md` |
+| 9. SESSION | Summary of what changed, test results, decisions, and pending items. Also save when switching tasks or ending the session. | `plan/sessions/session-<TS>.md` |
 
-Antes da etapa 1 e antes da etapa 4, **verifique as skills disponíveis** (seção 10).
+Before step 1 and before step 4, **check the available skills** (section 10).
+For SPEC, TASK, REVIEW, and SESSION, **copy the template** from `plan/templates/` and fill it in. Do not invent another format.
 
-Durante o fluxo:
+During the flow:
 
-- Explique as mudanças em alto nível a cada etapa, sem despejar diff.
-- Antes de apresentar um trabalho não trivial, pergunte-se se existe uma solução mais simples ou mais clara. Para correções simples e óbvias, pule isso.
-- Ao concluir o REVIEW com PASS, escreva um **checklist de verificação** na review com os comandos executados e seus resultados.
+- Explain changes at a high level at each step. Do not dump diffs.
+- Before presenting non-trivial work, ask yourself whether a simpler or clearer solution exists. For simple, obvious fixes, skip this.
+- When concluding REVIEW with PASS, write a **verification checklist** in the review with the commands run and their results.
 
 ---
 
-## 5. Tratamento de falha no REVIEW
+## 5. Handling REVIEW failures
 
-O veredito determina para onde voltar. Não reinicie tudo por causa de um erro pequeno.
+The verdict determines where to go back to. Do not restart everything over a small error.
 
-| Veredito | Situação | Ação |
+| Verdict | Situation | Action |
 |---|---|---|
-| **PASS** | Critérios de aceite atendidos, verificação completa verde, SAFETY sem pendências | Salve SESSION, depois commit, push e PR (seção 6). **Não** faça merge. |
-| **FAIL-IMPL** | Defeito de implementação: teste quebrado, lint, caso de borda não coberto, bug no código | Volte ao **CODING** (ou ao TDD, se faltar teste). Mantenha o mesmo timestamp. |
-| **FAIL-SPEC** | Requisito errado, incompleto ou ambíguo; falha arquitetural | Volte ao **SPEC** com **novo timestamp**. Registre na nova spec o que a anterior errou. |
+| **PASS** | Acceptance criteria met, full verification green, SAFETY with no open items | Save SESSION, then commit, push, and open a PR (section 6). **Do not** merge. |
+| **FAIL-IMPL** | Implementation defect: broken test, lint, uncovered edge case, bug in the code | Go back to **CODING** (or to TDD if a test is missing). Keep the same timestamp. |
+| **FAIL-SPEC** | Wrong, incomplete, or ambiguous requirement; architectural failure | Go back to **SPEC** with a **new timestamp**. Record in the new spec what the previous one got wrong. |
 
-**Limite de iterações:** após 3 ciclos FAIL na mesma tarefa, **pare e escale para o usuário** com um resumo do que foi tentado, do que falhou e das hipóteses restantes. Não continue em loop.
-
----
-
-## 6. Git e Pull Requests
-
-Modelo: Gitflow.
-
-1. **Branches** sempre a partir de `develop`, com prefixo:
-   - `feature/<slug>`: nova funcionalidade
-   - `fix/<slug>`: correção
-   - `bug/<slug>`: correção de bug reportado
-   - `chore/<slug>`: manutenção, dependências, configuração
-2. **Commits** seguem Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`, `test:`, `docs:`). Um commit por mudança lógica. O pre-commit deve estar verde.
-3. **Push e PR** contra `develop`: `gh pr create --base develop`.
-4. **Descrição do PR** inclui: resumo da mudança, caminho da spec (`plan/sdd/spec-<TS>.md`), caminho da review, e como foi verificado.
-5. **PR pequeno e focado:** se a mudança crescer além do escopo da spec, divida em PRs separados.
-6. **NUNCA faça merge** pela CLI ou pela API. Crie o PR e deixe o merge para o usuário, para garantir revisão humana.
-7. O PR só está pronto quando o CI (`lint` e `test`) está verde.
+**Iteration limit:** after 3 FAIL cycles on the same task, **stop and escalate to the user** with a summary of what was tried, what failed, and the remaining hypotheses. Do not keep looping.
 
 ---
 
-## 7. Memória: AI Memory e `plan/`
+## 6. Git and Pull Requests
 
-### Divisão de responsabilidades
+Model: Gitflow.
 
-| Onde | O que guardar | Papel |
+1. **Branches** always from `develop`, with a prefix:
+   - `feature/<slug>`: new functionality
+   - `fix/<slug>`: fix
+   - `bug/<slug>`: fix for a reported bug
+   - `chore/<slug>`: maintenance, dependencies, configuration
+2. **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, `refactor:`, `test:`, `docs:`). One commit per logical change. Pre-commit must be green.
+3. **Push and PR** against `develop`: `gh pr create --base develop`.
+4. **PR description** includes: change summary, path to the spec (`plan/sdd/spec-<TS>.md`), path to the review, and how it was verified.
+5. **Small, focused PRs:** if the change grows beyond the spec's scope, split it into separate PRs.
+6. **NEVER merge** via the CLI or the API. Create the PR and leave the merge to the user, so that human review is guaranteed.
+7. The PR is only ready when CI (`lint` and `test`) is green.
+
+---
+
+## 7. Memory: AI Memory and `plan/`
+
+### Division of responsibilities
+
+| Where | What to store | Role |
 |---|---|---|
-| **AI Memory** | Decisões arquiteturais, lições reutilizáveis, descobertas e convenções que valem para sessões futuras | **Fonte da verdade** para conhecimento persistente |
-| **`plan/`** | Specs, tasks, reviews e sessões da iteração em andamento | Registro de trabalho e rastreabilidade |
-| **`plan/tasks/lessons-<TS>.md`** | Lição bruta após uma correção do usuário | Rascunho. Promova para o AI Memory e mantenha só a referência. |
+| **AI Memory** | Architectural decisions, reusable lessons, discoveries, and conventions that matter for future sessions | **Source of truth** for persistent knowledge |
+| **`plan/`** | Specs, tasks, reviews, and sessions of the iteration in progress | Work log and traceability |
+| **`plan/tasks/lessons-<TS>.md`** | Raw lesson after a user correction | Draft. Promote to AI Memory and keep only the reference. |
 
-### Regras de uso
+### Usage rules
 
-- **Antes** de começar um trabalho relevante, consulte o AI Memory. Não assuma decisões anteriores nem redescubra o que já foi registrado.
-- **Depois** de correção do usuário, decisão arquitetural, descoberta ou lição reutilizável: registre no AI Memory e crie `plan/tasks/lessons-<TS>.md` com o padrão do erro e a regra para evitá-lo.
-- Seja conciso. Registre apenas o que ajudará em sessões futuras. Não registre logs, saídas de comando ou detalhes que o código já mostra.
-- No início da sessão, revise as lições relevantes ao projeto.
-- Documentação de referência: https://github.com/akitaonrails/ai-memory/tree/main/docs
+- **Before** starting relevant work, query AI Memory. Do not assume earlier decisions or rediscover what was already recorded.
+- **After** a user correction, architectural decision, discovery, or reusable lesson: record it in AI Memory and create `plan/tasks/lessons-<TS>.md` with the error pattern and the rule to avoid it.
+- Be concise. Record only what will help in future sessions. Do not record logs, command output, or details the code already shows.
+- At session start, review the lessons relevant to the project.
+- Reference documentation: https://github.com/akitaonrails/ai-memory/tree/main/docs
 
-### Fallback se o AI Memory estiver indisponível
+### Fallback if AI Memory is unavailable
 
-1. Avise o usuário em uma linha.
-2. Registre o que seria gravado em `plan/memory-pending-<TS>.md`.
-3. Continue o trabalho normalmente.
-4. Quando o serviço voltar, sincronize o conteúdo pendente e apague o arquivo.
+1. Tell the user in one line.
+2. Record what would have been saved in `plan/memory-pending-<TS>.md`.
+3. Continue working normally.
+4. When the service is back, sync the pending content and delete the file.
 
 ---
 
-## 8. Subagentes e nomenclatura de arquivos
+## 8. Subagents and file naming
 
-### Quando usar subagentes
+### When to use subagents
 
-**Use** para:
+**Use** for:
 
-- pesquisa ou exploração em muitos arquivos;
-- análises independentes que podem rodar em paralelo;
-- tarefas que poluiriam o contexto principal com saída volumosa.
+- research or exploration across many files;
+- independent analyses that can run in parallel;
+- tasks that would pollute the main context with bulky output.
 
-**Evite** para:
+**Avoid** for:
 
-- edições pequenas ou sequenciais, em que cada passo depende do anterior;
-- tarefas em que o custo de repassar contexto supera o ganho.
+- small or sequential edits where each step depends on the previous one;
+- tasks where the cost of passing context outweighs the gain.
 
-Uma tarefa por subagente, com objetivo e formato de retorno definidos.
+One task per subagent, with a defined goal and return format.
 
-### Nomenclatura
+### Naming
 
-- Timestamp: `YYYYMMDDHHmm`, 24h (exemplo: `202610011234`).
-- **SPEC, TASK, REVIEW e SESSION da mesma iteração compartilham o mesmo timestamp.** Um novo timestamp só nasce com um novo SPEC (FAIL-SPEC ou nova iniciativa).
-- `lessons-<TS>` usa o timestamp do momento da correção.
-- **Proibido** usar nomes genéricos como `todo.md`, `spec.md`, `review.md` ou `session.md`.
+- Timestamp: `YYYYMMDDHHmm`, 24h (example: `202610011234`).
+- **SPEC, TASK, REVIEW, and SESSION of the same iteration share the same timestamp.** A new timestamp is only created with a new SPEC (FAIL-SPEC or a new initiative).
+- `lessons-<TS>` uses the timestamp of the moment of the correction.
+- **Forbidden:** generic names such as `todo.md`, `spec.md`, `review.md`, or `session.md`. The `*.template.md` files in `plan/templates/` are the only exception.
 
-### Estrutura de `plan/`
+### Structure of `plan/`
 
 ```
 plan/
+├── templates/  *.template.md (models; not iteration artifacts)
 ├── sdd/        spec-<TS>.md
 ├── tasks/      todo-<TS>.md, lessons-<TS>.md
 ├── reviews/    review-<TS>.md
 └── sessions/   session-<TS>.md
 ```
 
-### Retenção
+### Retention
 
-`plan/` é **versionado** no repositório, pois dá rastreabilidade ao PR. Arquivos de iterações concluídas há mais de 90 dias podem ser movidos para `plan/archive/` mediante confirmação do usuário. Nunca apague artefatos sem confirmar.
+`plan/` is **versioned** in the repository, since it gives the PR traceability. Files from iterations completed more than 90 days ago may be moved to `plan/archive/` with the user's confirmation. Never delete artifacts without confirming.
 
 ---
 
-## 9. Proibições de segurança
+## 9. Security prohibitions
 
-**NUNCA**, sem autorização explícita do usuário na conversa atual:
+**NEVER**, without explicit authorization from the user in the current conversation:
 
-- `git push --force` (inclusive `--force-with-lease`) em `develop` ou `main`;
-- reescrever histórico já publicado (`rebase`, `reset --hard`, `commit --amend` em commits enviados);
-- `rm -rf` fora de diretórios temporários criados na própria tarefa;
-- alterar `.github/workflows/`, configuração de CI, hooks ou permissões sem avisar e explicar o motivo;
-- commitar `.env`, chaves, tokens, credenciais ou qualquer segredo. Se encontrar um segredo no repositório, avise o usuário em vez de corrigir em silêncio;
-- imprimir segredos em logs, saídas ou descrições de PR;
-- instalar dependências novas sem confirmar;
-- executar migrações ou comandos destrutivos em bancos de dados ou ambientes que não sejam locais de teste;
-- desativar testes, lint ou checagens do CI para fazer algo passar.
+- `git push --force` (including `--force-with-lease`) on `develop` or `main`;
+- rewrite already published history (`rebase`, `reset --hard`, `commit --amend` on pushed commits);
+- `rm -rf` outside temporary directories created by the task itself;
+- change `.github/workflows/`, CI configuration, hooks, or permissions without warning and explaining why;
+- commit `.env`, keys, tokens, credentials, or any secret. If you find a secret in the repository, warn the user instead of fixing it silently;
+- print secrets in logs, output, or PR descriptions;
+- install new dependencies without confirming;
+- run migrations or destructive commands on databases or environments that are not local test ones;
+- disable tests, lint, or CI checks to make something pass.
 
-Em caso de dúvida sobre se uma operação é destrutiva ou irreversível, **pergunte antes**.
+When in doubt about whether an operation is destructive or irreversible, **ask first**.
+
+Part of these rules is enforced by `.claude/settings.json` and `.claude/hooks/guard-bash.sh`. If a command is blocked, do not try to work around it: explain to the user what you needed to do and ask for authorization.
 
 ---
 
 ## 10. Skills
 
-Skills são instruções especializadas em `.claude/skills/<nome>/SKILL.md` (do projeto) e `~/.claude/skills/<nome>/SKILL.md` (pessoais). Cada uma tem um `description` que diz quando se aplica.
+Skills are specialized instructions in `.claude/skills/<name>/SKILL.md` (project) and `~/.claude/skills/<name>/SKILL.md` (personal). Each has a `description` that says when it applies.
 
-### Quando verificar
+### When to check
 
-- **Antes do SPEC:** liste as skills disponíveis e identifique as que se aplicam à tarefa.
-- **Antes do CODING:** releia as skills aplicáveis. Se o escopo mudou durante o SPEC ou TASK, repita a busca.
-- **No REVIEW:** confirme que as skills aplicáveis foram seguidas.
+- **Before SPEC:** list the available skills and identify the ones that apply to the task.
+- **Before CODING:** reread the applicable skills. If the scope changed during SPEC or TASK, repeat the search.
+- **In REVIEW:** confirm that the applicable skills were followed.
 
-### Como verificar
+### How to check
 
-1. Liste os diretórios em `.claude/skills/` e `~/.claude/skills/`.
-2. Leia o `description` de cada `SKILL.md`. Não leia o corpo de todas.
-3. Para cada skill cujo `description` combine com a tarefa, leia o `SKILL.md` completo e siga as instruções **antes** de agir.
-4. Se mais de uma se aplica, leia todas. Em conflito, a skill do projeto prevalece sobre a pessoal, e este CLAUDE.md prevalece sobre ambas.
+1. List the directories in `.claude/skills/` and `~/.claude/skills/`.
+2. Read each `SKILL.md`'s `description`. Do not read the body of all of them.
+3. For each skill whose `description` matches the task, read the full `SKILL.md` and follow its instructions **before** acting.
+4. If more than one applies, read all of them. On conflict, the project skill prevails over the personal one, and this CLAUDE.md prevails over both.
 
-### Registro
+### Recording
 
-- Na SPEC, inclua a seção **Skills aplicáveis** com os nomes das skills usadas (ou "nenhuma").
-- Na REVIEW, marque se cada skill listada foi seguida. Se alguma foi ignorada, justifique.
+- In the SPEC, include the **Applicable skills** section with the names of the skills used (or "none").
+- In the REVIEW, mark whether each listed skill was followed. If any was ignored, justify it.
 
-### Regras
+### Rules
 
-- Não invente skills. Se nenhuma se aplica, siga em frente sem comentar.
-- Não carregue skills irrelevantes só por precaução: isso gasta contexto.
-- Se uma skill contradiz uma proibição da seção 9, a seção 9 prevalece. Avise o usuário.
-- Se identificar uma tarefa repetitiva que merece virar skill, sugira ao usuário em vez de criar sozinho.
+- Do not invent skills. If none applies, move on without comment.
+- Do not load irrelevant skills just in case: that wastes context.
+- If a skill contradicts a prohibition in section 9, section 9 prevails. Warn the user.
+- If you identify a repetitive task that deserves to become a skill, suggest it to the user instead of creating it yourself.
+
+---
+
+## 11. Definition of done
+
+A non-trivial task is only "done" when **all** items are true. Check each one in the REVIEW.
+
+- [ ] Full verification (section 2) executed and green, with the output attached.
+- [ ] Every new or changed behavior has a test that failed before and passes now.
+- [ ] SPEC acceptance criteria met, one by one.
+- [ ] No `TODO`/`FIXME` without a reference to an issue or a `plan/tasks/` item.
+- [ ] SAFETY completed, with no secrets, unvalidated inputs, or destructive operations.
+- [ ] Documentation updated if the public interface, configuration, or usage changed.
+- [ ] SPEC, TASK, REVIEW, and SESSION exist with the same timestamp.
+- [ ] PR describes the change and links the SPEC and REVIEW.
+- [ ] Reusable lessons and decisions recorded in AI Memory.
+
+For trivial tasks, only items 1, 2, 4, and 5 apply.
+
+---
+
+## 12. Communication
+
+When reporting results to the user:
+
+- **Start with the real state:** done, partial, or blocked. If any test failed or was not run, say so in the first line.
+- **Separate fact from assumption:** "verified" only for what was executed or read. The rest is "assumed" or "not verified".
+- **Report failures without softening:** include the exact error and what was already tried.
+- **Be short:** high-level summary, artifact paths, and pending items. Do not paste diffs or long logs; point to where they are.
+- **Ask for decisions with options:** when escalating, present alternatives with pros and cons and your recommendation.
+- **No excessive praise or apologies.** Fix and move on.
+
+---
+
+## 13. Maintaining this file
+
+- A lesson that repeats **3 times** becomes a rule here. Record the promotion in AI Memory.
+- A rule that never influences behavior, or that has become a habit of the agent, should be removed.
+- Detail for a step that goes beyond a few lines becomes a skill or slash command, and only the summary and link stay here.
+- Keep the file under roughly 300 lines.
