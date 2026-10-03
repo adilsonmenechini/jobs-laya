@@ -1,0 +1,13 @@
+{
+  "title": "SRE  Sênior",
+  "company": "NTT DATA",
+  "location": null,
+  "remote": true,
+  "description": "Requisitos 5+ anos de experiência na carreira Azure Infraestrutura como Código Terraform CI/CD Azure Pipelines Python Observabilidade Kubernetes New Relic Conhecimentos Desejáveis PostgreSQL Kafka Azure Functions Kotlin Arquitetura Cloud SLI/SLO Gestão de Incidentes Melhoria Contínua Tarefas e Responsabilidades Sobre a vaga Buscamos um SRE / DevOps Sênior para atuar em um projeto de plataforma cloud, com foco em evoluir a infraestrutura em Azure e amadurecer a observabilidade do ambiente. É uma posição mão na massa, para quem tem autonomia, senso de dono e vivência real de produção. Responsabilidades Evoluir e padronizar a infraestrutura Azure usando Terraform, preparando o ambiente para escalar e replicar. Manter e melhorar as esteiras de CI/CD em Azure Pipelines. Sustentar ambientes Kube",
+  "source": "geekhunter",
+  "source_id": "sre--senior-1",
+  "url": "https://www.geekhunter.com/pt/ntt-data/jobs/sre--senior-1",
+  "posted_at": "2026-09-09",
+  "score": 68.23,
+  "match": "medium"
+}

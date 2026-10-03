@@ -51,7 +51,14 @@
     "LangChain",
     "LangGraph",
     "CrewAI",
-    "LLM"
+    "LLM",
+    "Git",
+    "Linux",
+    "SQL",
+    "GCP",
+    "Jenkins",
+    "Shell",
+    "PyTorch"
   ],
   "focus": [
     "SRE",

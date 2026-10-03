@@ -1,0 +1,13 @@
+{
+  "title": "Chief AWS DevOps Engineer",
+  "company": "EPAM Systems",
+  "location": "Remoto",
+  "remote": true,
+  "description": "We are looking for a Chief AWS DevOps Engineer to lead shared cloud platform services and deliver consistent developer experiences aligned with CCoE standards. You will treat the platform as a product, shipping reusable building blocks, paved roads, and golden paths across product and application teams. Responsibilities Design reusable platform capabilities, including shared services, standard compute patterns, and golden baselines, to enable safe and fast workload onboarding Operate and improve centralized services such as logging, monitoring, secrets, identity, file transfers, and key management Create paved roads and golden paths in partnership with product teams, security, and operations Coordinate with Cloud DevOps/Automation engineers to codify platform interfaces in IaC and pipeline",
+  "source": "indeed",
+  "source_id": "edc225d74d8d03b9",
+  "url": "https://careers.epam.com/en/vacancy/bltxqcrvoq6ocijjfbc_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+  "posted_at": "2026-10-02",
+  "score": 61.38,
+  "match": "medium"
+}

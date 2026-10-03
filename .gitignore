@@ -23,3 +23,8 @@ data/*.sqlite
 data/*.sqlite3
 !data/profile.json
 opencode.json
+
+# Codemap (local only, gerado pela skill /codemap)
+codemap.md
+.slim/
+AGENTS.md

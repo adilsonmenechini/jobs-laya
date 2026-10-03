@@ -95,6 +95,7 @@ def jobs(
     db: DbSession,
     match: Annotated[str | None, Query(pattern="^(high|medium|low)$")] = None,
     remote: bool | None = None,
+    location: str | None = None,
     query: str | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
     source: Annotated[
@@ -103,7 +104,7 @@ def jobs(
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):
-    items, total = list_jobs(db, match, remote, query, min_score, source, limit, offset)
+    items, total = list_jobs(db, match, remote, location, query, min_score, source, limit, offset)
     return {"total": total, "items": items}
 
 
