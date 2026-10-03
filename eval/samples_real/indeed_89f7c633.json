@@ -1,0 +1,13 @@
+{
+  "title": "Cloud Engineer / Site Reliability Engineer (SRE) – Pleno",
+  "company": "groove tech",
+  "location": "São Paulo, SP",
+  "remote": false,
+  "description": "Na GrooveTech, conectamos talentos de alta performance a desafios de tecnologia que transformam negócios. Buscamos um(a) Cloud Engineer / SRE Pleno com perfil hands-on para atuar na sustentação, resiliência e escalabilidade de uma plataforma crítica em um projeto estratégico. O ambiente é 100% Google Cloud Platform (GCP), tendo Kubernetes (GKE) como núcleo da arquitetura. Suas Principais Responsabilidades Infraestrutura Cloud & GKE: Sustentar e evoluir o ambiente GCP (GKE, Compute Engine, Cloud SQL, Storage, VPC, Load Balancers, Pub/Sub, BigQuery). Cultura e Práticas de SRE: Aplicar conceitos de SLIs, SLOs e Error Budgets, garantindo alta disponibilidade e estratégias de autoscaling. Observabilidade: Evoluir a stack de monitoramento (New Relic, OpenTelemetry, Prometheus, Grafana e Cloud Mo",
+  "source": "indeed",
+  "source_id": "89f7c633dd3b2dd4",
+  "url": "https://jobs.quickin.io/groove/jobs/6abfa9245087e30013cebe7c?src=Indeed",
+  "posted_at": "2026-10-02",
+  "score": 83.98,
+  "match": "high"
+}

@@ -30,6 +30,153 @@ class LayaInspiredClassifier:
         "remote": 0.10,
     }
 
+    # PT-BR → EN title mapping for common roles
+    PTBR_TITLES = {
+        "engenheiro de ia": "ai engineer",
+        "engenheiro ia": "ai engineer",
+        "engenheiro de ml": "ml engineer",
+        "engenheiro ml": "ml engineer",
+        "engenheiro de plataforma": "platform engineer",
+        "engenheiro de devops": "devops engineer",
+        "engenheiro devops": "devops engineer",
+        "engenheiro de sre": "sre",
+        "engenheiro sre": "sre",
+        "engenheiro de cloud": "cloud engineer",
+        "engenheiro cloud": "cloud engineer",
+        "engenheiro de dados": "data engineer",
+        "analista de devops": "devops analyst",
+        "analista devops": "devops analyst",
+        "analista de sre": "sre analyst",
+        "analista sre": "sre analyst",
+        "analista de cloud": "cloud analyst",
+        "analista cloud": "cloud analyst",
+        "analista de dados": "data analyst",
+        "arquiteto de soluções": "solutions architect",
+        "arquiteto de cloud": "cloud architect",
+        "coordenador de devops": "devops coordinator",
+        "coordenador sre": "sre coordinator",
+        "especialista em sre": "sre specialist",
+        "especialista devops": "devops specialist",
+        "especialista cloud": "cloud specialist",
+        "especialista em cloud": "cloud specialist",
+        "lead ai platform engineer": "ai platform engineer",
+        "staff platform engineer": "platform engineer",
+        "principal platform engineer": "platform engineer",
+        "senior data platform engineer": "data platform engineer",
+        "forward deployed engineer": "forward deployed engineer",
+        "site reliability engineer": "sre",
+        "automation and ot network engineer": "network engineer",
+        "murex environment and configuration manager": "configuration manager",
+        "manager delivery solutions architects": "solutions architect manager",
+        "product operations intern": "product operations intern",
+        "inside sales representative": "sales representative",
+        "fraud disputes intern": "intern",
+        "software engineer back end": "backend engineer",
+        "senior data developer": "data developer",
+        "engenheiro de ia tradicional e ia generativa": "ai engineer",
+        "engenheiro de agentes de ia": "ai agent engineer",
+        "ai engineer": "ai engineer",
+        "fullstack ai engineer": "ai engineer",
+        "cloud engineer": "cloud engineer",
+        "devops engineer": "devops engineer",
+        "devops": "devops",
+        "sre": "sre",
+        "platform engineer": "platform engineer",
+    }
+
+    # PT-BR → EN skills mapping
+    PTBR_SKILLS = {
+        "kubernetes": "kubernetes",
+        "k8s": "kubernetes",
+        "terraform": "terraform",
+        "aws": "aws",
+        "amazon web services": "aws",
+        "azure": "azure",
+        "gcp": "gcp",
+        "google cloud": "gcp",
+        "docker": "docker",
+        "python": "python",
+        "go": "go",
+        "golang": "go",
+        "linux": "linux",
+        "ci/cd": "ci/cd",
+        "ci cd": "ci/cd",
+        "pipeline": "pipeline",
+        "observabilidade": "observability",
+        "observability": "observability",
+        "monitoramento": "monitoring",
+        "monitoracao": "monitoring",
+        "sre": "sre",
+        "devops": "devops",
+        "cloud": "cloud",
+        "nuvem": "cloud",
+        "computação em nuvem": "cloud",
+        "infraestrutura": "infrastructure",
+        "infra": "infrastructure",
+        "automação": "automation",
+        "automacao": "automation",
+        "container": "container",
+        "conteiner": "container",
+        "microserviços": "microservices",
+        "microservices": "microservices",
+        "api": "api",
+        "rest": "rest",
+        "graphql": "graphql",
+        "banco de dados": "database",
+        "database": "database",
+        "sql": "sql",
+        "nosql": "nosql",
+        "mongodb": "mongodb",
+        "postgres": "postgres",
+        "postgresql": "postgres",
+        "mysql": "mysql",
+        "redis": "redis",
+        "kafka": "kafka",
+        "spark": "spark",
+        "hadoop": "hadoop",
+        "airflow": "airflow",
+        "dbt": "dbt",
+        "snowflake": "snowflake",
+        "databricks": "databricks",
+        "machine learning": "machine learning",
+        "ml": "ml",
+        "deep learning": "deep learning",
+        "ia": "ai",
+        "inteligência artificial": "ai",
+        "inteligencia artificial": "ai",
+        "llm": "llm",
+        "rag": "rag",
+        "langchain": "langchain",
+        "langgraph": "langgraph",
+        "openai": "openai",
+        "gpt": "gpt",
+        "claude": "claude",
+        "gemini": "gemini",
+        "prompt": "prompt",
+        "agent": "agent",
+        "agente": "agent",
+        "mcp": "mcp",
+    }
+
+    # PT-BR seniority keywords
+    PTBR_SENIORITY = {
+        "sênior": "senior",
+        "senior": "senior",
+        "pleno": "mid",
+        "júnior": "junior",
+        "junior": "junior",
+        "estágio": "intern",
+        "estagiário": "intern",
+        "lead": "lead",
+        "principal": "principal",
+        "staff": "staff",
+        "chief": "chief",
+        "coordenador": "lead",
+        "especialista": "specialist",
+        "analista": "analyst",
+        "arquiteto": "architect",
+    }
+
     def __init__(self, profile: dict):
         self.profile = profile
         self.skills = {self._norm(x) for x in profile.get("skills", [])}
@@ -61,32 +208,128 @@ class LayaInspiredClassifier:
             if re.search(rf"\b{re.escape(term)}\b", folded)
         ]
 
+    # Years-of-experience signals: real postings rarely write "Senior", they
+    # write "5+ anos de experiência". Matched against the whole text.
+    EXPERIENCE_PATTERN = re.compile(r"(\d{1,2})\s*\+?\s*(anos?|years?|yr)", re.IGNORECASE)
+    # Seniority expressed as a level, so a posting saying "Chief" satisfies a
+    # profile asking for "Staff" without the profile having to name every title.
+    SENIORITY_LEVELS = {
+        "intern": 0,
+        "estágio": 0,
+        "estagiário": 0,
+        "junior": 1,
+        "júnior": 1,
+        "pleno": 2,
+        "mid": 2,
+        "senior": 3,
+        "sênior": 3,
+        "lead": 4,
+        "líder": 4,
+        "staff": 4,
+        "principal": 5,
+        "chief": 5,
+        "head": 5,
+    }
+
     @staticmethod
     def _contains(text: str, term: str) -> bool:
         return term in text
+
+    @staticmethod
+    def _skill_in(text: str, skill: str) -> bool:
+        """Word-boundary skill match: 'Go' must not fire on 'google'/'going'."""
+        return re.search(rf"\b{re.escape(skill)}\b", text) is not None
+
+    def _map_ptbr_title(self, title: str) -> str:
+        """Map PT-BR job titles to EN equivalents for matching."""
+        # Direct mapping
+        if title in self.PTBR_TITLES:
+            return self.PTBR_TITLES[title]
+
+        # Partial mapping (check if any PT-BR keyword is in the title)
+        for ptbr, en in self.PTBR_TITLES.items():
+            if ptbr in title:
+                return en
+
+        return title
+
+    def _map_ptbr_text(self, text: str) -> str:
+        """Map PT-BR skills and terms to EN equivalents."""
+        result = text
+        for ptbr, en in self.PTBR_SKILLS.items():
+            result = result.replace(ptbr, en)
+        return result
+
+    @property
+    def _profile_seniority_floor(self) -> int:
+        """Lowest level the profile accepts; 0 when nothing is configured."""
+        levels = [self.SENIORITY_LEVELS[s] for s in self.seniority if s in self.SENIORITY_LEVELS]
+        return min(levels) if levels else 0
+
+    def _seniority_hits(self, text: str) -> list[str]:
+        """Seniority signals, accent-insensitive and years-aware.
+
+        A posting rarely writes the profile's exact word ("Senior"); PT-BR ads
+        write "Sênior", "Chief", or "5+ anos de experiência". All count as long
+        as they reach the profile's floor — "Pleno"/"Júnior" sit below it.
+        """
+        folded = self._fold(text)
+        floor = self._profile_seniority_floor
+
+        hits = [
+            expected
+            for expected in self.seniority
+            if re.search(rf"\b{re.escape(expected)}\b", folded)
+        ]
+        if not hits:
+            for word, level in self.SENIORITY_LEVELS.items():
+                if level >= floor and re.search(rf"\b{re.escape(self._fold(word))}\b", folded):
+                    hits.append(word)
+                    break
+        if not hits:
+            years = [int(n) for n, _ in self.EXPERIENCE_PATTERN.findall(text)]
+            if years and max(years) >= 5:
+                hits.append("5+ anos de experiência")
+        return hits
 
     def classify(self, job: dict) -> dict:
         title = self._norm(job.get("title", ""))
         description = self._norm(job.get("description", ""))
         text = f"{title} {description}"
-        matched_skills = sorted(skill for skill in self.skills if self._contains(text, skill))
 
-        title_hits = [t for t in self.titles if t in title]
-        seniority_hits = [s for s in self.seniority if s in title or s in description]
+        # Map PT-BR titles and skills to EN for matching. The original title
+        # stays in the text: the mapping resolves the role, but words like
+        # "Sênior" only exist in the source string.
+        mapped_title = self._map_ptbr_title(title)
+        mapped_description = self._map_ptbr_text(description)
+        matched_text = f"{title} {mapped_title} {mapped_description}"
+
+        matched_skills = sorted(
+            skill for skill in self.skills if self._skill_in(matched_text, skill)
+        )
+
+        title_hits = [t for t in self.titles if t in mapped_title]
+        seniority_hits = self._seniority_hits(matched_text)
 
         title_score = (
-            min(100, 60 + 20 * len(title_hits)) if title_hits else self._role_similarity(title)
+            min(100, 60 + 20 * len(title_hits))
+            if title_hits
+            else self._role_similarity(mapped_title)
         )
         seniority_score = 100 if seniority_hits else 50
-        skill_denominator = max(1, min(10, len(self.skills)))
+        # A real posting names 2-4 skills; a denominator sized after the whole
+        # profile (27 skills) would keep every score pinned in the low band.
+        skill_denominator = max(1, min(5, len(self.skills)))
         skills_score = min(100, (len(matched_skills) / skill_denominator) * 100)
 
-        cloud_terms = {"aws", "azure", "gcp", "cloud", "kubernetes", "terraform"}
-        cloud_hits = [x for x in cloud_terms if x in text]
+        cloud_terms = {"aws", "azure", "gcp", "cloud", "kubernetes", "terraform", "nuvem"}
+        cloud_hits = [x for x in cloud_terms if self._skill_in(matched_text, x)]
         cloud_score = min(100, len(cloud_hits) * 25)
 
         experience_score = (
-            100 if seniority_hits else (70 if "senior" in text or "staff" in text else 50)
+            100
+            if seniority_hits
+            else (70 if re.search(r"\b(senior|staff)\b", self._fold(matched_text)) else 50)
         )
 
         ai_terms = {
@@ -97,14 +340,17 @@ class LayaInspiredClassifier:
             "langchain",
             "langgraph",
             "machine learning",
+            "ia",
+            "inteligência artificial",
+            "aprendizado de máquina",
         }
-        ai_hits = [x for x in ai_terms if x in text]
+        ai_hits = [x for x in ai_terms if self._skill_in(matched_text, x)]
         ai_score = min(100, len(ai_hits) * 25)
 
-        remote = bool(job.get("remote")) or "remote" in text or "remoto" in text
+        remote = bool(job.get("remote")) or "remote" in matched_text or "remoto" in matched_text
         remote_score = 100 if (remote or not self.profile.get("remote_required", False)) else 0
 
-        excluded = self.exclusion_hits(text)
+        excluded = self.exclusion_hits(matched_text)
 
         components = {
             "title": round(title_score, 2),

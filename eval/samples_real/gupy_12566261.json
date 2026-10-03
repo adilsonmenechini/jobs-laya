@@ -1,0 +1,13 @@
+{
+  "title": "Analista de SRE Sênior",
+  "company": "Ux Group",
+  "location": "Barueri - SP",
+  "remote": false,
+  "description": "Sobre o perfil: Buscamos uma pessoa Analista de SRE Sênior para o time de SRE, responsável pela confiabilidade, observabilidade e segurança operacional dos ambientes de produção, rodando em um cluster EKS compartilhado entre os produtos da empresa. Além da atuação clássica de SRE, essa posição assume parte da frente de segurança de infraestrutura, investigando vulnerabilidades, hardening de produção e resposta a incidentes de segurança. Responsabilidades e atribuições Atuar na confiabilidade, performance e disponibilidade dos ambientes produtivos no cluster EKS compartilhado;Investigar e responder a incidentes de produção, incluindo incidentes de segurança (vazamento de credenciais, exposição de dados, exploração de vulnerabilidades);Definir, acompanhar e evoluir SLIs, SLOs e error budgets",
+  "source": "gupy",
+  "source_id": "12566261",
+  "url": "https://uxgroup.gupy.io/job/eyJqb2JJZCI6MTI1NjYyNjEsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=?jobBoardSource=gupy_portal",
+  "posted_at": "2026-09-22T23:34:31.441Z",
+  "score": 89.1,
+  "match": "high"
+}
