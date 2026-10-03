@@ -120,7 +120,18 @@ def test_app_js_shows_low_match_indicator():
 
     assert "low-indicator" in js
     assert "low-match" in js
-    assert "gaps[0]" in js  # shows first gap as the reason
+
+
+def test_app_js_low_indicator_reads_the_gap_array_not_the_joined_html():
+    """`gaps` is joined HTML (`<li>…`), so `gaps[0]` renders as '<'.
+
+    Regression: the indicator used to show `⚠️ <` on every low card.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "gaps[0]" not in js
+    assert "gapList[0]" in js  # first gap taken from the raw array
 
 
 def test_style_css_has_low_match_indicator():

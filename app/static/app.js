@@ -81,16 +81,15 @@ function card(job) {
   const reasons = (job.reasons || [])
     .map((reason) => `<li>${esc(reason)}</li>`)
     .join("");
-  const gaps = (job.gaps || [])
-    .map((gap) => `<li>${esc(gap)}</li>`)
-    .join("");
+  const gapList = job.gaps || [];
+  const gaps = gapList.map((gap) => `<li>${esc(gap)}</li>`).join("");
   const score = Number(job.score);
   const scoreLabel = Number.isFinite(score) ? score.toFixed(1) : "—";
 
   // Low match: show prominent indicator with reason
   const isLow = job.match === "low";
-  const lowReason = isLow && gaps.length > 0
-    ? `<div class="low-indicator">⚠️ ${esc(gaps[0])}</div>`
+  const lowReason = isLow && gapList.length > 0
+    ? `<div class="low-indicator">⚠️ ${esc(gapList[0])}</div>`
     : "";
 
   return `
