@@ -1,6 +1,6 @@
 # Evaluation
 
-Measured with `python eval/evaluate.py --backend laya` — backend `laya` (mps, median: english 359 ms, multilingual 157 ms) — over the 18 labeled jobs in `eval/samples/` (7 high, 5 medium, 6 low; 12 English, 6 Portuguese).
+Measured with `python eval/evaluate.py --backend laya` — backend `laya` (cpu, median: english 843 ms, multilingual 343 ms) — over the 18 labeled jobs in `eval/samples/` (7 high, 5 medium, 6 low; 12 English, 6 Portuguese).
 This is a small, hand-made inbox: the numbers show how the parts work together, not how the classifier does on real postings. Label a few hundred of your own jobs and refit the thresholds before trusting a verdict.
 
 | Screener | Exact matches | high | medium | low |

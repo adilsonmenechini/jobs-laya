@@ -24,6 +24,8 @@ class LayaView:
     skill_confidence: float
     seniority: int
     seniority_probs: list[float] = field(default_factory=list)
+    exclusions: bool = False
+    exclusions_confidence: float = 0.0
 
 
 @dataclass
@@ -49,6 +51,7 @@ def to_result(raw: dict, latency_ms: float) -> EngineResult:
     remote = answers.get("remote") or {}
     fit = answers.get("skill_fit") or {}
     seniority = answers.get("seniority") or {}
+    exclusions = answers.get("exclusions") or {}
 
     raw_probs = seniority.get("probabilities") or {}
     ordered = sorted(raw_probs.items(), key=lambda pair: int(pair[0]))
@@ -63,6 +66,8 @@ def to_result(raw: dict, latency_ms: float) -> EngineResult:
         skill_confidence=float(fit.get("answer_confidence") or 0.0),
         seniority=int(seniority.get("score") or 0),
         seniority_probs=probs,
+        exclusions=bool(exclusions.get("noul") or False),
+        exclusions_confidence=float(exclusions.get("answer_confidence") or 0.0),
     )
     routing = raw.get("routing") or {}
     model = routing.get("model") or raw.get("model") or "laya"
@@ -173,6 +178,14 @@ class FakeEngine:
             else:
                 family = "other"
 
+            # Confidence varies by how clear the signal is
+            if family in ("devops", "site_reliability", "ai_ml"):
+                role_confidence = 0.85
+            elif family == "platform_cloud":
+                role_confidence = 0.70
+            else:
+                role_confidence = 0.50  # "other" is less certain
+
             if any(word in text for word in ("staff", "principal", "lead")):
                 seniority = 2
             elif "senior" in text:
@@ -185,15 +198,29 @@ class FakeEngine:
                 else ([0.1, 0.8, 0.1] if seniority == 1 else [0.05, 0.15, 0.8])
             )
 
+            exclusion_terms = (
+                "inglês fluente",
+                "ingles fluente",
+                "inglês avançado",
+                "ingles avancado",
+                "fluent english",
+                "advanced english",
+                "english fluency",
+            )
+            exclusions = any(term in text for term in exclusion_terms)
+            exclusions_confidence = 0.9 if exclusions else 0.1
+
             view = LayaView(
                 role_family=family,
-                role_confidence=0.85,
+                role_confidence=role_confidence,
                 remote=remote,
                 remote_confidence=max(remote, 1 - remote),
                 skill_fit=skill_fit,
                 skill_confidence=max(skill_fit, 1 - skill_fit),
                 seniority=seniority,
                 seniority_probs=weights,
+                exclusions=exclusions,
+                exclusions_confidence=exclusions_confidence,
             )
             results.append(EngineResult(view=view, model="fake", latency_ms=1.0))
         return results

@@ -44,16 +44,20 @@ class LayaJobClassifier:
         gaps = list(base["gaps"])
 
         # --- policy: Laya reads the language, code keeps the facts ---
+        # Remote: always use Laya's answer when profile requires it (binary signal)
         if self.profile.get("remote_required"):
             components["remote"] = round(view.remote * 100, 2)
 
+        # Title: 50/50 blend (Laya's role_family is useful but not fully trusted)
         if view.role_family in ROLE_FAMILIES_IN_PROFILE:
             components["title"] = round(max(components["title"], 75.0), 2)
         else:
             components["title"] = round(min(components["title"], 40.0), 2)
 
+        # Skills: 50/50 blend
         components["skills"] = round(0.5 * components["skills"] + 0.5 * view.skill_fit * 100, 2)
 
+        # Seniority: 50/50 blend
         seniority_value = SENIORITY_VALUE[min(2, max(0, view.seniority))]
         components["seniority"] = round(0.5 * components["seniority"] + 0.5 * seniority_value, 2)
 
@@ -80,6 +84,9 @@ class LayaJobClassifier:
         excluded_block = base["decision"].get("excluded") or {"value": False, "terms": []}
         if excluded_block.get("value"):
             gaps.append(f"Dealbreaker presente na vaga: {', '.join(excluded_block['terms'])}")
+
+        # Laya exclusion veto: disabled until the model is fine-tuned with the
+        # exclusions question. The current checkpoint answers it unreliably.
 
         probabilities = LayaInspiredClassifier._match_probabilities(score)
 
@@ -120,6 +127,10 @@ class LayaJobClassifier:
                     "seniority": {
                         "score": view.seniority,
                         "probabilities": view.seniority_probs,
+                    },
+                    "exclusions": {
+                        "noul": view.exclusions,
+                        "confidence": round(view.exclusions_confidence, 4),
                     },
                 },
             },
