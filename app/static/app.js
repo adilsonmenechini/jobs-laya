@@ -2,13 +2,24 @@
 
 const $ = (sel) => document.querySelector(sel);
 
+// Pydantic validation errors arrive as `detail: [{msg, loc}, …]`; a plain
+// handler would fall back to `res.statusText` ("Unprocessable Content").
+function detailMessage(body, res) {
+  const detail = body.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => (item && item.msg ? String(item.msg) : ""))
+      .filter(Boolean);
+    if (messages.length) return messages.join(" · ");
+  }
+  return res.statusText || `HTTP ${res.status}`;
+}
+
 async function getJSON(url, options) {
   const res = await fetch(url, options);
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const detail = typeof body.detail === "string" ? body.detail : res.statusText;
-    throw new Error(detail);
-  }
+  if (!res.ok) throw new Error(detailMessage(body, res));
   return body;
 }
 
@@ -21,6 +32,15 @@ function esc(value) {
 
 function safeUrl(url) {
   return /^https?:\/\//i.test(String(url || "")) ? url : "";
+}
+
+// posted_at arrives in three shapes: `YYYY-MM-DD` (GeekHunter detail, Indeed),
+// a full ISO timestamp (Gupy) and relative text (`Publicada há 5 dias`).
+// Only the ISO timestamp is normalized — anything else is shown as-is.
+function formatPostedAt(value) {
+  const raw = String(value ?? "").trim();
+  const isoDate = raw.match(/^\d{4}-\d{2}-\d{2}T/);
+  return isoDate ? raw.slice(0, 10) : raw;
 }
 
 async function loadHealth() {
@@ -104,7 +124,7 @@ function card(job) {
     </div>
     <div class="meta"><span class="source-chip" data-source="${esc(job.source || "linkedin")}">${esc(job.source || "linkedin")}</span> ${esc(job.company || "—")} · ${esc(job.location || "—")}${
     job.remote ? " · remoto" : ""
-  }${job.posted_at ? " · " + esc(job.posted_at) : ""}</div>
+  }${job.posted_at ? " · " + esc(formatPostedAt(job.posted_at)) : ""}</div>
     <div class="score-row">
       <div class="score-bar"><span style="width:${Math.max(0, Math.min(100, score || 0))}%"></span></div>
       <b>${scoreLabel}</b>
