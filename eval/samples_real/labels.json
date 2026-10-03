@@ -26,8 +26,8 @@
   {
     "file": "geekhunter_devops--.json",
     "lang": "pt",
-    "expected": "high",
-    "note": "SRE + Terraform + CI/CD + remoto"
+    "expected": "medium",
+    "note": "SRE + Terraform + CI/CD + remoto, mas pleno (mesmo criterio das outras 5 vagas pleno)"
   },
   {
     "file": "geekhunter_devops-s.json",
@@ -200,8 +200,8 @@
   {
     "file": "gupy_12640842.json",
     "lang": "pt",
-    "expected": "medium",
-    "note": "AI sênior, mas híbrido"
+    "expected": "high",
+    "note": "AI Engineer Senior — modalidade nao e criterio de match (14 outros high nao sao remotos)"
   },
   {
     "file": "gupy_12650308.json",
