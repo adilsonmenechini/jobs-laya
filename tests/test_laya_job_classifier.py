@@ -130,6 +130,27 @@ def test_exclusion_survives_model_merge():
     assert abs(sum(result["decision"]["choice"]["probabilities"].values()) - 1.0) < 1e-6
 
 
+def test_exclusion_messages_appear_exactly_once():
+    """The heuristic base already records the dealbreaker; `_combine` must not
+    repeat it.
+
+    Regression: the card showed "Exclusão do perfil atingida: …" twice under
+    Motivos and "Dealbreaker presente na vaga: …" twice under Gaps.
+    """
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    result = classifier.classify(ENGLISH_JOB)
+
+    dealbreaker_gaps = [gap for gap in result["gaps"] if gap.startswith("Dealbreaker")]
+    exclusion_reasons = [reason for reason in result["reasons"] if reason.startswith("Exclusão")]
+
+    assert len(dealbreaker_gaps) == 1, result["gaps"]
+    assert len(exclusion_reasons) == 1, result["reasons"]
+
+    # the veto itself is untouched by de-duplication
+    assert result["match"] == "low"
+    assert result["score"] <= 49.0
+
+
 def test_no_exclusion_keeps_model_verdict():
     classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
     result = classifier.classify(HIGH_JOB)
