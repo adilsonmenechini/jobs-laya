@@ -169,3 +169,137 @@ async def test_fake_engine_is_deterministic():
     assert first.view == second.view
     assert first.model == "fake"
     assert abs(sum(first.view.seniority_probs) - 1.0) < 1e-6
+
+
+# ===== Confidence gating tests (TDD for SPEC-202610022141) =====
+
+CONFIDENCE_PROFILE = {
+    "titles": ["SRE", "DevOps", "Platform Engineer"],
+    "seniority": ["Senior", "Staff"],
+    "remote_required": True,
+    "skills": ["AWS", "Kubernetes", "Terraform", "Prometheus", "Python"],
+    "exclusions": ["inglês fluente"],
+}
+
+
+class HighConfidenceEngine:
+    """FakeEngine that returns high confidence on all answers."""
+
+    device = "fake"
+    ready = True
+
+    def predict(self, states: list[dict[str, str]]) -> list[EngineResult]:
+        from app.classifier.engine import EngineResult, LayaView
+
+        results = []
+        for _ in states:
+            view = LayaView(
+                role_family="site_reliability",
+                role_confidence=0.95,
+                remote=0.95,
+                remote_confidence=0.95,
+                skill_fit=0.95,
+                skill_confidence=0.95,
+                seniority=1,
+                seniority_probs=[0.0, 0.9, 0.1],
+            )
+            results.append(EngineResult(view=view, model="fake", latency_ms=1.0))
+        return results
+
+
+class LowConfidenceEngine:
+    """FakeEngine that returns low confidence on role_family (should fall back to heuristic)."""
+
+    device = "fake"
+    ready = True
+
+    def predict(self, states: list[dict[str, str]]) -> list[EngineResult]:
+        from app.classifier.engine import EngineResult, LayaView
+
+        results = []
+        for _ in states:
+            view = LayaView(
+                role_family="other",
+                role_confidence=0.30,  # LOW confidence — should not trust Laya
+                remote=0.95,
+                remote_confidence=0.95,
+                skill_fit=0.95,
+                skill_confidence=0.95,
+                seniority=1,
+                seniority_probs=[0.0, 0.9, 0.1],
+            )
+            results.append(EngineResult(view=view, model="fake", latency_ms=1.0))
+        return results
+
+
+class ExclusionEngine:
+    """FakeEngine that returns exclusion=true with high confidence."""
+
+    device = "fake"
+    ready = True
+
+    def predict(self, states: list[dict[str, str]]) -> list[EngineResult]:
+        from app.classifier.engine import EngineResult, LayaView
+
+        results = []
+        for _ in states:
+            view = LayaView(
+                role_family="site_reliability",
+                role_confidence=0.95,
+                remote=0.95,
+                remote_confidence=0.95,
+                skill_fit=0.95,
+                skill_confidence=0.95,
+                seniority=1,
+                seniority_probs=[0.0, 0.9, 0.1],
+            )
+            # Monkey-patch exclusions into view for test
+            view.exclusions = True
+            view.exclusions_confidence = 0.95
+            results.append(EngineResult(view=view, model="fake", latency_ms=1.0))
+        return results
+
+
+def test_confidence_gating_high_role_confidence_uses_laya():
+    """High role_confidence → Laya influences title component strongly."""
+    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, HighConfidenceEngine())
+    result = classifier.classify(HIGH_JOB)
+
+    # With high confidence, Laya should push score up (role_family matches profile)
+    assert result["match"] == "high"
+    assert result["score"] >= 80
+    # Laya block should be present with real model info
+    assert result["decision"]["laya"]["backend"] == "laya"
+    assert result["decision"]["laya"]["answers"]["role_family"]["confidence"] == 0.95
+
+
+def test_confidence_gating_low_role_confidence_still_blends():
+    """Low role_confidence → policy still blends 50/50 (no gating).
+
+    The Laya real checkpoint has poorly calibrated confidences, so gating
+    on role_confidence would ignore Laya entirely. The 50/50 blend is the
+    safe default; exclusions are the only confidence-gated veto.
+    """
+    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, LowConfidenceEngine())
+    result = classifier.classify(HIGH_JOB)
+
+    # Heuristic sees "Senior SRE" + skills → high
+    # Laya says role_family=other with low confidence → still blended 50/50
+    # Result may be medium (Laya drags title down) — that's the known tradeoff
+    assert result["match"] in ("high", "medium")
+    # The decision should note low confidence was recorded
+    assert result["decision"]["laya"]["answers"]["role_family"]["confidence"] == 0.30
+
+
+def test_fake_engine_returns_exclusions_confidence():
+    """FakeEngine updated to include exclusions in its deterministic logic."""
+    engine = FakeEngine()
+    state = {
+        "title": "Senior SRE",
+        "description": "remote kubernetes english fluent required",
+        "workplace": "remote",
+    }
+    result = engine.predict([state])[0]
+    # FakeEngine should now detect exclusion keywords
+    assert hasattr(result.view, "exclusions")
+    assert hasattr(result.view, "exclusions_confidence")

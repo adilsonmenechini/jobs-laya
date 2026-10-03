@@ -48,6 +48,18 @@ QUESTIONS = {
             "false": "it asks for skills unrelated to infrastructure or reliability",
         },
     },
+    "exclusions": {
+        "type": "noul",
+        "instructions": (
+            "Does the job in `title` and `description` contain any dealbreaker "
+            "from the profile's exclusion list (e.g. 'inglês fluente', 'inglês "
+            "avançado', 'fluent english')?"
+        ),
+        "criteria": {
+            "true": "the job requires or mentions one of the excluded terms",
+            "false": "none of the excluded terms appear in the job",
+        },
+    },
 }
 
 
