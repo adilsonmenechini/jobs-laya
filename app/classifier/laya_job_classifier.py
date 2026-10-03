@@ -81,9 +81,9 @@ class LayaJobClassifier:
             gaps.append("Laya: senioridade abaixo do esperado")
 
         # Dealbreaker veto survives the model merge: exclusions are absolute.
+        # The heuristic base already recorded the dealbreaker in `reasons` and
+        # `gaps` — this block only re-applies the veto to the merged score.
         excluded_block = base["decision"].get("excluded") or {"value": False, "terms": []}
-        if excluded_block.get("value"):
-            gaps.append(f"Dealbreaker presente na vaga: {', '.join(excluded_block['terms'])}")
 
         # Laya exclusion veto: disabled until the model is fine-tuned with the
         # exclusions question. The current checkpoint answers it unreliably.
@@ -94,7 +94,6 @@ class LayaJobClassifier:
             score = min(score, 49.0)
             match = "low"
             probabilities = LayaInspiredClassifier._match_probabilities(score)
-            reasons.append(f"Exclusão do perfil atingida: {', '.join(excluded_block['terms'])}")
 
         decision = {
             "choice": {
