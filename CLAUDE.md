@@ -22,15 +22,11 @@ Always use the commands below. Do not discover them by trial and error. Fill in 
 
 | Action | Command |
 |---|---|
-| Lint | `make lint` → `uv run ruff check --fix .` |
-| Check formatting | `uv run ruff format --check .` |
-| Type check (if any) | none configured (no mypy/pyright) |
-| Tests | `make test` → `uv run pytest -q` |
-| **Full verification** (equivalent to CI) | `uv run ruff check . && uv run ruff format --check . && uv run pytest -q && uvx bandit==1.9.4 -r app -ll` |
-
-Sources: `Makefile`, `pyproject.toml`, `.github/workflows/ci.yml`. CI also runs
-`gitleaks dir . --redact` (needs the `gitleaks` binary); locally the pre-commit
-hook runs `gitleaks git --staged --redact`.
+| Lint | `<fill in>` |
+| Check formatting | `<fill in>` |
+| Type check (if any) | `<fill in>` |
+| Tests | `<fill in>` |
+| **Full verification** (equivalent to CI) | `<fill in>` |
 
 If this table is not filled in, find the commands by reading `Makefile`, `justfile`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, or `.github/workflows/`, fill in the table, and ask the user to confirm.
 
