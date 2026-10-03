@@ -158,25 +158,6 @@ class LayaInspiredClassifier:
         "mcp": "mcp",
     }
 
-    # PT-BR seniority keywords
-    PTBR_SENIORITY = {
-        "sênior": "senior",
-        "senior": "senior",
-        "pleno": "mid",
-        "júnior": "junior",
-        "junior": "junior",
-        "estágio": "intern",
-        "estagiário": "intern",
-        "lead": "lead",
-        "principal": "principal",
-        "staff": "staff",
-        "chief": "chief",
-        "coordenador": "lead",
-        "especialista": "specialist",
-        "analista": "analyst",
-        "arquiteto": "architect",
-    }
-
     def __init__(self, profile: dict):
         self.profile = profile
         self.skills = {self._norm(x) for x in profile.get("skills", [])}
@@ -223,9 +204,11 @@ class LayaInspiredClassifier:
         "mid": 2,
         "senior": 3,
         "sênior": 3,
+        "especialista": 3,
         "lead": 4,
         "líder": 4,
         "staff": 4,
+        "coordenador": 4,
         "principal": 5,
         "chief": 5,
         "head": 5,

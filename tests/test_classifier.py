@@ -276,3 +276,40 @@ def test_junior_still_below_profile_seniority():
         }
     )
     assert result["decision"]["score"]["components"]["seniority"] == 50.0
+
+
+def test_especialista_counts_as_profile_seniority():
+    """'Especialista' is the PT-BR equivalent of a senior specialist."""
+    classifier = LayaInspiredClassifier(PROFILE)
+    result = classifier.classify(
+        {
+            "title": "Especialista em SRE",
+            "location": "Brazil",
+            "remote": True,
+            "description": "Kubernetes Terraform AWS Prometheus Python.",
+        }
+    )
+    assert result["decision"]["score"]["components"]["seniority"] == 100.0
+
+
+def test_coordenador_counts_as_profile_seniority():
+    """'Coordenador' leads a team — above the profile's floor."""
+    classifier = LayaInspiredClassifier(PROFILE)
+    result = classifier.classify(
+        {
+            "title": "Coordenador SRE e DevOps",
+            "location": "Brazil",
+            "remote": True,
+            "description": "Kubernetes Terraform AWS Prometheus Python.",
+        }
+    )
+    assert result["decision"]["score"]["components"]["seniority"] == 100.0
+
+
+def test_no_unused_seniority_table():
+    """PTBR_SENIORITY was dead code; SENIORITY_LEVELS is the single source."""
+    from app.classifier.laya_classifier import LayaInspiredClassifier as C
+
+    assert not hasattr(C, "PTBR_SENIORITY")
+    assert "especialista" in C.SENIORITY_LEVELS
+    assert "coordenador" in C.SENIORITY_LEVELS
