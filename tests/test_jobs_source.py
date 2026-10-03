@@ -206,3 +206,29 @@ def test_jobs_endpoint_accepts_the_new_sources():
             response = client.get("/jobs", params={"source": source})
             assert response.status_code == 200, source
             assert response.json()["total"] == 0
+
+
+def test_jobs_endpoint_filters_by_location(db):
+    """Location filter matches city or country (case-insensitive)."""
+    classifier = FakeClassifier()
+    upsert_job(db, make_item("linkedin", "1", location="São Paulo - SP"), classifier)
+    upsert_job(db, make_item("linkedin", "2", location="Rio de Janeiro - RJ"), classifier)
+    upsert_job(db, make_item("linkedin", "3", location="Brazil"), classifier)
+
+    with TestClient(app) as client:
+        response = client.get("/jobs", params={"location": "são paulo"})
+
+    body = response.json()
+    assert body["total"] == 1
+    assert body["items"][0]["location"] == "São Paulo - SP"
+
+
+def test_jobs_endpoint_location_filter_case_insensitive(db):
+    """Location filter is case-insensitive."""
+    classifier = FakeClassifier()
+    upsert_job(db, make_item("linkedin", "1", location="Brazil"), classifier)
+
+    with TestClient(app) as client:
+        response = client.get("/jobs", params={"location": "brazil"})
+
+    assert response.json()["total"] == 1

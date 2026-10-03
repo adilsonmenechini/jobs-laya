@@ -111,3 +111,40 @@ def test_style_css_has_source_chip():
         css = client.get("/static/style.css").text
 
     assert ".source-chip" in css
+
+
+def test_app_js_shows_low_match_indicator():
+    """Low match jobs should show a prominent indicator with the reason."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "low-indicator" in js
+    assert "low-match" in js
+    assert "gaps[0]" in js  # shows first gap as the reason
+
+
+def test_style_css_has_low_match_indicator():
+    """Low match indicator should be styled prominently."""
+    with TestClient(app) as client:
+        css = client.get("/static/style.css").text
+
+    assert ".low-indicator" in css
+    assert ".card.low-match" in css
+    assert "border-color: var(--low)" in css
+
+
+def test_filters_have_location_input():
+    """Dashboard has a location filter input."""
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    assert 'id="f-location"' in html
+
+
+def test_app_js_sends_location_filter():
+    """Frontend sends location filter to API."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "f-location" in js
+    assert 'params.set("location"' in js

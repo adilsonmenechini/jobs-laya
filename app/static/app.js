@@ -49,11 +49,13 @@ function filterQuery() {
   const source = $("#f-source").value;
   const match = $("#f-match").value;
   const remote = $("#f-remote").value;
+  const location = $("#f-location").value.trim();
   const score = $("#f-score").value;
   const query = $("#f-query").value.trim();
   if (source) params.set("source", source);
   if (match) params.set("match", match);
   if (remote) params.set("remote", remote);
+  if (location) params.set("location", location);
   if (score !== "") params.set("min_score", score);
   if (query) params.set("query", query);
   return params.toString();
@@ -85,8 +87,14 @@ function card(job) {
   const score = Number(job.score);
   const scoreLabel = Number.isFinite(score) ? score.toFixed(1) : "—";
 
+  // Low match: show prominent indicator with reason
+  const isLow = job.match === "low";
+  const lowReason = isLow && gaps.length > 0
+    ? `<div class="low-indicator">⚠️ ${esc(gaps[0])}</div>`
+    : "";
+
   return `
-  <article class="card">
+  <article class="card${isLow ? " low-match" : ""}">
     <div class="card-head">
       <h2>${
         url
@@ -103,6 +111,7 @@ function card(job) {
       <b>${scoreLabel}</b>
     </div>
     ${probabilities ? probabilityRow(probabilities) : ""}
+    ${lowReason}
     <details>
       <summary>Detalhes</summary>
       ${reasons ? `<h3>Motivos</h3><ul class="reasons">${reasons}</ul>` : ""}
@@ -178,6 +187,7 @@ $("#f-apply").addEventListener("click", loadJobs);
 $("#f-source").addEventListener("change", loadJobs);
 $("#f-match").addEventListener("change", loadJobs);
 $("#f-remote").addEventListener("change", loadJobs);
+$("#f-location").addEventListener("change", loadJobs);
 $("#f-score").addEventListener("change", loadJobs);
 $("#f-query").addEventListener("keydown", (event) => {
   if (event.key === "Enter") loadJobs();

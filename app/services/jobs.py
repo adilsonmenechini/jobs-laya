@@ -162,6 +162,7 @@ def list_jobs(
     db: Session,
     match: str | None = None,
     remote: bool | None = None,
+    location: str | None = None,
     query: str | None = None,
     min_score: float | None = None,
     source: str | None = None,
@@ -176,6 +177,9 @@ def list_jobs(
         filters.append(Job.match == match)
     if remote is not None:
         filters.append(Job.remote == remote)
+    if location:
+        loc = f"%{location.lower()}%"
+        filters.append(Job.location.ilike(loc))
     if min_score is not None:
         filters.append(Job.score >= min_score)
     if source:
