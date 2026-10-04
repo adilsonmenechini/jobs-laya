@@ -37,8 +37,63 @@ class ExplodingEngine:
         raise RuntimeError("checkpoint corrupto")
 
 
+class LayaLikeEngine:
+    """Stand-in for the real LayaEngine: a model name, a real latency."""
+
+    device = "cpu"
+    ready = True
+
+    def predict(self, states):
+        from app.classifier.engine import EngineResult, LayaView
+
+        view = LayaView(
+            role_family="site_reliability",
+            role_confidence=0.9,
+            remote=0.9,
+            remote_confidence=0.9,
+            skill_fit=0.9,
+            skill_confidence=0.9,
+            seniority=2,
+            seniority_probs=[0.0, 0.1, 0.9],
+        )
+        return [EngineResult(view=view, model="multilingual", latency_ms=248.03) for _ in states]
+
+
+def test_fake_engine_provenance_is_not_laya():
+    """`decision.laya.backend` must name the engine that really classified.
+
+    Regression: it was hardcoded to `"laya"`, so a `CLASSIFIER_BACKEND=fake`
+    sync still persisted `backend="laya"` alongside `model="fake"`.
+    """
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
+    laya = classifier.classify(HIGH_JOB)["decision"]["laya"]
+
+    assert laya["backend"] == "fake"
+    assert laya["model"] == "fake"
+    assert laya["latency_ms"] == 1.0
+
+
+def test_laya_engine_provenance_stays_laya():
+    classifier = LayaJobClassifier(PROFILE, LayaLikeEngine(), backend="laya")
+    laya = classifier.classify(HIGH_JOB)["decision"]["laya"]
+
+    assert laya["backend"] == "laya"
+    assert laya["model"] == "multilingual"
+
+
+def test_build_classifier_passes_the_configured_backend(monkeypatch):
+    """Wiring: the factory forwards CLASSIFIER_BACKEND, not a constant."""
+    from app.classifier import build_classifier
+
+    monkeypatch.setattr("app.classifier.settings.classifier_backend", "fake")
+    classifier = build_classifier(PROFILE)
+    laya = classifier.classify(HIGH_JOB)["decision"]["laya"]
+
+    assert laya["backend"] == "fake"
+
+
 def test_high_match_keeps_contract():
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(HIGH_JOB)
 
     assert result["match"] == "high"
@@ -46,14 +101,14 @@ def test_high_match_keeps_contract():
     assert result["decision"]["choice"]["value"] == "high"
     assert result["decision"]["score"]["value"] == result["score"]
     assert result["decision"]["score"]["components"]
-    # real Laya block present with the fake's identity
-    assert result["decision"]["laya"]["backend"] == "laya"
+    # real Laya block carries the fake's identity — provenance included
+    assert result["decision"]["laya"]["backend"] == "fake"
     assert result["decision"]["laya"]["model"] == "fake"
     assert result["decision"]["laya"]["answers"]["role_family"]["choice"] == "site_reliability"
 
 
 def test_low_match_accumulates_gaps():
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(LOW_JOB)
 
     assert result["match"] == "low"
@@ -63,7 +118,7 @@ def test_low_match_accumulates_gaps():
 
 
 def test_noul_reports_remote_probability():
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
 
     remote = classifier.classify(HIGH_JOB)["decision"]["noul"]
     onsite = classifier.classify(LOW_JOB)["decision"]["noul"]
@@ -75,7 +130,7 @@ def test_noul_reports_remote_probability():
 
 
 def test_laya_reasons_are_appended_to_heuristic_reasons():
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(HIGH_JOB)
 
     assert any(reason.startswith("Cargo compatível") for reason in result["reasons"])
@@ -83,14 +138,14 @@ def test_laya_reasons_are_appended_to_heuristic_reasons():
 
 
 def test_choice_probabilities_still_sum_to_one():
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
     probs = classifier.classify(HIGH_JOB)["decision"]["choice"]["probabilities"]
 
     assert abs(sum(probs.values()) - 1.0) < 1e-6
 
 
 def test_engine_failure_falls_back_to_heuristic_contract():
-    classifier = LayaJobClassifier(PROFILE, ExplodingEngine())
+    classifier = LayaJobClassifier(PROFILE, ExplodingEngine(), backend="laya")
     result = classifier.classify(HIGH_JOB)
 
     # heuristic verdict survives an engine crash
@@ -116,7 +171,7 @@ ENGLISH_JOB = {
 
 def test_exclusion_survives_model_merge():
     """Even with a high FakeEngine verdict, a dealbreaker forces low."""
-    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(ENGLISH_JOB)
 
     assert result["match"] == "low"
@@ -137,7 +192,7 @@ def test_exclusion_messages_appear_exactly_once():
     Regression: the card showed "Exclusão do perfil atingida: …" twice under
     Motivos and "Dealbreaker presente na vaga: …" twice under Gaps.
     """
-    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(ENGLISH_JOB)
 
     dealbreaker_gaps = [gap for gap in result["gaps"] if gap.startswith("Dealbreaker")]
@@ -152,7 +207,7 @@ def test_exclusion_messages_appear_exactly_once():
 
 
 def test_no_exclusion_keeps_model_verdict():
-    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(EXCLUSION_PROFILE, FakeEngine(), backend="fake")
     result = classifier.classify(HIGH_JOB)
 
     assert result["match"] == "high"
@@ -171,7 +226,7 @@ def test_seniority_score_maps_to_profile_expectation():
         seniority_probs=[0.0, 0.1, 0.9],
     )
     result = EngineResult(view=view, model="fake", latency_ms=1.0)
-    classifier = LayaJobClassifier(PROFILE, FakeEngine())
+    classifier = LayaJobClassifier(PROFILE, FakeEngine(), backend="fake")
     combined = classifier._combine(classifier.signals.classify(HIGH_JOB), result)
 
     # staff-level answer should not lower the heuristic's seniority component
@@ -283,7 +338,7 @@ class ExclusionEngine:
 
 def test_confidence_gating_high_role_confidence_uses_laya():
     """High role_confidence → Laya influences title component strongly."""
-    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, HighConfidenceEngine())
+    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, HighConfidenceEngine(), backend="laya")
     result = classifier.classify(HIGH_JOB)
 
     # With high confidence, Laya should push score up (role_family matches profile)
@@ -301,7 +356,7 @@ def test_confidence_gating_low_role_confidence_still_blends():
     on role_confidence would ignore Laya entirely. The 50/50 blend is the
     safe default; exclusions are the only confidence-gated veto.
     """
-    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, LowConfidenceEngine())
+    classifier = LayaJobClassifier(CONFIDENCE_PROFILE, LowConfidenceEngine(), backend="laya")
     result = classifier.classify(HIGH_JOB)
 
     # Heuristic sees "Senior SRE" + skills → high

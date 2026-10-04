@@ -22,11 +22,11 @@ Always use the commands below. Do not discover them by trial and error. Fill in 
 
 | Action | Command |
 |---|---|
-| Lint | `<fill in>` |
-| Check formatting | `<fill in>` |
-| Type check (if any) | `<fill in>` |
-| Tests | `<fill in>` |
-| **Full verification** (equivalent to CI) | `<fill in>` |
+| Lint | `make lint` (`uv run ruff check --fix .` + `uv run ruff format .`) |
+| Check formatting | `uv run ruff format --check .` |
+| Type check (if any) | none — the project has no type checker configured |
+| Tests | `make test` (`uv run pytest -q`) |
+| **Full verification** (equivalent to CI) | `uv run pre-commit run --all-files` — runs ruff check, ruff format, bandit, gitleaks and pytest; CI runs the same three jobs (lint, security, test) |
 
 If this table is not filled in, find the commands by reading `Makefile`, `justfile`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, or `.github/workflows/`, fill in the table, and ask the user to confirm.
 
