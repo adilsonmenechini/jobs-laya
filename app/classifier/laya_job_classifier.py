@@ -18,9 +18,12 @@ ROLE_FAMILIES_IN_PROFILE = {"site_reliability", "devops", "platform_cloud", "ai_
 
 
 class LayaJobClassifier:
-    def __init__(self, profile: dict, engine: Engine) -> None:
+    def __init__(self, profile: dict, engine: Engine, backend: str) -> None:
         self.profile = profile
         self.engine = engine
+        # Provenance: which backend produced this decision. Required — a silent
+        # default of "laya" is exactly the lie this parameter exists to prevent.
+        self.backend = backend
         self.signals = LayaInspiredClassifier(profile)
 
     def classify(self, job: dict) -> dict:
@@ -113,7 +116,7 @@ class LayaJobClassifier:
             },
             "excluded": excluded_block,
             "laya": {
-                "backend": "laya",
+                "backend": self.backend,
                 "model": result.model,
                 "latency_ms": round(result.latency_ms, 2),
                 "answers": {

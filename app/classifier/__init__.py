@@ -17,6 +17,6 @@ def build_classifier(profile: dict):
         return LayaInspiredClassifier(profile)
     try:
         engine = FakeEngine() if backend == "fake" else get_engine()
-        return LayaJobClassifier(profile, engine)
+        return LayaJobClassifier(profile, engine, backend)
     except Exception:
         return LayaInspiredClassifier(profile)
