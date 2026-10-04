@@ -55,8 +55,12 @@ async function loadHealth() {
         : "Laya · carregando modelo…";
     }
     const sources = (health.sources || []).join(", ");
-    badge.textContent = sources ? `${label} · ${sources}` : label;
-    badge.title = sources ? `fontes: ${sources}` : "";
+    const state = `backend ativa: ${label}`;
+    badge.textContent = sources ? `${state} · ${sources}` : state;
+    badge.title =
+      "Configuração do processo em execução. O rodapé de cada card mostra a " +
+      "backend que classificou aquele job — podem diferir." +
+      (sources ? ` Fontes: ${sources}.` : "");
     badge.className = "badge " + (classifier.backend === "heuristic" ? "warn" : "ok");
   } catch (err) {
     badge.textContent = "API offline";
@@ -137,7 +141,7 @@ function card(job) {
       ${gaps ? `<h3>Gaps</h3><ul class="gaps">${gaps}</ul>` : ""}
       ${
         laya
-          ? `<p class="laya">Laya · modelo ${esc(laya.model)} · ${esc(laya.latency_ms)} ms · backend ${esc(laya.backend)}</p>`
+          ? `<p class="laya">backend ${esc(laya.backend)} · modelo ${esc(laya.model)} · ${esc(laya.latency_ms)} ms</p>`
           : ""
       }
     </details>

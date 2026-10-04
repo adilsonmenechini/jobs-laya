@@ -235,3 +235,32 @@ def test_app_js_sends_location_filter():
 
     assert "f-location" in js
     assert 'params.set("location"' in js
+
+
+def test_app_js_footer_opens_with_the_real_backend():
+    """The card footer hard-coded `Laya ·` as its prefix.
+
+    A sync under `CLASSIFIER_BACKEND=fake` therefore rendered
+    `Laya · modelo fake · 1 ms · backend laya` — the family name asserted
+    itself over the provenance it was supposed to report.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "Laya · modelo" not in js
+    assert "backend ${esc(laya.backend)} · modelo ${esc(laya.model)}" in js
+
+
+def test_app_js_labels_the_badge_as_the_active_backend():
+    """The badge reports the running config, the cards report provenance.
+
+    Unlabelled, the two read as a contradiction: a process pointed at `fake`
+    sitting above cards classified by `laya`. The badge must say which of the
+    two it is.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "backend ativa: " in js
+    # the tooltip spells out where the card's own backend comes from
+    assert "classificou" in js
