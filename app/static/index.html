@@ -5,6 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Job Classifier</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* Abas de Configurações — apenas os tokens do design system existente.
+       style.css não é alterado nesta iteração; o estado ativo da aba é
+       controlado por aria-selected (mutado pelo hash router em app.js). */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 16px 22px 0;
+    }
+    .tab-btn {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-weight: 500;
+    }
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .tab-btn[aria-selected="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #04121f;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -18,9 +44,8 @@
   <div class="layout">
     <nav class="sidebar" aria-label="navegação principal">
       <a href="#/vagas" class="sidebar-link">Vagas</a>
-      <a href="#/perfil" class="sidebar-link">Perfil</a>
-      <a href="#/dados" class="sidebar-link">Dados</a>
       <a href="#/kanban" class="sidebar-link">Kanban</a>
+      <a href="#/configuracoes" class="sidebar-link">Configurações</a>
     </nav>
 
     <main>
@@ -83,59 +108,70 @@
         <div id="jobs" aria-live="polite"></div>
       </section>
 
-      <section id="page-perfil" hidden>
-        <div class="panel">
-          <h2>Perfil</h2>
-          <form id="profile-form">
-            <div class="form-field">
-              <label for="p-name">Nome</label>
-              <input id="p-name" type="text" aria-label="nome">
-            </div>
-            <div class="form-field">
-              <label for="p-titles">Títulos (um por linha)</label>
-              <textarea id="p-titles" rows="3" aria-label="títulos"></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-seniority">Senioridade (um por linha)</label>
-              <textarea id="p-seniority" rows="2" aria-label="senioridade"></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-locations">Localizações (um por linha)</label>
-              <textarea id="p-locations" rows="2" aria-label="localizações"></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-skills">Skills (um por linha)</label>
-              <textarea id="p-skills" rows="4" aria-label="skills"></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-focus">Foco (um por linha)</label>
-              <textarea id="p-focus" rows="2" aria-label="foco"></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-exclusions">Exclusões (um por linha)</label>
-              <textarea id="p-exclusions" rows="3" aria-label="exclusões"></textarea>
-            </div>
-            <div class="form-field form-field-inline">
-              <label for="p-remote">Remoto obrigatório</label>
-              <input id="p-remote" type="checkbox" aria-label="remoto obrigatório">
-            </div>
-            <button type="submit">Salvar perfil</button>
-            <span id="profile-status" class="form-status" role="status" aria-live="polite"></span>
-          </form>
+      <section id="page-configuracoes" hidden>
+        <div class="tabs" role="tablist" aria-label="seções de configuração">
+          <button type="button" class="tab-btn" id="tab-btn-perfil"
+                  role="tab" data-tab="perfil" aria-selected="true"
+                  aria-controls="tab-perfil">Perfil</button>
+          <button type="button" class="tab-btn" id="tab-btn-dados"
+                  role="tab" data-tab="dados" aria-selected="false"
+                  aria-controls="tab-dados">Dados</button>
         </div>
-      </section>
 
-      <section id="page-dados" hidden>
-        <div class="panel">
-          <h2>Dados</h2>
-          <div class="data-summary">
-            <div class="data-total">
-              <span class="data-label">Total de vagas</span>
-              <span id="data-total" class="data-value">—</span>
-            </div>
-            <div id="source-counts" class="source-counts"></div>
+        <div id="tab-perfil" role="tabpanel" aria-labelledby="tab-btn-perfil">
+          <div class="panel">
+            <h2>Perfil</h2>
+            <form id="profile-form">
+              <div class="form-field">
+                <label for="p-name">Nome</label>
+                <input id="p-name" type="text" aria-label="nome">
+              </div>
+              <div class="form-field">
+                <label for="p-titles">Títulos (um por linha)</label>
+                <textarea id="p-titles" rows="3" aria-label="títulos"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="p-seniority">Senioridade (um por linha)</label>
+                <textarea id="p-seniority" rows="2" aria-label="senioridade"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="p-locations">Localizações (um por linha)</label>
+                <textarea id="p-locations" rows="2" aria-label="localizações"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="p-skills">Skills (um por linha)</label>
+                <textarea id="p-skills" rows="4" aria-label="skills"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="p-focus">Foco (um por linha)</label>
+                <textarea id="p-focus" rows="2" aria-label="foco"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="p-exclusions">Exclusões (um por linha)</label>
+                <textarea id="p-exclusions" rows="3" aria-label="exclusões"></textarea>
+              </div>
+              <div class="form-field form-field-inline">
+                <label for="p-remote">Remoto obrigatório</label>
+                <input id="p-remote" type="checkbox" aria-label="remoto obrigatório">
+              </div>
+              <button type="submit">Salvar perfil</button>
+              <span id="profile-status" class="form-status" role="status" aria-live="polite"></span>
+            </form>
           </div>
-          <button type="button" id="clean-btn" class="danger">Limpar vagas</button>
+        </div>
+
+        <div id="tab-dados" role="tabpanel" aria-labelledby="tab-btn-dados" hidden>
+          <div class="panel">
+            <h2>Dados</h2>
+            <div class="data-summary">
+              <div class="data-total">
+                <span class="data-label">Total de vagas</span>
+                <span id="data-total" class="data-value">—</span>
+              </div>
+              <div id="source-counts" class="source-counts"></div>
+            </div>
+            <button type="button" id="clean-btn" class="danger">Limpar vagas</button>
+          </div>
         </div>
       </section>
 

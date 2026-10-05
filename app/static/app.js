@@ -208,11 +208,40 @@ async function runSync(event) {
 
 // ── Hash router ──────────────────────────────────────────────────────────────
 
-const PAGES = ["vagas", "perfil", "dados", "kanban"];
+// Páginas de primeiro nível. Perfil e Dados deixaram de ser páginas: são abas
+// dentro de Configurações (`#/configuracoes/<tab>`). Rotas antigas (`#/perfil`,
+// `#/dados`) e hashes desconhecidos caem em "vagas" (CA10).
+const PAGES = ["vagas", "kanban", "configuracoes"];
+const TABS = ["perfil", "dados"];
+
+// Caminho cru do hash sem "#/" — usado para o deep-link da tab e para marcar
+// a sidebar pelo prefixo da rota ("#/configuracoes/perfil" também é
+// Configurações).
+function hashPath() {
+  return window.location.hash.replace(/^#\/?/, "");
+}
 
 function currentRoute() {
-  const hash = window.location.hash.replace(/^#\/?/, "");
-  return PAGES.includes(hash) ? hash : "vagas";
+  // "configuracoes/dados" → "configuracoes"; sub-rotas colapsam na página.
+  const route = hashPath().split("/")[0];
+  return PAGES.includes(route) ? route : "vagas";
+}
+
+// Segmento após "#/configuracoes/"; default "perfil" (hash sem sub-rota,
+// barra final ou tab desconhecida).
+function currentTab() {
+  const match = hashPath().match(/^configuracoes\/([^/?#]*)/);
+  return TABS.includes(match ? match[1] : "") ? match[1] : "perfil";
+}
+
+// Aba visível dentro de #page-configuracoes (painéis + aria-selected).
+function showTab(tab) {
+  for (const name of TABS) {
+    const panel = $(`#tab-${name}`);
+    if (panel) panel.hidden = name !== tab;
+    const btn = document.querySelector(`.tab-btn[data-tab="${name}"]`);
+    if (btn) btn.setAttribute("aria-selected", String(name === tab));
+  }
 }
 
 function showPage(route) {
@@ -220,20 +249,38 @@ function showPage(route) {
     const el = $(`#page-${page}`);
     if (el) el.hidden = page !== route;
   }
+  const path = hashPath();
   document.querySelectorAll(".sidebar-link").forEach((link) => {
-    const isActive = link.getAttribute("href") === `#/${route}`;
+    const target = (link.getAttribute("href") || "").replace(/^#\/?/, "");
+    // Prefixo, não igualdade exata: "#/configuracoes/perfil" e
+    // "#/configuracoes/dados" também marcam Configurações. Hash vazio,
+    // desconhecido ou rota antiga já colapsou em "vagas".
+    const isActive =
+      target === route &&
+      (route === "vagas" || path === target || path.startsWith(`${target}/`));
     link.classList.toggle("active", isActive);
     if (isActive) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
+  if (route === "configuracoes") showTab(currentTab());
 }
 
 function navigate() {
   const route = currentRoute();
-  showPage(route);
-  if (route === "perfil") loadProfile();
-  if (route === "dados") loadDataCounts();
+  showPage(route); // showPage já aplica a tab visível em Configurações
+  if (route === "configuracoes") {
+    if (currentTab() === "dados") loadDataCounts();
+    else loadProfile();
+  }
   if (route === "kanban") loadKanban();
+}
+
+// Troca de tab: só mexe no hash — quem recarrega é o hashchange → navigate().
+// Tab já visível com hash já alvo: retorna sem nada (sem loop, sem re-fetch).
+function selectTab(tab) {
+  if (!TABS.includes(tab)) return;
+  if (currentRoute() === "configuracoes" && currentTab() === tab) return;
+  window.location.hash = `#/configuracoes/${tab}`;
 }
 
 // ── Profile page ─────────────────────────────────────────────────────────────
@@ -459,6 +506,16 @@ $("#jobs").addEventListener("click", (event) => {
   const btn = event.target.closest(".add-btn");
   if (btn) addToKanban(btn);
 });
+
+// Abas de Configurações: delegação em #page-configuracoes — um listener
+// único registrado uma vez; nenhum render ou hashchange o duplica.
+const configPage = $("#page-configuracoes");
+if (configPage) {
+  configPage.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-tab]");
+    if (btn) selectTab(btn.dataset.tab);
+  });
+}
 
 // Kanban: move buttons + status select (delegated from kanban page)
 $("#page-kanban").addEventListener("click", (event) => {
