@@ -155,6 +155,11 @@ async def sync_jobs(
             # One dead source must not erase what the others delivered:
             # results stay persisted and the failure is reported per source.
             errors[provider.name] = str(exc)
+        except Exception as exc:
+            # Any other failure (parsing, DB, classifier) must also degrade
+            # only this source. CancelledError is BaseException, so deadline
+            # cancellation still propagates.
+            errors[provider.name] = f"unexpected error: {exc}"
     return SyncOutcome(count=count, errors=errors)
 
 
