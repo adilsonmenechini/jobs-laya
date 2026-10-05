@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.classifier import build_classifier
 from app.config import settings
 from app.models import Job
+from app.services import curriculum
 from app.services.kanban import job_without_kanban_card
 from app.sources import JobSource, SourceUnavailableError, build_sources
 
@@ -65,6 +66,11 @@ def upsert_job(db: Session, normalized: dict, classifier: Classifier) -> Job:
     existing.decision = result["decision"]
     existing.reasons = result["reasons"]
     existing.gaps = result["gaps"]
+    # SPEC 202610051432 (R8/CA11): which curriculum version produced this
+    # classification — stamped next to the result, None when the file is
+    # absent. Classification only happens on sync, so editing the curriculum
+    # later never rewrites this row (R9/CA12); no automatic reclassification.
+    existing.curriculum_version = curriculum.version()
     db.commit()
     db.refresh(existing)
     return existing

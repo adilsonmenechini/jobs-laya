@@ -100,8 +100,28 @@ def migrate_legacy_jobs(db_engine: Engine) -> bool:
     return True
 
 
+def migrate_curriculum_version(db_engine: Engine) -> bool:
+    """Add `jobs.curriculum_version` to an existing `jobs` table.
+
+    `create_all` only creates missing tables — an existing `jobs` never gains
+    the column. Same explicit `ALTER TABLE` pattern as `migrate_legacy_jobs`.
+    Returns True when a migration ran.
+    """
+    inspector = inspect(db_engine)
+    if "jobs" not in inspector.get_table_names():
+        return False  # create_all will build the table with the column already
+    columns = {column["name"] for column in inspector.get_columns("jobs")}
+    if "curriculum_version" in columns:
+        return False
+
+    with db_engine.begin() as conn:
+        conn.exec_driver_sql("ALTER TABLE jobs ADD COLUMN curriculum_version VARCHAR(64)")
+    return True
+
+
 def init_db() -> None:
     from app.models import Job, KanbanJob  # noqa: F401
 
     migrate_legacy_jobs(engine)
+    migrate_curriculum_version(engine)
     Base.metadata.create_all(bind=engine)
