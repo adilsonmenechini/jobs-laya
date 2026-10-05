@@ -101,7 +101,7 @@ def migrate_legacy_jobs(db_engine: Engine) -> bool:
 
 
 def init_db() -> None:
-    from app.models import Job  # noqa: F401
+    from app.models import Job, KanbanJob  # noqa: F401
 
     migrate_legacy_jobs(engine)
     Base.metadata.create_all(bind=engine)

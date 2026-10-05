@@ -294,3 +294,95 @@ def test_dashboard_profile_form_and_clean_button_exist():
     assert 'id="clean-btn"' in html
     # destructive action must be guarded by a confirmation
     assert "confirm(" in js
+
+
+def test_dashboard_has_kanban_page():
+    """Sidebar nav + kanban page container with three columns."""
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    for fragment in (
+        "#/kanban",
+        'id="page-kanban"',
+        'id="kanban-CHECK"',
+        'id="kanban-RUNNING"',
+        'id="kanban-DONE"',
+    ):
+        assert fragment in html, fragment
+
+
+def test_app_js_add_button_posts_to_kanban():
+    """+ Add button in card posts to /kanban and removes card without reload."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "POST /kanban" in js or '"/kanban"' in js
+    assert "job.source" in js
+    assert "job.source_id" in js
+    assert "✓ Adicionada ao CHECK" in js
+
+
+def test_app_js_moves_kanban_card():
+    """Kanban card can be moved via PATCH with status."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "PATCH /kanban/" in js or "`/kanban/${" in js
+    assert "CHECK" in js
+    assert "RUNNING" in js
+    assert "DONE" in js
+
+
+def test_app_js_kanban_card_renders_fields():
+    """Kanban card shows title, company, location, url, created_at."""
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert "item.title" in js
+    assert "item.company" in js
+    assert "item.location" in js
+    assert "item.url" in js
+    assert "item.created_at" in js
+
+
+def test_style_css_has_kanban_columns():
+    """Kanban columns are styled."""
+    with TestClient(app) as client:
+        css = client.get("/static/style.css").text
+
+    assert ".kanban-board" in css
+    assert ".kanban-column" in css
+    assert ".kanban-card" in css
+
+
+def test_add_button_reads_dataset_in_camel_case():
+    """`data-source-id` vira `dataset.sourceId` — nunca `dataset.source_id`.
+
+    Regression: o `+ Add` mandava `source_id: undefined` e a API respondia
+    422 "Field required". Só o browser real expõe o nome camelCase; ler a
+    fonte pelo atributo escrito no HTML é o que garante a correspondência.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+        html = client.get("/").text
+
+    # o atributo é escrito com hífen…
+    assert 'data-source-id="' in js
+    # …e lido como camelCase, que é o que o DOM realmente expõe
+    assert "button.dataset.sourceId" in js
+    assert "button.dataset.source_id" not in js
+    assert html.count('href="#/kanban"') == 1
+
+
+def test_add_to_kanban_decrements_the_job_counter():
+    """Remover o card da lista tem que mexer no contador junto.
+
+    Regression: o `+ Add` tirava o card do DOM e o contador continuava
+    mostrando o total antigo — a tela dizia 3 vagas listando 2.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert '$("#total")' in js  # o mesmo contador que loadJobs atualiza
+    assert "totalEl.textContent" in js
+    assert "shown - 1" in js

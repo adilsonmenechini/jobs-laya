@@ -117,7 +117,7 @@ function card(job) {
     : "";
 
   return `
-  <article class="card${isLow ? " low-match" : ""}">
+  <article class="card${isLow ? " low-match" : ""}" data-source="${esc(job.source || "linkedin")}" data-source-id="${esc(job.source_id || "")}">
     <div class="card-head">
       <h2>${
         url
@@ -135,6 +135,7 @@ function card(job) {
     </div>
     ${probabilities ? probabilityRow(probabilities) : ""}
     ${lowReason}
+    <button type="button" class="add-btn" data-source="${esc(job.source || "linkedin")}" data-source-id="${esc(job.source_id || "")}">+ Add</button>
     <details>
       <summary>Detalhes</summary>
       ${reasons ? `<h3>Motivos</h3><ul class="reasons">${reasons}</ul>` : ""}
@@ -207,7 +208,7 @@ async function runSync(event) {
 
 // ── Hash router ──────────────────────────────────────────────────────────────
 
-const PAGES = ["vagas", "perfil", "dados"];
+const PAGES = ["vagas", "perfil", "dados", "kanban"];
 
 function currentRoute() {
   const hash = window.location.hash.replace(/^#\/?/, "");
@@ -232,6 +233,7 @@ function navigate() {
   showPage(route);
   if (route === "perfil") loadProfile();
   if (route === "dados") loadDataCounts();
+  if (route === "kanban") loadKanban();
 }
 
 // ── Profile page ─────────────────────────────────────────────────────────────
@@ -337,6 +339,105 @@ async function cleanJobs() {
   }
 }
 
+// ── Kanban page ──────────────────────────────────────────────────────────────
+
+const KANBAN_STATUSES = ["CHECK", "RUNNING", "DONE"];
+
+function kanbanCard(item) {
+  const url = safeUrl(item.url);
+  const title = url
+    ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(item.title || "—")}</a>`
+    : esc(item.title || "—");
+  const company = esc(item.company || "—");
+  const location = esc(item.location || "—");
+  const created = esc(item.created_at ? item.created_at.slice(0, 10) : "—");
+  const prevStatus = KANBAN_STATUSES[KANBAN_STATUSES.indexOf(item.status) - 1];
+  const nextStatus = KANBAN_STATUSES[KANBAN_STATUSES.indexOf(item.status) + 1];
+  const prevBtn = prevStatus
+    ? `<button type="button" class="kanban-move" data-id="${item.id}" data-status="${prevStatus}" aria-label="Mover para ${prevStatus}">←</button>`
+    : "";
+  const nextBtn = nextStatus
+    ? `<button type="button" class="kanban-move" data-id="${item.id}" data-status="${nextStatus}" aria-label="Mover para ${nextStatus}">→</button>`
+    : "";
+  const options = KANBAN_STATUSES.map(
+    (s) => `<option value="${s}"${s === item.status ? " selected" : ""}>${s}</option>`
+  ).join("");
+  return `
+  <div class="kanban-card" data-id="${item.id}">
+    <div class="kanban-card-title">${title}</div>
+    <div class="kanban-card-meta">${company} · ${location} · ${created}</div>
+    <div class="kanban-card-controls">
+      ${prevBtn}
+      <select class="kanban-status-select" aria-label="alterar status" data-id="${item.id}">${options}</select>
+      ${nextBtn}
+    </div>
+  </div>`;
+}
+
+async function loadKanban() {
+  for (const status of KANBAN_STATUSES) {
+    const body = $(`#kanban-body-${status}`);
+    if (body) body.innerHTML = "<p class='kanban-empty'>Carregando…</p>";
+  }
+  try {
+    const data = await getJSON("/kanban");
+    for (const status of KANBAN_STATUSES) {
+      const body = $(`#kanban-body-${status}`);
+      if (!body) continue;
+      const items = data.items.filter((item) => item.status === status);
+      body.innerHTML = items.length
+        ? items.map(kanbanCard).join("")
+        : "<p class='kanban-empty'>Nenhuma candidatura.</p>";
+    }
+  } catch (err) {
+    for (const status of KANBAN_STATUSES) {
+      const body = $(`#kanban-body-${status}`);
+      if (body) body.innerHTML = `<p class="kanban-empty">Erro: ${esc(err.message)}</p>`;
+    }
+  }
+}
+
+async function moveKanbanCard(id, status) {
+  try {
+    await getJSON(`/kanban/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    await loadKanban();
+  } catch (err) {
+    alert(`Erro ao mover card: ${err.message}`);
+  }
+}
+
+async function addToKanban(button) {
+  const source = button.dataset.source;
+  const sourceId = button.dataset.sourceId;
+  button.disabled = true;
+  try {
+    await getJSON("/kanban", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source, source_id: sourceId }),
+    });
+    button.textContent = "✓ Adicionada ao CHECK";
+    const cardEl = button.closest(".card");
+    if (cardEl) {
+      cardEl.style.opacity = "0.3";
+      cardEl.style.pointerEvents = "none";
+      // O contador reflete a listagem: sem esta checagem ele ficaria
+      // exibindo um número que a API já não devolve.
+      const totalEl = $("#total");
+      const shown = Number.parseInt(totalEl.textContent, 10);
+      if (Number.isFinite(shown) && shown > 0) totalEl.textContent = `${shown - 1} vaga(s)`;
+      setTimeout(() => cardEl.remove(), 300);
+    }
+  } catch (err) {
+    button.disabled = false;
+    button.textContent = `Erro: ${err.message}`;
+  }
+}
+
 // ── Event listeners ──────────────────────────────────────────────────────────
 
 $("#sync-form").addEventListener("submit", runSync);
@@ -352,6 +453,22 @@ $("#f-query").addEventListener("keydown", (event) => {
 $("#profile-form").addEventListener("submit", saveProfile);
 $("#clean-btn").addEventListener("click", cleanJobs);
 window.addEventListener("hashchange", navigate);
+
+// Kanban: + Add buttons (delegated from #jobs)
+$("#jobs").addEventListener("click", (event) => {
+  const btn = event.target.closest(".add-btn");
+  if (btn) addToKanban(btn);
+});
+
+// Kanban: move buttons + status select (delegated from kanban page)
+$("#page-kanban").addEventListener("click", (event) => {
+  const btn = event.target.closest(".kanban-move");
+  if (btn) moveKanbanCard(btn.dataset.id, btn.dataset.status);
+});
+$("#page-kanban").addEventListener("change", (event) => {
+  const select = event.target.closest(".kanban-status-select");
+  if (select) moveKanbanCard(select.dataset.id, select.value);
+});
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 
