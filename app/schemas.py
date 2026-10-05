@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -48,6 +49,37 @@ class ProfileOut(BaseModel):
     skills: list[str]
     focus: list[str]
     exclusions: list[str] = Field(default_factory=list)
+
+
+class KanbanCreateIn(BaseModel):
+    source: str = Field(max_length=32)
+    source_id: str = Field(max_length=128)
+
+
+class KanbanPatchIn(BaseModel):
+    status: Literal["CHECK", "RUNNING", "DONE"]
+
+
+class KanbanOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    source: str
+    source_id: str
+    title: str | None
+    company: str | None
+    location: str | None
+    url: str | None
+    remote: bool | None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    applied_at: datetime | None
+
+
+class KanbanList(BaseModel):
+    total: int
+    items: list[KanbanOut]
 
 
 class ToolDescriptorOut(BaseModel):

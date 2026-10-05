@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.classifier import build_classifier
 from app.config import settings
 from app.models import Job
+from app.services.kanban import job_without_kanban_card
 from app.sources import JobSource, SourceUnavailableError, build_sources
 
 JOB_COLUMNS = {c.name for c in Job.__table__.columns}
@@ -206,6 +207,9 @@ def list_jobs(
     count_stmt = select(func.count()).select_from(Job)
 
     filters = []
+    # Cards saem da lista principal: identidade é (source, source_id), nunca
+    # jobs.id. Mesma condição em stmt e count_stmt, senão a paginação mente (CA8).
+    filters.append(job_without_kanban_card())
     if match:
         filters.append(Job.match == match)
     if remote is not None:
