@@ -143,6 +143,9 @@ Swagger:
       └─────────────────────┬───────────────────────┘
                             ▼
       FastAPI: GET /jobs · /tools · /health · /profile · dashboard
+
+      jobs (coletadas)  ──+ Add ──▶  kanban_jobs (CHECK/RUNNING/DONE)
+      GET /jobs omite as cardadas   snapshot sobrevive ao clean
 ```
 
 Fluxo de uma chamada:
@@ -381,6 +384,56 @@ GET /jobs/{job_id}
 GET /profile
 GET /health
 ```
+
+`GET /jobs` **omite** as vagas que já têm um card no Kanban — quem está em
+processo de candidatura não aparece para análise de novo.
+
+### Kanban de candidaturas
+
+Vagas marcadas para candidatura moram em `kanban_jobs`, separadas das vagas
+coletadas em `jobs`. A identidade da candidatura é `(source, source_id)` — **não**
+`jobs.id`, que o SQLite recicla depois de um `DELETE`. Cada linha guarda um
+snapshot (`title`, `company`, `location`, `url`, `remote`), então o card continua
+correto mesmo depois de a vaga de origem ser removida de `jobs`.
+
+```text
+CHECK   → selecionada para análise/candidatura
+RUNNING → candidatura em andamento
+DONE    → candidatura concluída
+```
+
+```bash
+# adicionar ao Kanban (idempotente: repetir devolve o mesmo card)
+curl -X POST http://localhost:3080/kanban \
+  -H 'Content-Type: application/json' \
+  -d '{"source": "gupy", "source_id": "12345"}'
+
+# listar tudo, ou filtrar por coluna
+curl http://localhost:3080/kanban
+curl "http://localhost:3080/kanban?status=RUNNING"
+
+# mover um card
+curl -X PATCH http://localhost:3080/kanban/7 \
+  -H 'Content-Type: application/json' \
+  -d '{"status": "RUNNING"}'
+
+# devolver a vaga para o front principal
+curl -X DELETE http://localhost:3080/kanban/7
+```
+
+`POST /kanban` responde `200` nos dois casos — card novo ou já existente. O
+cabeçalho `X-Already-Existed: true|false` distingue os dois. `PATCH` grava
+`applied_at` na primeira entrada em `DONE`. `status` fora do conjunto
+`CHECK|RUNNING|DONE` devolve `422`; id inexistente devolve `404`.
+
+### Limpar vagas coletadas
+
+```bash
+curl -X DELETE http://localhost:3080/jobs
+# → {"deleted": 42, "kept": 7}
+```
+
+Apaga apenas as vagas **fora** do Kanban. `kept` conta os cards preservados.
 
 ## Tools locais (read-only)
 

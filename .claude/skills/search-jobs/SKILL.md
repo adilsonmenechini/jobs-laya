@@ -1,13 +1,15 @@
 ---
 name: search-jobs
-description: Buscar, coletar e filtrar vagas de emprego neste repositório via API local — sincronizar fontes (LinkedIn, GeekHunter, Gupy, Indeed, Glassdoor), listar/classificar vagas contra o perfil, inspecionar por que uma vaga recebeu low/medium/high, ou rodar o eval do classificador. Use quando o pedido for sobre vagas, sync, filtros de vaga, score/match, ou "buscar/achar vagas de X".
+description: Buscar, coletar e filtrar vagas de emprego neste repositório via API local — sincronizar fontes (LinkedIn, GeekHunter, Gupy, Indeed, Glassdoor), listar/classificar vagas contra o perfil, inspecionar por que uma vaga recebeu low/medium/high, gerenciar o Kanban de candidaturas (CHECK/RUNNING/DONE), ou rodar o eval do classificador. Use quando o pedido for sobre vagas, sync, filtros de vaga, score/match, kanban/candidatura, ou "buscar/achar vagas de X".
 ---
 
 # Search Jobs
 
-Interface de leitura do `job-classifier`: coleta vagas de 5 fontes, classifica
-contra `data/profile.json` e serve por HTTP. **Somente leitura** — não existe
-nenhum caminho de escrita nas fontes (sem candidatura, mensagem ou conexão).
+Interface do `job-classifier`: coleta vagas de 5 fontes, classifica contra
+`data/profile.json` e serve por HTTP. As **fontes** são somente leitura — não há
+candidatura, mensagem ou conexão automática em lugar nenhum. O Kanban (§7) é
+persistência local de tracking, não um envio de candidatura: ele nunca posta
+nada em site de terceiros.
 
 ## 1. Subir a API
 
@@ -111,6 +113,39 @@ Estado conhecido (2026-10-03): heurística 38/67 · `high` 17/35 · `low` 16/20.
 O score **discrimina mal as classes** — medianas sobrepostas (high 51.8 /
 low 41.6). Não afirme que o classifier é preciso sem citar esses números.
 
+## 7. Kanban de candidaturas
+
+Vagas em processo de candidatura ficam em `kanban_jobs`, com status `CHECK`
+(selecionada), `RUNNING` (em andamento) ou `DONE` (concluída).
+
+```bash
+# adicionar (idempotente — repetir devolve o mesmo card)
+curl -X POST http://localhost:3080/kanban \
+  -H 'Content-Type: application/json' \
+  -d '{"source": "gupy", "source_id": "12345"}'
+
+curl http://localhost:3080/kanban                    # todos
+curl "http://localhost:3080/kanban?status=RUNNING"  # uma coluna
+
+curl -X PATCH http://localhost:3080/kanban/7 \
+  -H 'Content-Type: application/json' -d '{"status": "DONE"}'
+
+curl -X DELETE http://localhost:3080/kanban/7        # devolve ao front
+```
+
+A identidade da candidatura é **`(source, source_id)`**, nunca `jobs.id` — o
+SQLite recicla o rowid depois de um `DELETE`, então ligar a elas faria o card
+apontar para outra vaga. Cada linha carrega um snapshot (`title`, `company`,
+`location`, `url`, `remote`) e sobrevive à remoção da vaga em `jobs`.
+
+Três consequências que surprise quem usa a API:
+
+- `GET /jobs` **omite** as vagas cardadas — a contagem e os itens caem juntas.
+- `POST /kanban` devolve `200` sempre. O cabeçalho `X-Already-Existed`
+  diz se o card acabou de ser criado (`false`) ou já existia (`true`).
+- `DELETE /jobs` (limpar) apaga **só** as vagas fora do Kanban e responde
+  `{"deleted": n, "kept": m}`. `kept` conta os cards preservados.
+
 ## Cuidados
 
 - **Nunca** trate `synced` como número de vagas *novas*: é o total processado;
@@ -118,3 +153,5 @@ low 41.6). Não afirme que o classifier é preciso sem citar esses números.
 - **Não** invente `errors` — só o que o response trouxer.
 - Descrições da Gupy abrem com texto de marketing da empresa e os requisitos
   vêm depois; não conclua "vaga sem requisitos" olhando só o começo do texto.
+- Uma vaga no Kanban **não** some do `jobs`: some da listagem. Para limpá-la de
+  vez, é `DELETE /kanban/{id}` — não `DELETE /jobs`.
