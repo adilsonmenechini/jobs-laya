@@ -365,3 +365,101 @@ details .gaps li { color: var(--medium); }
   font-weight: 700;
   color: var(--text);
 }
+
+/* ── Kanban page ─────────────────────────────────────────────────────────── */
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.kanban-column {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 200px;
+}
+
+.kanban-col-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.kanban-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kanban-empty {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.kanban-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.kanban-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.kanban-card-title a { color: var(--text); text-decoration: none; }
+.kanban-card-title a:hover { color: var(--accent); }
+
+.kanban-card-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.kanban-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kanban-card-controls .kanban-move {
+  padding: 4px 10px;
+  font-size: 14px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.kanban-status-select {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* ── + Add button on job cards ──────────────────────────────────────────── */
+
+.add-btn {
+  margin-top: 10px;
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--card);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.add-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #04121f;
+}
+.add-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

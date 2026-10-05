@@ -20,6 +20,7 @@
       <a href="#/vagas" class="sidebar-link">Vagas</a>
       <a href="#/perfil" class="sidebar-link">Perfil</a>
       <a href="#/dados" class="sidebar-link">Dados</a>
+      <a href="#/kanban" class="sidebar-link">Kanban</a>
     </nav>
 
     <main>
@@ -135,6 +136,26 @@
             <div id="source-counts" class="source-counts"></div>
           </div>
           <button type="button" id="clean-btn" class="danger">Limpar vagas</button>
+        </div>
+      </section>
+
+      <section id="page-kanban" hidden>
+        <div class="panel">
+          <h2>Kanban</h2>
+          <div class="kanban-board">
+            <div class="kanban-column" id="kanban-CHECK">
+              <h3 class="kanban-col-title">CHECK</h3>
+              <div class="kanban-col-body" id="kanban-body-CHECK"></div>
+            </div>
+            <div class="kanban-column" id="kanban-RUNNING">
+              <h3 class="kanban-col-title">RUNNING</h3>
+              <div class="kanban-col-body" id="kanban-body-RUNNING"></div>
+            </div>
+            <div class="kanban-column" id="kanban-DONE">
+              <h3 class="kanban-col-title">DONE</h3>
+              <div class="kanban-col-body" id="kanban-body-DONE"></div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
