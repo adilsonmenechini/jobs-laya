@@ -48,6 +48,44 @@ body {
 .badge.bad { color: var(--low); border-color: var(--low); }
 .badge.neutral { color: var(--muted); }
 
+/* ── Layout: sidebar + main ─────────────────────────────────────────────── */
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 53px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-link:hover { background: var(--card); color: var(--text); }
+.sidebar-link.active { background: var(--accent); color: #04121f; }
+
+main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+
 .panel {
   display: flex;
   flex-wrap: wrap;
@@ -58,6 +96,13 @@ body {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
+}
+
+.panel h2 {
+  width: 100%;
+  font-size: 15px;
+  margin: 0 0 4px;
+  color: var(--text);
 }
 
 input, select, button {
@@ -79,7 +124,15 @@ button {
 button:disabled { opacity: 0.6; cursor: wait; }
 .filters button { background: var(--card); color: var(--text); border-color: var(--border); }
 
+button.danger {
+  background: var(--low);
+  border-color: var(--low);
+  color: #1a0505;
+}
+
 .status { color: var(--muted); font-size: 13px; }
+
+/* ── Jobs grid ──────────────────────────────────────────────────────────── */
 
 #jobs {
   display: grid;
@@ -199,3 +252,116 @@ details ul { margin: 0; padding-left: 18px; font-size: 13px; }
 details .reasons li { color: var(--text); }
 details .gaps li { color: var(--medium); }
 .laya { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+
+/* ── Profile form ───────────────────────────────────────────────────────── */
+
+#profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.form-field textarea {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-field input[type="text"] {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.form-field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-field-inline input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.form-status {
+  font-size: 13px;
+  min-height: 18px;
+}
+.form-status.ok { color: var(--high); }
+.form-status.error { color: var(--low); }
+
+/* ── Data page ──────────────────────────────────────────────────────────── */
+
+.data-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.data-total {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.data-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.data-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.source-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.source-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.source-label {
+  color: var(--muted);
+}
+
+.source-value {
+  font-weight: 700;
+  color: var(--text);
+}

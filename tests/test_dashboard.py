@@ -264,3 +264,33 @@ def test_app_js_labels_the_badge_as_the_active_backend():
     assert "backend ativa: " in js
     # the tooltip spells out where the card's own backend comes from
     assert "classificou" in js
+
+
+def test_dashboard_has_sidebar_with_three_pages():
+    """Sidebar nav + the three page containers the hash router switches."""
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    for fragment in (
+        'class="sidebar"',
+        "#/vagas",
+        "#/perfil",
+        "#/dados",
+        'id="page-vagas"',
+        'id="page-perfil"',
+        'id="page-dados"',
+    ):
+        assert fragment in html, fragment
+
+
+def test_dashboard_profile_form_and_clean_button_exist():
+    with TestClient(app) as client:
+        html = client.get("/").text
+        js = client.get("/static/app.js").text
+
+    assert 'id="profile-form"' in html
+    for field in ("p-titles", "p-skills", "p-remote", "p-exclusions"):
+        assert field in html, field
+    assert 'id="clean-btn"' in html
+    # destructive action must be guarded by a confirmation
+    assert "confirm(" in js

@@ -1,3 +1,6 @@
+import json
+import os
+import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
@@ -5,6 +8,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from app.classifier.engine import peek_engine
@@ -70,6 +74,28 @@ def profile():
     return load_profile(settings.profile_path)
 
 
+@app.put("/profile", response_model=ProfileOut)
+def update_profile(payload: ProfileOut):
+    """Persist `data/profile.json` atomically (temp file + replace).
+
+    FastAPI validates the body against `ProfileOut` before this runs, so an
+    invalid payload answers 422 without ever touching the file on disk.
+    """
+    path = Path(settings.profile_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Unique temp file in the same directory: os.replace stays atomic (same
+    # fs), and two concurrent saves cannot claim the same tmp path.
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload.model_dump(), ensure_ascii=False, indent=2) + "\n")
+        os.replace(tmp_name, path)
+    except BaseException:
+        Path(tmp_name).unlink(missing_ok=True)
+        raise
+    return payload
+
+
 @app.post("/jobs/sync")
 async def sync(request: JobSearchRequest, db: DbSession):
     try:
@@ -114,6 +140,15 @@ def job(job_id: int, db: DbSession):
     if not item:
         raise HTTPException(status_code=404, detail="Job not found")
     return item
+
+
+@app.delete("/jobs")
+def clean_jobs(db: DbSession):
+    """Wipe every persisted job — nothing else (profile, session, schema)."""
+    result = db.execute(delete(Job))
+    deleted = result.rowcount
+    db.commit()
+    return {"deleted": deleted}
 
 
 async def run_tool(awaitable):

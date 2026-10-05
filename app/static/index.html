@@ -15,64 +15,130 @@
     </div>
   </header>
 
-  <main>
-    <section class="panel">
-      <form id="sync-form">
-        <select id="source" aria-label="fonte das vagas">
-          <option value="all" selected>Todas as fontes</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="geekhunter">GeekHunter</option>
-          <option value="gupy">Gupy</option>
-          <option value="indeed">Indeed</option>
-          <option value="glassdoor">Glassdoor</option>
-        </select>
-        <input id="keywords" size="36" aria-label="keywords (separadas por vírgula)"
-               placeholder="keywords (separadas por vírgula)"
-               value="SRE, DevOps, Platform Engineer">
-        <input id="location" size="14" aria-label="local" placeholder="local" value="Brazil">
-        <input id="limit" type="number" min="1" max="100" value="10" aria-label="limite">
-        <select id="hours-old" aria-label="janela de recência: só vagas publicadas neste período">
-          <option value="24">1 dia</option>
-          <option value="72">72 horas</option>
-          <option value="168">7 dias</option>
-          <option value="720" selected>30 dias</option>
-          <option value="0">sem filtro</option>
-        </select>
-        <button type="submit" id="sync-btn">Buscar e classificar</button>
-        <span id="sync-status" class="status" role="status" aria-live="polite"></span>
-      </form>
-    </section>
+  <div class="layout">
+    <nav class="sidebar" aria-label="navegação principal">
+      <a href="#/vagas" class="sidebar-link">Vagas</a>
+      <a href="#/perfil" class="sidebar-link">Perfil</a>
+      <a href="#/dados" class="sidebar-link">Dados</a>
+    </nav>
 
-    <section class="panel filters">
-      <select id="f-source" aria-label="filtrar por fonte">
-        <option value="">fonte: todas</option>
-        <option value="linkedin">LinkedIn</option>
-        <option value="geekhunter">GeekHunter</option>
-        <option value="gupy">Gupy</option>
-        <option value="indeed">Indeed</option>
-        <option value="glassdoor">Glassdoor</option>
-      </select>
-      <select id="f-match" aria-label="filtrar por match">
-        <option value="">match: todos</option>
-        <option value="high">high</option>
-        <option value="medium">medium</option>
-        <option value="low">low</option>
-      </select>
-      <select id="f-remote" aria-label="filtrar por modalidade">
-        <option value="">modalidade: todas</option>
-        <option value="true">somente remoto</option>
-        <option value="false">presencial/híbrido</option>
-      </select>
-      <input id="f-location" aria-label="filtrar por cidade ou país" placeholder="cidade ou país…">
-      <input id="f-score" type="number" min="0" max="100" aria-label="score mínimo"
-             placeholder="score mín.">
-      <input id="f-query" aria-label="buscar no texto" placeholder="buscar no texto…">
-      <button type="button" id="f-apply">Filtrar</button>
-      <span id="total" class="status" role="status" aria-live="polite"></span>
-    </section>
+    <main>
+      <section id="page-vagas">
+        <section class="panel">
+          <form id="sync-form">
+            <select id="source" aria-label="fonte das vagas">
+              <option value="all" selected>Todas as fontes</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="geekhunter">GeekHunter</option>
+              <option value="gupy">Gupy</option>
+              <option value="indeed">Indeed</option>
+              <option value="glassdoor">Glassdoor</option>
+            </select>
+            <input id="keywords" size="36" aria-label="keywords (separadas por vírgula)"
+                   placeholder="keywords (separadas por vírgula)"
+                   value="SRE, DevOps, Platform Engineer">
+            <input id="location" size="14" aria-label="local" placeholder="local" value="Brazil">
+            <input id="limit" type="number" min="1" max="100" value="10" aria-label="limite">
+            <select id="hours-old" aria-label="janela de recência: só vagas publicadas neste período">
+              <option value="24">1 dia</option>
+              <option value="72">72 horas</option>
+              <option value="168">7 dias</option>
+              <option value="720" selected>30 dias</option>
+              <option value="0">sem filtro</option>
+            </select>
+            <button type="submit" id="sync-btn">Buscar e classificar</button>
+            <span id="sync-status" class="status" role="status" aria-live="polite"></span>
+          </form>
+        </section>
 
-    <div id="jobs" aria-live="polite"></div>
-  </main>
+        <section class="panel filters">
+          <select id="f-source" aria-label="filtrar por fonte">
+            <option value="">fonte: todas</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="geekhunter">GeekHunter</option>
+            <option value="gupy">Gupy</option>
+            <option value="indeed">Indeed</option>
+            <option value="glassdoor">Glassdoor</option>
+          </select>
+          <select id="f-match" aria-label="filtrar por match">
+            <option value="">match: todos</option>
+            <option value="high">high</option>
+            <option value="medium">medium</option>
+            <option value="low">low</option>
+          </select>
+          <select id="f-remote" aria-label="filtrar por modalidade">
+            <option value="">modalidade: todas</option>
+            <option value="true">somente remoto</option>
+            <option value="false">presencial/híbrido</option>
+          </select>
+          <input id="f-location" aria-label="filtrar por cidade ou país" placeholder="cidade ou país…">
+          <input id="f-score" type="number" min="0" max="100" aria-label="score mínimo"
+                 placeholder="score mín.">
+          <input id="f-query" aria-label="buscar no texto" placeholder="buscar no texto…">
+          <button type="button" id="f-apply">Filtrar</button>
+          <span id="total" class="status" role="status" aria-live="polite"></span>
+        </section>
+
+        <div id="jobs" aria-live="polite"></div>
+      </section>
+
+      <section id="page-perfil" hidden>
+        <div class="panel">
+          <h2>Perfil</h2>
+          <form id="profile-form">
+            <div class="form-field">
+              <label for="p-name">Nome</label>
+              <input id="p-name" type="text" aria-label="nome">
+            </div>
+            <div class="form-field">
+              <label for="p-titles">Títulos (um por linha)</label>
+              <textarea id="p-titles" rows="3" aria-label="títulos"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-seniority">Senioridade (um por linha)</label>
+              <textarea id="p-seniority" rows="2" aria-label="senioridade"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-locations">Localizações (um por linha)</label>
+              <textarea id="p-locations" rows="2" aria-label="localizações"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-skills">Skills (um por linha)</label>
+              <textarea id="p-skills" rows="4" aria-label="skills"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-focus">Foco (um por linha)</label>
+              <textarea id="p-focus" rows="2" aria-label="foco"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-exclusions">Exclusões (um por linha)</label>
+              <textarea id="p-exclusions" rows="3" aria-label="exclusões"></textarea>
+            </div>
+            <div class="form-field form-field-inline">
+              <label for="p-remote">Remoto obrigatório</label>
+              <input id="p-remote" type="checkbox" aria-label="remoto obrigatório">
+            </div>
+            <button type="submit">Salvar perfil</button>
+            <span id="profile-status" class="form-status" role="status" aria-live="polite"></span>
+          </form>
+        </div>
+      </section>
+
+      <section id="page-dados" hidden>
+        <div class="panel">
+          <h2>Dados</h2>
+          <div class="data-summary">
+            <div class="data-total">
+              <span class="data-label">Total de vagas</span>
+              <span id="data-total" class="data-value">—</span>
+            </div>
+            <div id="source-counts" class="source-counts"></div>
+          </div>
+          <button type="button" id="clean-btn" class="danger">Limpar vagas</button>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="/static/app.js"></script>
 </body>

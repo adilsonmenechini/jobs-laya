@@ -205,6 +205,140 @@ async function runSync(event) {
   }
 }
 
+// ── Hash router ──────────────────────────────────────────────────────────────
+
+const PAGES = ["vagas", "perfil", "dados"];
+
+function currentRoute() {
+  const hash = window.location.hash.replace(/^#\/?/, "");
+  return PAGES.includes(hash) ? hash : "vagas";
+}
+
+function showPage(route) {
+  for (const page of PAGES) {
+    const el = $(`#page-${page}`);
+    if (el) el.hidden = page !== route;
+  }
+  document.querySelectorAll(".sidebar-link").forEach((link) => {
+    const isActive = link.getAttribute("href") === `#/${route}`;
+    link.classList.toggle("active", isActive);
+    if (isActive) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+}
+
+function navigate() {
+  const route = currentRoute();
+  showPage(route);
+  if (route === "perfil") loadProfile();
+  if (route === "dados") loadDataCounts();
+}
+
+// ── Profile page ─────────────────────────────────────────────────────────────
+
+function textareaToList(el) {
+  return el.value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function listToTextarea(items) {
+  return (items || []).join("\n");
+}
+
+async function loadProfile() {
+  const status = $("#profile-status");
+  status.textContent = "";
+  try {
+    const profile = await getJSON("/profile");
+    $("#p-name").value = profile.name || "";
+    $("#p-titles").value = listToTextarea(profile.titles);
+    $("#p-seniority").value = listToTextarea(profile.seniority);
+    $("#p-locations").value = listToTextarea(profile.locations);
+    $("#p-skills").value = listToTextarea(profile.skills);
+    $("#p-focus").value = listToTextarea(profile.focus);
+    $("#p-exclusions").value = listToTextarea(profile.exclusions);
+    $("#p-remote").checked = Boolean(profile.remote_required);
+  } catch (err) {
+    status.textContent = `Erro ao carregar perfil: ${err.message}`;
+    status.className = "form-status error";
+  }
+}
+
+async function saveProfile(event) {
+  event.preventDefault();
+  const status = $("#profile-status");
+  status.className = "form-status";
+  status.textContent = "Salvando…";
+  const payload = {
+    name: $("#p-name").value.trim(),
+    titles: textareaToList($("#p-titles")),
+    seniority: textareaToList($("#p-seniority")),
+    locations: textareaToList($("#p-locations")),
+    remote_required: $("#p-remote").checked,
+    skills: textareaToList($("#p-skills")),
+    focus: textareaToList($("#p-focus")),
+    exclusions: textareaToList($("#p-exclusions")),
+  };
+  try {
+    await getJSON("/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    status.textContent = "Perfil salvo com sucesso.";
+    status.className = "form-status ok";
+  } catch (err) {
+    status.textContent = `Erro: ${err.message}`;
+    status.className = "form-status error";
+  }
+}
+
+// ── Data page ────────────────────────────────────────────────────────────────
+
+const SOURCES = ["linkedin", "geekhunter", "gupy", "indeed", "glassdoor"];
+
+async function loadDataCounts() {
+  const totalEl = $("#data-total");
+  const countsEl = $("#source-counts");
+  totalEl.textContent = "…";
+  countsEl.innerHTML = "";
+  try {
+    const totalData = await getJSON("/jobs?limit=1");
+    totalEl.textContent = String(totalData.total);
+  } catch (err) {
+    totalEl.textContent = "erro";
+  }
+  for (const source of SOURCES) {
+    try {
+      const data = await getJSON(`/jobs?source=${source}&limit=1`);
+      const row = document.createElement("div");
+      row.className = "source-count";
+      row.innerHTML = `<span class="source-label">${esc(source)}</span><span class="source-value">${data.total}</span>`;
+      countsEl.appendChild(row);
+    } catch {
+      const row = document.createElement("div");
+      row.className = "source-count";
+      row.innerHTML = `<span class="source-label">${esc(source)}</span><span class="source-value">erro</span>`;
+      countsEl.appendChild(row);
+    }
+  }
+}
+
+async function cleanJobs() {
+  if (!window.confirm("Apagar todas as vagas do banco?")) return;
+  try {
+    await getJSON("/jobs", { method: "DELETE" });
+    await loadDataCounts();
+    await loadJobs();
+  } catch (err) {
+    alert(`Erro ao limpar vagas: ${err.message}`);
+  }
+}
+
+// ── Event listeners ──────────────────────────────────────────────────────────
+
 $("#sync-form").addEventListener("submit", runSync);
 $("#f-apply").addEventListener("click", loadJobs);
 $("#f-source").addEventListener("change", loadJobs);
@@ -215,7 +349,13 @@ $("#f-score").addEventListener("change", loadJobs);
 $("#f-query").addEventListener("keydown", (event) => {
   if (event.key === "Enter") loadJobs();
 });
+$("#profile-form").addEventListener("submit", saveProfile);
+$("#clean-btn").addEventListener("click", cleanJobs);
+window.addEventListener("hashchange", navigate);
+
+// ── Init ─────────────────────────────────────────────────────────────────────
 
 loadHealth();
 loadJobs();
 setInterval(loadHealth, 30000);
+navigate();
