@@ -353,3 +353,36 @@ def test_style_css_has_kanban_columns():
     assert ".kanban-board" in css
     assert ".kanban-column" in css
     assert ".kanban-card" in css
+
+
+def test_add_button_reads_dataset_in_camel_case():
+    """`data-source-id` vira `dataset.sourceId` — nunca `dataset.source_id`.
+
+    Regression: o `+ Add` mandava `source_id: undefined` e a API respondia
+    422 "Field required". Só o browser real expõe o nome camelCase; ler a
+    fonte pelo atributo escrito no HTML é o que garante a correspondência.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+        html = client.get("/").text
+
+    # o atributo é escrito com hífen…
+    assert 'data-source-id="' in js
+    # …e lido como camelCase, que é o que o DOM realmente expõe
+    assert "button.dataset.sourceId" in js
+    assert "button.dataset.source_id" not in js
+    assert html.count('href="#/kanban"') == 1
+
+
+def test_add_to_kanban_decrements_the_job_counter():
+    """Remover o card da lista tem que mexer no contador junto.
+
+    Regression: o `+ Add` tirava o card do DOM e o contador continuava
+    mostrando o total antigo — a tela dizia 3 vagas listando 2.
+    """
+    with TestClient(app) as client:
+        js = client.get("/static/app.js").text
+
+    assert '$("#total")' in js  # o mesmo contador que loadJobs atualiza
+    assert "totalEl.textContent" in js
+    assert "shown - 1" in js

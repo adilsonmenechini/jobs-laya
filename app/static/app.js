@@ -412,7 +412,7 @@ async function moveKanbanCard(id, status) {
 
 async function addToKanban(button) {
   const source = button.dataset.source;
-  const sourceId = button.dataset.source_id;
+  const sourceId = button.dataset.sourceId;
   button.disabled = true;
   try {
     await getJSON("/kanban", {
@@ -425,6 +425,11 @@ async function addToKanban(button) {
     if (cardEl) {
       cardEl.style.opacity = "0.3";
       cardEl.style.pointerEvents = "none";
+      // O contador reflete a listagem: sem esta checagem ele ficaria
+      // exibindo um número que a API já não devolve.
+      const totalEl = $("#total");
+      const shown = Number.parseInt(totalEl.textContent, 10);
+      if (Number.isFinite(shown) && shown > 0) totalEl.textContent = `${shown - 1} vaga(s)`;
       setTimeout(() => cardEl.remove(), 300);
     }
   } catch (err) {
