@@ -8,6 +8,7 @@ from app.sources import SourceUnavailableError
 from app.sources.geekhunter import GeekHunterSource
 from tests.fixtures_loader import fixture
 
+IDENTIFIER = "5a60a71c44bc345ec59d8f6900b2a91de5dbce415cc4d0d58ffd192d095ae420"
 SEARCH = fixture("geekhunter_search.html")
 DETAIL = fixture("geekhunter_job_detail.html")
 
@@ -39,7 +40,7 @@ async def test_search_returns_normalized_items():
 
     assert len(items) == 10
     assert items[0]["source"] == "geekhunter"
-    assert items[0]["source_id"] == "site-reliability-engineer--sre--3"
+    assert items[0]["source_id"] == "/pt/ntt-data/jobs/site-reliability-engineer--sre--3"
     assert "searchTerm=SRE" in seen[0]
     # Brazil is not a city: cityName must not be sent
     assert "cityName" not in seen[0]
@@ -218,6 +219,7 @@ async def test_details_merges_without_wiping_search_data():
     assert merged["location"] == "São Paulo, SP, Brasil"  # detail has none: kept
     assert merged["posted_at"] == "2026-09-30"  # ISO date from JobPosting wins
     assert merged["remote"] is True  # upgraded
+    assert merged["source_id"] == IDENTIFIER  # detail's stable id replaces the path
 
 
 @pytest.mark.asyncio

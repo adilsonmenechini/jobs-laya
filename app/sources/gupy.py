@@ -146,6 +146,9 @@ class GupySource:
             headers={"User-Agent": "job-classifier/0.1.0 (job research; read-only)"},
         )
 
+    async def aclose(self) -> None:
+        await self._client.aclose()
+
     async def _fetch(self, url: str, params: dict | None = None) -> httpx.Response:
         try:
             response = await retry_on_transient(

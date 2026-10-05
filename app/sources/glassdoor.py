@@ -157,6 +157,10 @@ class GlassdoorSource:
             delay_seconds=0.0,  # the source owns the inter-navigation delay
         )
 
+    async def aclose(self) -> None:
+        """No-op: `search()` closes its engine in `finally` (one Chromium per call)."""
+        return None
+
     async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
         # `location` is ignored on purpose: the SERP covers all of Brazil (spec FR-2).
         url = f"{self._config.glassdoor_base_url}{SERP_PATH}?sc.keyword={quote(keywords)}"

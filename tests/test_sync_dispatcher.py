@@ -41,6 +41,7 @@ class FakeSource:
         self.items = items
         self.fail = fail
         self.searches: list[tuple[str, str, int]] = []
+        self.closes = 0
 
     async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
         self.searches.append((keywords, location, limit))
@@ -50,6 +51,9 @@ class FakeSource:
 
     async def details(self, item: dict) -> dict:
         return item
+
+    async def aclose(self) -> None:
+        self.closes += 1
 
 
 def gh_item(source_id: str, title: str = "SRE") -> dict:
@@ -85,7 +89,8 @@ def db():
     session.close()
 
 
-def run(db, source: str, sources: dict, **kwargs):
+def run(db, source: str, sources: dict | None = None, **kwargs):
+    """`sources=None` mirrors the API path: sync_jobs builds the registry itself."""
     import asyncio
 
     return asyncio.run(
@@ -176,6 +181,46 @@ def test_sync_all_isolates_expired_linkedin_session(db):
 def test_sync_unknown_source_fails_loudly(db):
     with pytest.raises(SourceUnavailableError):
         run(db, "geekhunter", {"linkedin": FakeSource("linkedin", [])})
+
+
+# ------------------------------------------------------- client lifecycle
+
+
+def test_sync_closes_the_registry_it_built(db, monkeypatch):
+    """The leak fix: sources built by sync_jobs are closed when the run ends."""
+    from app.services import jobs as jobs_service
+
+    built = {"geekhunter": FakeSource("geekhunter", [gh_item("7")])}
+    monkeypatch.setattr(jobs_service, "build_sources", lambda config=None: built)
+
+    outcome = run(db, "geekhunter")  # no injected registry → sync_jobs builds it
+
+    assert outcome.count == 1
+    assert built["geekhunter"].closes == 1
+
+
+def test_sync_closes_the_registry_even_when_resolve_fails(db, monkeypatch):
+    """The 503 path must close too: a failed resolve used to discard a
+    freshly built registry without closing it."""
+    from app.services import jobs as jobs_service
+
+    built = {"linkedin": FakeSource("linkedin", [])}
+    monkeypatch.setattr(jobs_service, "build_sources", lambda config=None: built)
+
+    with pytest.raises(SourceUnavailableError):
+        run(db, "geekhunter")  # not registered → resolve fails loudly
+
+    assert built["linkedin"].closes == 1
+
+
+def test_sync_never_closes_an_injected_registry(db):
+    """Ownership: who injects the registry also closes it (test fakes, callers)."""
+    geekhunter = FakeSource("geekhunter", [gh_item("2")])
+
+    outcome = run(db, "geekhunter", {"geekhunter": geekhunter})
+
+    assert outcome.count == 1
+    assert geekhunter.closes == 0
 
 
 # -------------------------------------------------------------------- recency
