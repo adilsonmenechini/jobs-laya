@@ -40,7 +40,29 @@ TEXT_CLEAN = re.compile(r"\s+")
 
 
 def _source_id(url: str) -> str:
-    return urlparse(url).path.rstrip("/").rsplit("/", 1)[-1]
+    """Normalized path as the id — the slug alone collides across companies.
+
+    Job slugs end with a per-company counter (`sre--senior-1`), so two
+    employers can mint the same slug: as a bare slug they overwrite each
+    other in `parse_search_page` and in the DB upsert.
+    """
+    return urlparse(url).path.rstrip("/")
+
+
+def _identifier_value(posting: dict) -> str | None:
+    """GeekHunter's internal job id (JSON-LD `identifier.value`).
+
+    A content-independent hash: unlike the URL slug, it survives an upstream
+    slug rename, so the upsert matches the same row instead of adding one.
+    """
+    identifier = posting.get("identifier")
+    value = identifier.get("value") if isinstance(identifier, dict) else None
+    return value if isinstance(value, str) and value else None
+
+
+def _detail_source_id(posting: dict, url: str) -> str:
+    """Stable id for the detail payload: internal id when present, else path."""
+    return _identifier_value(posting) or _source_id(url)
 
 
 def _company_slug(url: str) -> str | None:
@@ -165,7 +187,7 @@ def parse_job_detail(html: str) -> dict:
         skills = posting.get("skills") or ""
         return {
             "source": "geekhunter",
-            "source_id": _source_id(url),
+            "source_id": _detail_source_id(posting, url),
             "title": posting.get("title") or "",
             "company": org.get("name") if isinstance(org, dict) else None,
             "company_slug": _company_slug(url),
@@ -233,6 +255,9 @@ class GeekHunterSource:
             follow_redirects=True,
             headers={"User-Agent": "job-classifier/0.1.0 (job research; read-only)"},
         )
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
 
     async def _get(self, url: str, params: dict | None = None) -> str:
         try:

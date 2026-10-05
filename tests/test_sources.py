@@ -1,5 +1,6 @@
 """Fase 1 — config and JobSource Protocol are in place and importable."""
 
+import httpx
 import pytest
 
 from app.config import Settings
@@ -10,6 +11,10 @@ from app.sources import (
     build_sources,
     source_names,
 )
+from app.sources.geekhunter import GeekHunterSource
+from app.sources.glassdoor import GlassdoorSource
+from app.sources.gupy import GupySource
+from app.sources.indeed import IndeedSource
 from app.sources.linkedin import LinkedInSource
 
 
@@ -133,3 +138,38 @@ async def test_linkedin_tool_error_is_reported_as_source_unavailable():
 
     with pytest.raises(SourceUnavailableError, match="make login"):
         await source.search("SRE", "Brazil", 10)
+
+
+# ------------------------------------------------------------------- aclose
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("source_cls", [GeekHunterSource, GupySource, IndeedSource])
+async def test_aclose_closes_the_httpx_client(source_cls):
+    """The registry is rebuilt per sync: unclosed clients pile up sockets."""
+    source = source_cls(Settings(_env_file=None))
+
+    assert not source._client.is_closed
+    await source.aclose()
+    assert source._client.is_closed
+
+
+@pytest.mark.asyncio
+async def test_aclose_closes_an_injected_client():
+    client = httpx.AsyncClient()
+    source = GeekHunterSource(Settings(_env_file=None), client=client)
+
+    await source.aclose()
+
+    assert client.is_closed
+
+
+@pytest.mark.asyncio
+async def test_browser_sources_aclose_is_a_documented_noop():
+    """LinkedIn's session dies at lifespan; Glassdoor's engine dies at
+    search()'s finally — neither owns anything to release here."""
+    linkedin = LinkedInSource(client=ExpiredSessionClient())
+    glassdoor = GlassdoorSource(Settings(_env_file=None))
+
+    assert await linkedin.aclose() is None
+    assert await glassdoor.aclose() is None

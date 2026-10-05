@@ -207,6 +207,9 @@ class IndeedSource:
             headers={"User-Agent": "job-classifier/0.1.0 (job research; read-only)"},
         )
 
+    async def aclose(self) -> None:
+        await self._client.aclose()
+
     def _build_query(self, keywords: str, location: str, limit: int, cursor: str | None) -> str:
         where = location_arg(location)
         location_clause = (
