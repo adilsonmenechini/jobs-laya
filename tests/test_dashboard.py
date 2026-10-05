@@ -267,20 +267,74 @@ def test_app_js_labels_the_badge_as_the_active_backend():
 
 
 def test_dashboard_has_sidebar_with_three_pages():
-    """Sidebar nav + the three page containers the hash router switches."""
+    """Sidebar nav + the three page containers the hash router switches.
+
+    CA1/R1: the sidebar exposes only Vagas, Kanban and Configurações, in that
+    order. R3/R4: Perfil and Dados are no longer top-level pages — they became
+    tabs inside Configurações, so `#/perfil`, `#/dados`, `#page-perfil` and
+    `#page-dados` must be gone (CA10: the old hashes fall back to Vagas).
+    """
     with TestClient(app) as client:
         html = client.get("/").text
 
     for fragment in (
         'class="sidebar"',
         "#/vagas",
-        "#/perfil",
-        "#/dados",
+        "#/kanban",
+        "#/configuracoes",
         'id="page-vagas"',
-        'id="page-perfil"',
-        'id="page-dados"',
+        'id="page-kanban"',
+        'id="page-configuracoes"',
+        'id="tab-perfil"',
+        'id="tab-dados"',
+        'data-tab="perfil"',
+        'data-tab="dados"',
     ):
         assert fragment in html, fragment
+
+    # R1: exactly three links, in order.
+    assert html.count('class="sidebar-link"') == 3
+    assert html.index("#/vagas") < html.index("#/kanban") < html.index("#/configuracoes")
+
+    # R4: Perfil and Dados left the sidebar.
+    for removed in ("#/perfil", "#/dados", 'id="page-perfil"', 'id="page-dados"'):
+        assert removed not in html, removed
+
+
+def test_dashboard_migrated_ids_survive_inside_the_config_tabs():
+    """CA9/R6: moving Perfil and Dados into tabs may only change the path.
+
+    The ids the frontend and the tests bind to must still exist, now nested in
+    `#page-configuracoes` / `#tab-perfil` / `#tab-dados` / `#page-kanban`.
+    """
+    with TestClient(app) as client:
+        html = client.get("/").text
+
+    config = html[html.index('id="page-configuracoes"') : html.index('id="page-kanban"')]
+    perfil = config[config.index('id="tab-perfil"') : config.index('id="tab-dados"')]
+    dados = config[config.index('id="tab-dados"') :]
+    kanban = html[html.index('id="page-kanban"') :]
+
+    for element_id in (
+        'id="profile-form"',
+        'id="clean-btn"',
+        'id="data-total"',
+        'id="source-counts"',
+    ):
+        assert element_id in config, element_id
+
+    for field in ("p-titles", "p-skills", "p-remote", "p-exclusions"):
+        assert f'id="{field}"' in perfil, field
+
+    for element_id in (
+        'id="data-total"',
+        'id="source-counts"',
+        'id="clean-btn"',
+    ):
+        assert element_id in dados, element_id
+
+    for status in ("CHECK", "RUNNING", "DONE"):
+        assert f'id="kanban-body-{status}"' in kanban, status
 
 
 def test_dashboard_profile_form_and_clean_button_exist():
