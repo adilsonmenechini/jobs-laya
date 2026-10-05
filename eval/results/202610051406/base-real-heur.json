@@ -1,0 +1,940 @@
+[
+  {
+    "file": "geekhunter_ai-engin.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "AI Engineer + LangChain + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 83.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 83.5
+    }
+  },
+  {
+    "file": "geekhunter_analista.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_desenvol.json",
+    "source": "geekhunter",
+    "expected": "medium",
+    "note": "DevOps + GCP, mas pleno",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 76.25
+    },
+    "combined": {
+      "match": "medium",
+      "score": 76.25
+    }
+  },
+  {
+    "file": "geekhunter_deveops-.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "DevOps + AWS + 5 anos",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "geekhunter_devops--.json",
+    "source": "geekhunter",
+    "expected": "medium",
+    "note": "SRE + Terraform + CI/CD + remoto, mas pleno (mesmo criterio das outras 5 vagas pleno)",
+    "heuristics_only": {
+      "match": "high",
+      "score": 91.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 91.0
+    }
+  },
+  {
+    "file": "geekhunter_devops-s.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_engenhei.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "AI + LangChain + K8s",
+    "heuristics_only": {
+      "match": "low",
+      "score": 56.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 56.0
+    }
+  },
+  {
+    "file": "geekhunter_ml-engin.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "ML + Terraform + K8s + AWS + remoto",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_platform.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_principa.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado + pré-vendas",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_qa-engin.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "QA fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 53.5
+    },
+    "combined": {
+      "match": "low",
+      "score": 53.5
+    }
+  },
+  {
+    "file": "geekhunter_senior-d.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_senior-m.json",
+    "source": "geekhunter",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "geekhunter_site-rel.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "SRE + K8s + observabilidade + remoto",
+    "heuristics_only": {
+      "match": "low",
+      "score": 59.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 59.0
+    }
+  },
+  {
+    "file": "geekhunter_sre---en.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "SRE + observabilidade + remoto",
+    "heuristics_only": {
+      "match": "low",
+      "score": 47.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 47.0
+    }
+  },
+  {
+    "file": "geekhunter_sre--sen.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "SRE + Terraform + K8s + Azure + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 85.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 85.0
+    }
+  },
+  {
+    "file": "geekhunter_sre-seni.json",
+    "source": "geekhunter",
+    "expected": "high",
+    "note": "SRE + AWS + Python + observabilidade",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12198836.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "DevOps sênior",
+    "heuristics_only": {
+      "match": "low",
+      "score": 31.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 31.0
+    }
+  },
+  {
+    "file": "gupy_12220389.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "Platform adjacente, dados",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12298004.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "Platform + principal",
+    "heuristics_only": {
+      "match": "high",
+      "score": 83.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 83.5
+    }
+  },
+  {
+    "file": "gupy_12421688.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "AI + LLM + platform",
+    "heuristics_only": {
+      "match": "high",
+      "score": 88.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 88.5
+    }
+  },
+  {
+    "file": "gupy_12455072.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "SRE + platform, mas pleno",
+    "heuristics_only": {
+      "match": "high",
+      "score": 92.25
+    },
+    "combined": {
+      "match": "high",
+      "score": 92.25
+    }
+  },
+  {
+    "file": "gupy_12459907.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "Platform + staff",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 70.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 70.0
+    }
+  },
+  {
+    "file": "gupy_12498580.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "SRE, mas pleno",
+    "heuristics_only": {
+      "match": "high",
+      "score": 88.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 88.5
+    }
+  },
+  {
+    "file": "gupy_12533478.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "SRE + remoto",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 78.5
+    },
+    "combined": {
+      "match": "medium",
+      "score": 78.5
+    }
+  },
+  {
+    "file": "gupy_12534574.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "DevOps especialista",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12566261.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "SRE sênior",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12571250.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "SRE + DevOps + coordenação",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12590656.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "DevOps + AWS + Python + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 91.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 91.0
+    }
+  },
+  {
+    "file": "gupy_12607005.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "DevOps, mas semi senior",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "gupy_12613042.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "AI + LLM + platform + sênior",
+    "heuristics_only": {
+      "match": "high",
+      "score": 88.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 88.5
+    }
+  },
+  {
+    "file": "gupy_12614793.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "DevOps + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 92.25
+    },
+    "combined": {
+      "match": "high",
+      "score": 92.25
+    }
+  },
+  {
+    "file": "gupy_12628069.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "SRE + observabilidade, mas analista",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 73.5
+    },
+    "combined": {
+      "match": "medium",
+      "score": 73.5
+    }
+  },
+  {
+    "file": "gupy_12640842.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "AI Engineer Senior — modalidade nao e criterio de match (14 outros high nao sao remotos)",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 69.75
+    },
+    "combined": {
+      "match": "medium",
+      "score": 69.75
+    }
+  },
+  {
+    "file": "gupy_12650308.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "DevOps + Azure + remoto",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 78.5
+    },
+    "combined": {
+      "match": "medium",
+      "score": 78.5
+    }
+  },
+  {
+    "file": "gupy_12656910.json",
+    "source": "gupy",
+    "expected": "low",
+    "note": "Júnior, fora do perfil sênior",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 66.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 66.0
+    }
+  },
+  {
+    "file": "gupy_12657833.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "AI + agentes + remoto",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "gupy_12659312.json",
+    "source": "gupy",
+    "expected": "high",
+    "note": "AI Engineer",
+    "heuristics_only": {
+      "match": "low",
+      "score": 22.25
+    },
+    "combined": {
+      "match": "low",
+      "score": 22.25
+    }
+  },
+  {
+    "file": "gupy_12664961.json",
+    "source": "gupy",
+    "expected": "medium",
+    "note": "AI, mas fullstack",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 78.5
+    },
+    "combined": {
+      "match": "medium",
+      "score": 78.5
+    }
+  },
+  {
+    "file": "indeed_013f671b.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "DBA fora do perfil",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 61.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 61.0
+    }
+  },
+  {
+    "file": "indeed_0655c7aa.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "SRE + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 93.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 93.5
+    }
+  },
+  {
+    "file": "indeed_0e73a4f4.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Rede/OT fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 31.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 31.0
+    }
+  },
+  {
+    "file": "indeed_0fa714c2.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Vendas fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 32.25
+    },
+    "combined": {
+      "match": "low",
+      "score": 32.25
+    }
+  },
+  {
+    "file": "indeed_205c42ed.json",
+    "source": "indeed",
+    "expected": "medium",
+    "note": "Config manager, não SRE/DevOps",
+    "heuristics_only": {
+      "match": "low",
+      "score": 59.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 59.0
+    }
+  },
+  {
+    "file": "indeed_50292bec.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "DevOps + AWS + lead + remoto",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 62.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 62.0
+    }
+  },
+  {
+    "file": "indeed_5d411b5d.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Estágio fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 19.75
+    },
+    "combined": {
+      "match": "low",
+      "score": 19.75
+    }
+  },
+  {
+    "file": "indeed_5ea5c7cf.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "Cloud sênior + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 89.25
+    },
+    "combined": {
+      "match": "high",
+      "score": 89.25
+    }
+  },
+  {
+    "file": "indeed_61a28b15.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "Cloud architect + remoto",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "indeed_6a29acc2.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "SRE especialista",
+    "heuristics_only": {
+      "match": "high",
+      "score": 92.25
+    },
+    "combined": {
+      "match": "high",
+      "score": 92.25
+    }
+  },
+  {
+    "file": "indeed_6c93724c.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "DevOps + SRE + remoto",
+    "heuristics_only": {
+      "match": "high",
+      "score": 91.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 91.0
+    }
+  },
+  {
+    "file": "indeed_7aefd65e.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "DBA fora do perfil",
+    "heuristics_only": {
+      "match": "high",
+      "score": 81.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 81.0
+    }
+  },
+  {
+    "file": "indeed_827582ee.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "DevOps + AWS + chief + remoto",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 70.5
+    },
+    "combined": {
+      "match": "medium",
+      "score": 70.5
+    }
+  },
+  {
+    "file": "indeed_89f7c633.json",
+    "source": "indeed",
+    "expected": "medium",
+    "note": "Cloud/SRE, mas pleno",
+    "heuristics_only": {
+      "match": "high",
+      "score": 91.0
+    },
+    "combined": {
+      "match": "high",
+      "score": 91.0
+    }
+  },
+  {
+    "file": "indeed_8f19678e.json",
+    "source": "indeed",
+    "expected": "medium",
+    "note": "Manager de architects, não hands-on",
+    "heuristics_only": {
+      "match": "low",
+      "score": 32.25
+    },
+    "combined": {
+      "match": "low",
+      "score": 32.25
+    }
+  },
+  {
+    "file": "indeed_91ddb9a0.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Estágio fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 29.75
+    },
+    "combined": {
+      "match": "low",
+      "score": 29.75
+    }
+  },
+  {
+    "file": "indeed_aca2611e.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "DBA fora do perfil",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 64.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 64.0
+    }
+  },
+  {
+    "file": "indeed_ae59986d.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Vendas fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 32.25
+    },
+    "combined": {
+      "match": "low",
+      "score": 32.25
+    }
+  },
+  {
+    "file": "indeed_af7140d9.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Java dev fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 59.75
+    },
+    "combined": {
+      "match": "low",
+      "score": 59.75
+    }
+  },
+  {
+    "file": "indeed_c010e7d1.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Backend fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 56.75
+    },
+    "combined": {
+      "match": "low",
+      "score": 56.75
+    }
+  },
+  {
+    "file": "indeed_c42b3253.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Data dev fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 49.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 49.0
+    }
+  },
+  {
+    "file": "indeed_cd668d69.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "AI engineer",
+    "heuristics_only": {
+      "match": "low",
+      "score": 54.5
+    },
+    "combined": {
+      "match": "low",
+      "score": 54.5
+    }
+  },
+  {
+    "file": "indeed_df875d8f.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "AI/ML + Python + senior",
+    "heuristics_only": {
+      "match": "high",
+      "score": 83.5
+    },
+    "combined": {
+      "match": "high",
+      "score": 83.5
+    }
+  },
+  {
+    "file": "indeed_e368d4f9.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "SRE + Cloud + senior",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 68.75
+    },
+    "combined": {
+      "match": "medium",
+      "score": 68.75
+    }
+  },
+  {
+    "file": "indeed_edc225d7.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "DevOps + AWS + chief",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 62.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 62.0
+    }
+  },
+  {
+    "file": "indeed_edfeab7b.json",
+    "source": "indeed",
+    "expected": "high",
+    "note": "DevOps + AWS + senior",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 62.0
+    },
+    "combined": {
+      "match": "medium",
+      "score": 62.0
+    }
+  },
+  {
+    "file": "indeed_f0b55248.json",
+    "source": "indeed",
+    "expected": "low",
+    "note": "Dados fora do perfil",
+    "heuristics_only": {
+      "match": "low",
+      "score": 54.0
+    },
+    "combined": {
+      "match": "low",
+      "score": 54.0
+    }
+  },
+  {
+    "file": "indeed_f275e834.json",
+    "source": "indeed",
+    "expected": "medium",
+    "note": "AI architect, não SRE/DevOps",
+    "heuristics_only": {
+      "match": "medium",
+      "score": 79.75
+    },
+    "combined": {
+      "match": "medium",
+      "score": 79.75
+    }
+  }
+]

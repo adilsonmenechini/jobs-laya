@@ -30,7 +30,7 @@ def build_engine(backend: str, device: str | None):
     return FakeEngine() if backend == "fake" else LayaEngine(device=device)
 
 
-def evaluate(engine, profile: dict, labels: list[dict]) -> list[dict]:
+def evaluate(engine, profile: dict, labels: list[dict], backend: str = "laya") -> list[dict]:
     heuristics = LayaInspiredClassifier(profile)
     rows = []
     for label in labels:
@@ -44,7 +44,9 @@ def evaluate(engine, profile: dict, labels: list[dict]) -> list[dict]:
             policy_engine = _CachedEngine(reading)
         else:
             policy_engine = _NoEngine()
-        combined = LayaJobClassifier(profile, policy_engine).classify(job)
+        # `backend` is provenance: it records which engine produced the
+        # verdict (decision.laya.backend).
+        combined = LayaJobClassifier(profile, policy_engine, backend=backend).classify(job)
         rows.append(
             {
                 "file": label["file"],
@@ -133,7 +135,7 @@ def main() -> int:
     profile = json.loads((ROOT / "data" / "profile.json").read_text(encoding="utf-8"))
     engine = build_engine(args.backend, args.device)
 
-    rows = evaluate(engine, profile, labels)
+    rows = evaluate(engine, profile, labels, args.backend)
     markdown = report(rows, args.backend)
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)

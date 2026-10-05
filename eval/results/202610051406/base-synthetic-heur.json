@@ -8,22 +8,14 @@
       "match": "high",
       "score": 88.5
     },
-    "laya_only": {
-      "match": "high",
-      "score": 93.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 84.88
+      "score": 88.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "platform_cloud",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "staff-platform-engineer-remote-en.json",
@@ -34,22 +26,14 @@
       "match": "high",
       "score": 86.0
     },
-    "laya_only": {
-      "match": "high",
-      "score": 96.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 83.5
+      "score": 86.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "platform_cloud",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 2
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "principal-reliability-remote-en.json",
@@ -60,22 +44,14 @@
       "match": "high",
       "score": 88.5
     },
-    "laya_only": {
-      "match": "high",
-      "score": 96.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 86.0
+      "score": 88.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "site_reliability",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 2
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "ai-engineer-llm-remote-en.json",
@@ -86,22 +62,14 @@
       "match": "high",
       "score": 83.5
     },
-    "laya_only": {
-      "match": "high",
-      "score": 93.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 88.88
+      "score": 83.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "ai_ml",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "devops-engineer-remote-en.json",
@@ -112,22 +80,14 @@
       "match": "high",
       "score": 86.0
     },
-    "laya_only": {
-      "match": "high",
-      "score": 93.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 82.38
+      "score": 86.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "devops",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "cloud-engineer-remote-en.json",
@@ -138,22 +98,14 @@
       "match": "high",
       "score": 88.0
     },
-    "laya_only": {
-      "match": "medium",
-      "score": 76.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 80.0
+      "score": 88.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "site_reliability",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "mlops-remote-en.json",
@@ -164,22 +116,14 @@
       "match": "medium",
       "score": 79.75
     },
-    "laya_only": {
-      "match": "medium",
-      "score": 76.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "medium",
-      "score": 78.75
+      "score": 79.75
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "ai_ml",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "devops-hybrid-london-en.json",
@@ -190,22 +134,14 @@
       "match": "medium",
       "score": 78.5
     },
-    "laya_only": {
-      "match": "medium",
-      "score": 79.67
-    },
+    "laya_only": null,
     "combined": {
       "match": "medium",
-      "score": 76.88
+      "score": 78.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "devops",
-      "remote": 0.1,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "devops-sales-engineer-en.json",
@@ -216,22 +152,14 @@
       "match": "medium",
       "score": 78.5
     },
-    "laya_only": {
-      "match": "low",
-      "score": 49.33
-    },
+    "laya_only": null,
     "combined": {
       "match": "medium",
-      "score": 64.25
+      "score": 78.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "product-marketing-cloud-keywords-en.json",
@@ -242,22 +170,14 @@
       "match": "high",
       "score": 88.0
     },
-    "laya_only": {
-      "match": "low",
-      "score": 49.33
-    },
+    "laya_only": null,
     "combined": {
-      "match": "medium",
-      "score": 73.0
+      "match": "high",
+      "score": 88.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "sales-manager-remote-en.json",
@@ -268,22 +188,14 @@
       "match": "low",
       "score": 41.0
     },
-    "laya_only": {
-      "match": "low",
-      "score": 37.33
-    },
+    "laya_only": null,
     "combined": {
       "match": "low",
-      "score": 41.5
+      "score": 41.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.9,
-      "skill_fit": 0.1,
-      "seniority": 2
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "frontend-engineer-remote-en.json",
@@ -294,22 +206,14 @@
       "match": "low",
       "score": 41.0
     },
-    "laya_only": {
-      "match": "low",
-      "score": 34.33
-    },
+    "laya_only": null,
     "combined": {
       "match": "low",
-      "score": 40.38
+      "score": 41.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.9,
-      "skill_fit": 0.1,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "engenheiro-devops-senior-remoto-pt.json",
@@ -320,22 +224,14 @@
       "match": "high",
       "score": 91.0
     },
-    "laya_only": {
-      "match": "high",
-      "score": 93.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 87.38
+      "score": 91.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "devops",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "sre-plataforma-remoto-pt.json",
@@ -346,22 +242,14 @@
       "match": "high",
       "score": 88.5
     },
-    "laya_only": {
-      "match": "high",
-      "score": 93.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "high",
-      "score": 84.88
+      "score": 88.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "site_reliability",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 1
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "engenheiro-cloud-remoto-pt.json",
@@ -372,22 +260,14 @@
       "match": "high",
       "score": 88.0
     },
-    "laya_only": {
-      "match": "low",
-      "score": 49.33
-    },
+    "laya_only": null,
     "combined": {
-      "match": "medium",
-      "score": 73.0
+      "match": "high",
+      "score": 88.0
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "devops-pleno-remoto-pt.json",
@@ -398,22 +278,14 @@
       "match": "high",
       "score": 88.5
     },
-    "laya_only": {
-      "match": "medium",
-      "score": 76.0
-    },
+    "laya_only": null,
     "combined": {
-      "match": "medium",
-      "score": 78.5
+      "match": "high",
+      "score": 88.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "devops",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "devops-junior-remoto-pt.json",
@@ -424,22 +296,14 @@
       "match": "medium",
       "score": 73.5
     },
-    "laya_only": {
-      "match": "medium",
-      "score": 76.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "medium",
-      "score": 67.25
+      "score": 73.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "devops",
-      "remote": 0.9,
-      "skill_fit": 0.9,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   },
   {
     "file": "estagio-contabilidade-presencial-pt.json",
@@ -450,21 +314,13 @@
       "match": "low",
       "score": 18.5
     },
-    "laya_only": {
-      "match": "low",
-      "score": 4.0
-    },
+    "laya_only": null,
     "combined": {
       "match": "low",
-      "score": 17.25
+      "score": 18.5
     },
-    "model": "fake",
-    "laya_ms": 1.0,
-    "laya_answers": {
-      "role_family": "other",
-      "remote": 0.1,
-      "skill_fit": 0.1,
-      "seniority": 0
-    }
+    "model": null,
+    "laya_ms": null,
+    "laya_answers": null
   }
 ]
