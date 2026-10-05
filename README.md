@@ -1,6 +1,6 @@
 # Job Classifier
 
-**MVP local para buscar vagas em quatro fontes, classificá-las contra um perfil profissional com o modelo Laya (ou fallback heurístico) e servi-las por API + dashboard.**
+**MVP local para buscar vagas em cinco fontes, classificá-las contra um perfil profissional com o modelo Laya (ou fallback heurístico) e servi-las por API + dashboard.**
 
 [![CI](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml/badge.svg)](https://github.com/adilsonmenechini/jobs-laya/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.13%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
@@ -9,14 +9,12 @@
 [Visão geral](#visão-geral) •
 [Stack](#stack) •
 [Instalação](#instalação) •
-[Rodando a API](#rodando-a-api) •
+[Dashboard](#dashboard) •
 [Como funciona](#como-funciona) •
 [Configuração](#configuração) •
 [Fontes](#fontes) •
 [API](#api) •
-[Tools locais](#tools-locais-read-only) •
-[Avaliação](#avaliação-eval) •
-[Testes, linter e CI](#testes-linter-segurança-e-ci) •
+[Testes, linter e CI](#testes-linter-e-ci) •
 [Estrutura](#estrutura-do-projeto) •
 [Limitações](#limitações-do-mvp)
 
@@ -26,14 +24,14 @@
 
 O pipeline faz seis coisas:
 
-1. buscar vagas no **LinkedIn** (browser local, Patchright), no **GeekHunter**
-   e na **Gupy** (HTTP público, sem login), no **Indeed** (API GraphQL
-   pública) e no **Glassdoor** (browser local);
+1. buscar vagas no **LinkedIn** e no **Glassdoor** (browser local, Patchright), no
+   **GeekHunter** e na **Gupy** (HTTP público, sem login) e no **Indeed** (API
+   GraphQL pública);
 2. obter detalhes;
 3. normalizar e deduplicar;
 4. classificar contra um perfil profissional;
 5. salvar em SQLite;
-6. listar e filtrar pela API.
+6. listar e filtrar pela API e pelo dashboard.
 
 A arquitetura usa **Laya de verdade** (o modelo de decisões tipadas da ConvAI,
 `laya[serve]`): o classifier combina as respostas `choice`, `score` e `noul`
@@ -45,6 +43,7 @@ política local — probabilidades calibradas em vez de geração livre.
 | Feature | Descrição |
 | --- | --- |
 | **5 fontes + `all`** | LinkedIn e Glassdoor via browser local (Patchright); GeekHunter, Gupy e Indeed via HTTP público, sem login |
+| **Kanban de candidaturas** | Colunas `CHECK` / `RUNNING` / `DONE`, persistidas em `kanban_jobs`, com snapshot próprio — o card sobrevive ao clean |
 | **Classifier Laya** | 4 perguntas tipadas num único forward pass + sinais heurísticos, com fallback automático para heurística |
 | **Deduplicação** | Por `(source, source_id)` — re-sincronizar atualiza, nunca duplica |
 | **API + dashboard** | FastAPI com filtros, `/health`, Swagger e frontend estático servido pela própria API |
@@ -55,15 +54,10 @@ política local — probabilidades calibradas em vez de geração livre.
 ## Stack
 
 - Python 3.13+
-- FastAPI
-- SQLAlchemy
-- SQLite
-- Pydantic
+- FastAPI · SQLAlchemy · SQLite · Pydantic
 - Laya (`laya[serve]`) + torch/transformers
-- Patchright (Chromium local)
-- BeautifulSoup
-- pytest
-- ruff
+- Patchright (Chromium local) · httpx · BeautifulSoup
+- pytest · ruff
 
 ## Instalação
 
@@ -93,26 +87,47 @@ A sessão fica salva no perfil persistente `~/.linkedin-laya/profile/` e é
 reusada por todas as chamadas seguintes. Repita o `make login` só se o cookie
 `li_at` expirar.
 
-## Rodando a API
+## Dashboard
 
 ```bash
 make run
 # equivalente a: uv run uvicorn app.main:app --reload --port 3080
 ```
 
-Dashboard (frontend estático servido pela própria API):
+O menu lateral tem três entradas: **Vagas**, **Kanban** e **Configurações**.
+Vagas é a tela inicial; Perfil e Dados moram como abas dentro de Configurações
+(`#/configuracoes/perfil`, `#/configuracoes/dados`).
 
-<http://localhost:3080/>
+Swagger em <http://localhost:3080/docs>.
 
-Ele lista as vagas classificadas com score, probabilidades, motivos e gaps,
-filtros (fonte/match/remoto/score/texto) e o formulário **Buscar e classificar**
-que dispara o sync (com seletor de fonte: LinkedIn, GeekHunter, Gupy,
-Indeed, Glassdoor ou todas).
-O badge no topo mostra o backend do classifier.
+### Vagas
 
-Swagger:
+Busca (`fonte`, `termos`, `local`, `quantidade`, `janela de recência` +
+**Buscar e classificar`), filtros (fonte, match, modalidade, cidade/país,
+score, busca textual) e a lista de vagas classificadas com score, badge de
+match e as ações **+ Add** (manda para o Kanban) e **Detalhes**.
 
-<http://localhost:3080/docs>
+![Tela de Vagas com busca, filtros e cards classificados](docs/images/vagas.png)
+
+### Kanban
+
+Três colunas — `CHECK`, `RUNNING`, `DONE` — movíveis pelo select e pelas
+setas de cada card. Um card sai da lista de Vagas ao ser adicionado, e a
+vaga **não volta a aparecer** lá enquanto estiver no Kanban.
+
+![Kanban com as três colunas e cards](docs/images/kanban.png)
+
+### Configurações
+
+Aba **Perfil** para editar os dados usados pelo classifier (títulos, senioridade,
+skills, foco, exclusões, remoto obrigatório). Aba **Dados** para ver o total
+de vagas por fonte e limpar as vagas coletadas — o clean **preserva** tudo que
+está no Kanban.
+
+![Configurações com as abas Perfil e Dados](docs/images/configuracoes.png)
+
+> Os prints usam um banco isolado semeado com as amostras de `eval/samples/`
+> e `CLASSIFIER_BACKEND=fake` — nenhum dado real do LinkedIn aparece neles.
 
 ## Como funciona
 
@@ -148,14 +163,6 @@ Swagger:
       GET /jobs omite as cardadas   snapshot sobrevive ao clean
 ```
 
-Fluxo de uma chamada:
-
-```
-sync → fonte(s) coletam → normaliza → dedup → classifier decide
-  → high/medium/low + probabilidades + motivos + gaps persistidos
-  → listagem/filtros pela API e pelo dashboard
-```
-
 O modelo só carrega no primeiro uso, nunca no startup — `GET /health`
 mostra `{backend, laya_ready, device}` e mantém boot e testes sem download.
 
@@ -164,7 +171,8 @@ mostra `{backend, laya_ready, device}` e mantém boot e testes sem download.
 ### Perfil
 
 O perfil padrão está em `data/profile.json`. Altere os títulos, senioridade,
-skills, cloud e preferências de remoto.
+skills e preferências de remoto pelo dashboard (Configurações → Perfil) ou
+editando o arquivo.
 
 #### Exclusões (dealbreakers)
 
@@ -186,7 +194,7 @@ Escolhido por `CLASSIFIER_BACKEND`:
 
 | Valor | O que é |
 |---|---|
-| `laya` (default) | Laya real via `laya[serve]` — 4 perguntas tipadas em 1 forward pass, combinadas com os sinais heurísticos. A **primeira classificação baixa o checkpoint (~800MB)** do Hugging Face. |
+| `laya` (default) | Laya real via `laya[serve]` — 4 perguntas tipadas em 1 forward pass, combinadas com os sinais heurísticos. A **primeira classificação baixa o checkpoint (~800 MB)** do Hugging Face. |
 | `fake` | Mesma política, mas com `FakeEngine` determinístico (keywords) — pipeline completo sem modelo. |
 | `heuristic` | Só a heurística antiga (`LayaInspiredClassifier`), sem modelo. |
 
@@ -203,7 +211,8 @@ Perguntas do Laya (todas em um passe, em `app/classifier/questions.py`):
 
 ### Variáveis de ambiente (`.env`)
 
-O arquivo `.env.example` traz a lista completa; as principais:
+O arquivo `.env.example` traz a lista completa; ver também `app/config.py`
+(nome das settings em `UPPER_CASE`). As principais:
 
 ```text
 DATABASE_URL=sqlite:///./data/jobs.db
@@ -222,15 +231,19 @@ GEEKHUNTER_BASE_URL=https://www.geekhunter.com
 GEEKHUNTER_DELAY_SECONDS=1.0
 GEEKHUNTER_PAGE_SIZE=25
 GEEKHUNTER_TIMEOUT_S=30.0
+GEEKHUNTER_MAX_RETRIES=2
+GEEKHUNTER_BACKOFF_SECONDS=5.0
 
 GUPY_BASE_URL=https://portal.gupy.io
 GUPY_DELAY_SECONDS=1.0
 GUPY_PAGE_SIZE=10
 GUPY_TIMEOUT_S=30.0
+GUPY_MAX_RETRIES=2
+GUPY_BACKOFF_SECONDS=5.0
 
 # Indeed (API GraphQL pública; credencial e mercado vêm do .env)
 INDEED_API_KEY=
-INDEED_CO=BR
+INDEED_COUNTRY=BR
 INDEED_LOCALE=pt-BR
 INDEED_BASE_URL=https://apis.indeed.com
 INDEED_DELAY_SECONDS=1.0
@@ -239,8 +252,7 @@ INDEED_TIMEOUT_S=30.0
 INDEED_MAX_RETRIES=2
 INDEED_BACKOFF_SECONDS=5.0
 
-# Glassdoor só via browser local: HTTP direto responde 403 (Cloudflare).
-# Nesta máquina o headless cai no desafio "Um momento…", então headless=false.
+# Glassdoor só via browser local: HTTP direto responde 403 (Cloudflare)
 GLASSDOOR_BASE_URL=https://www.glassdoor.com
 GLASSDOOR_DELAY_SECONDS=2.0
 GLASSDOOR_TIMEOUT_MS=30000
@@ -300,68 +312,28 @@ mapa `errors` por fonte (vazio quando tudo funcionou):
 {"synced": 25, "errors": {}}
 ```
 
-Exemplo com fonte única:
-
-```bash
-curl -X POST http://localhost:3080/jobs/sync \
-  -H 'Content-Type: application/json' \
-  -d '{"keywords": ["SRE"], "source": "geekhunter", "limit": 10}'
-# {"synced": 10, "errors": {}}
-```
-
 Deduplicação é por `(source, source_id)` — a mesma vaga re-sincronizada
 atualiza, nunca duplica, e o mesmo `source_id` de fontes diferentes convive
 no mesmo banco. Filtro na listagem: `GET /jobs?source=geekhunter`.
 
-### GeekHunter
+### Detalhes por fonte
 
-Os dados vêm do JSON-LD das páginas públicas (`ItemList` na listagem,
-`JobPosting` no detalhe), com fallback para o DOM renderizado.
+- **GeekHunter** — JSON-LD das páginas públicas (`ItemList` na listagem,
+  `JobPosting` no detalhe), com fallback para o DOM renderizado.
+- **Gupy** — API pública `GET /api/job-search/jobs` (`jobName`, `limit`,
+  `offset`). `location` é mapeado com cuidado: `remoto`/`remote` vira
+  `workplaceType=remote` (nunca `city=remoto`), nome completo de estado vira
+  `state=` (ex.: `Bahia`), qualquer outra coisa vira `city=`.
+- **Indeed** — API GraphQL pública `POST /graphql` (a mesma que o JobSpy
+  usa). Escolhida de propósito: a SERP em HTML **não traz descrição nem data
+  de publicação**, e o classifier pontua as duas. `location` vira o clause
+  `where:`; `posted_at` usa `dateOnIndeed` com fallback para `datePublished`.
+  Falha de transporte é **repetida** com backoff exponencial + jitter.
+- **Glassdoor** — SERP aberta via browser local e parseada pelos cards
+  (`data-test="job-title"`, `compactEmployerName`, `emp-location`,
+  `descSnippet`). `location` é **ignorado** (a busca cobre o Brasil inteiro).
+
 Somente leitura: nenhuma tool de escrita em nenhuma fonte.
-
-### Gupy
-
-API pública `GET /api/job-search/jobs` (`jobName`, `limit`, `offset`), sem
-login e sem browser. `location` é mapeado com cuidado: `remoto`/`remote` vira
-`workplaceType=remote` (nunca `city=remoto`), nome completo de estado vira
-`state=` (ex.: `Bahia`), qualquer outra coisa vira `city=`; `Brazil`/`brasil`
-não manda filtro. A descrição completa já vem na busca; `details()` só
-consulta a página SSR (`__NEXT_DATA__`) quando ela veio vazia.
-
-### Indeed
-
-API GraphQL pública `POST /graphql` (a mesma que o JobSpy usa), sem login e
-sem browser. Foi escolhida de propósito: a SERP em HTML **não traz descrição
-nem data de publicação**, e o classifier pontua as duas. Uma única requisição
-já devolve título, empresa, local, descrição completa (HTML), skills
-(`attributes`) e a URL de candidatura; `details()` é no-op documentado.
-
-`location` vira o clause `where:` — `Brazil`/`brasil` não manda filtro e
-`remoto` viaja como valor de local (o Indeed BR reporta vagas remotas com
-`city: "Remoto"`, daí o `remote: true`). `posted_at` usa `dateOnIndeed`
-(quando a vaga entrou no Indeed) com fallback para `datePublished`.
-Pagina por `cursor` até `indeed_page_size`, parando em página vazia ou sem
-cursor. Os headers de mercado `indeed-co` / `indeed-locale` (`INDEED_CO` /
-`INDEED_LOCALE`) selecionam o país — sem eles o Indeed responde outro.
-
-A credencial **nunca fica no código**: `INDEED_API_KEY` vive só no `.env`
-(chave pública do app oficial da Indeed). Sem ela a fonte recusa a busca
-antes de qualquer requisição e o sync reporta o erro apenas pra `indeed`.
-Falha de transporte (timeout, 5xx, conexão) é **repetida** com backoff
-exponencial + jitter — `indeed_max_retries` tentativas depois da primeira,
-base `indeed_backoff_seconds`. Erros permanentes (GraphQL `errors`, resposta
-não-JSON) não são repetidos: o endpoint já respondeu.
-
-### Glassdoor
-
-A SERP abre via browser local (Patchright) e é parseada pelos cards
-(`data-test="job-title"`, `compactEmployerName`, `emp-location`,
-`descSnippet`) mais o `jl=` da URL. `location` é **ignorado** (a busca cobre
-o Brasil inteiro) e `details()` é no-op documentado: todas as rotas de
-detalhe caem no desafio do Cloudflare no browser local (spec Non-Goals) — v1
-guarda o snippet + linha de `Habilidades:` da SERP. Desafio detectado
-(`Um momento…` / `Somente humanos`) vira `SourceUnavailableError`, então o
-sync responde 200 com `errors["glassdoor"]` sem derrubar as outras fontes.
 
 ## API
 
@@ -374,14 +346,13 @@ curl "http://localhost:3080/jobs?match=high&limit=20"
 Outros filtros:
 
 ```text
-GET /jobs
 GET /jobs?match=medium
 GET /jobs?remote=true
 GET /jobs?query=kubernetes
 GET /jobs?min_score=70
 GET /jobs?source=geekhunter
 GET /jobs/{job_id}
-GET /profile
+GET /profile · PUT /profile
 GET /health
 ```
 
@@ -513,11 +484,10 @@ make lint
 1. higiene (`pre-commit-hooks`): whitespace, EOF, yaml/toml válidos,
    arquivos >500KB, detecção de chave privada;
 2. `ruff check --fix` + `ruff format` (mesma versão do projeto, `v0.16.9`);
-3. `bandit -r app -ll` — análise de segurança estática (achados médios+;
-   neste momento: 0 achados no `app/`);
+3. `bandit -r app -ll` — análise de segurança estática (0 achados no `app/`);
 4. `gitleaks git --staged --redact` — caça a segredos no diff staged
    (usa o binário do `brew install gitleaks`; precisa estar no PATH);
-5. `pytest -q` — a suíte roda em ~0.5s (DB temporário e `FakeEngine`,
+5. `pytest -q` — a suíte roda em **~80s** (319 testes; DB temporário,
    sem download de modelo e sem browser).
 
 Rodar manualmente sobre tudo:
@@ -536,7 +506,6 @@ A branch protection em `develop` deve exigir os três checks.
 | Gate | pre-commit (local) | CI |
 | --- | --- | --- |
 | `ruff check` / `ruff format` | ✓ (`--fix`) | ✓ (`--check`, versão do `uv.lock`) |
-| Higiene (whitespace, yaml/toml, >500KB, chave privada) | ✓ | via `pytest` + ruff (higiene local) |
 | `bandit -r app -ll` (segurança estática) | ✓ | ✓ job `security` (`bandit==1.9.4`) |
 | `gitleaks` (segredos) | ✓ (diff staged) | ✓ job `security` (repo inteiro, `v8.30.1`) |
 | `pytest` | ✓ | ✓ job `test` (`uv sync --locked`) |
@@ -561,6 +530,7 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 ├── .env.example               # todas as variáveis de ambiente
 ├── data/
 │   └── profile.json           # perfil usado pelo classifier
+├── docs/images/               # prints do dashboard usados no README
 ├── eval/
 │   ├── evaluate.py            # ablação: heuristics only / laya only / combined
 │   ├── evaluation.md          # relatório gerado
@@ -568,17 +538,17 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 │   └── samples/               # 18 vagas fictícias + labels.json
 ├── plan/                      # sdd, sessions, tasks (artefatos de planejamento)
 ├── app/
-│   ├── main.py
-│   ├── config.py
-│   ├── db.py
-│   ├── models.py
+│   ├── main.py                # rotas FastAPI (jobs, kanban, profile, tools)
+│   ├── config.py              # settings (pydantic-settings)
+│   ├── db.py                  # engine, sessionmaker, migração de schema
+│   ├── models.py              # Job, KanbanJob
 │   ├── schemas.py
 │   ├── static/                # dashboard (index.html, app.js, style.css)
 │   ├── classifier/
 │   │   ├── __init__.py        # build_classifier (laya | fake | heuristic)
+│   │   ├── engine.py          # LayaEngine / FakeEngine (protocol Engine)
 │   │   ├── laya_classifier.py # heurístico (fallback)
 │   │   ├── laya_job_classifier.py # política Laya + sinais
-│   │   ├── engine.py          # LayaEngine / FakeEngine (protocol Engine)
 │   │   └── questions.py       # perguntas tipadas choice/noul/score
 │   ├── linkedin/
 │   │   ├── browser.py
@@ -591,35 +561,16 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 │   ├── sources/               # providers pluggables (Protocol JobSource)
 │   │   ├── __init__.py        # build_sources (registry injetável)
 │   │   ├── base.py            # JobSource + SourceUnavailableError
+│   │   ├── retry.py           # backoff + jitter compartilhado
 │   │   ├── linkedin.py        # adapter do LinkedInBrowserClient
 │   │   ├── geekhunter.py      # httpx + BeautifulSoup/JSON-LD (sem login)
 │   │   ├── gupy.py            # httpx + API JSON pública (sem login)
 │   │   ├── indeed.py          # httpx + API GraphQL pública (sem login)
 │   │   └── glassdoor.py       # browser + parser da SERP (Cloudflare)
 │   └── services/
-│       └── jobs.py            # sync dispatcher por fonte + listagem
-└── tests/
-    ├── conftest.py            # DB temporário (testes herméticos)
-    ├── fixtures_loader.py
-    ├── fixtures/              # HTML de exemplo dos parsers
-    ├── test_classifier.py
-    ├── test_laya_job_classifier.py
-    ├── test_dashboard.py
-    ├── test_api.py
-    ├── test_tools.py
-    ├── test_api_tools.py
-    ├── test_scrape.py
-    ├── test_parsing.py
-    ├── test_sources.py
-    ├── test_geekhunter.py
-    ├── test_geekhunter_source.py
-    ├── test_gupy_source.py
-    ├── test_indeed_source.py
-    ├── test_glassdoor_source.py
-    ├── test_jobs_source.py
-    ├── test_sync_dispatcher.py
-    ├── test_db_migration.py
-    └── test_browser_client.py
+│       ├── jobs.py            # sync dispatcher por fonte + listagem
+│       └── kanban.py          # criação idempotente + filtro do clean
+└── tests/                     # 26 arquivos: API, classifier, fontes, dashboard
 ```
 
 ## Limitações do MVP
@@ -641,3 +592,5 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 - Conteúdo do GeekHunter é em PT-BR: skills/sênioridade podem mapear
   diferente do LinkedIn para o mesmo perfil.
 - Não há candidatura automática (nenhuma fonte tem tool de escrita).
+- A aba **Dados** é um container: a organização interna (currículo, tecnologias,
+  experiências, preferências) ainda não foi construída.
