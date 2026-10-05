@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup
 
 from app.config import Settings, settings
 from app.sources.base import SourceUnavailableError
+from app.sources.retry import retry_on_transient
 
 SEARCH_PATH = "/api/job-search/jobs"
 TEXT_CLEAN = re.compile(r"\s+")
@@ -147,7 +148,11 @@ class GupySource:
 
     async def _fetch(self, url: str, params: dict | None = None) -> httpx.Response:
         try:
-            response = await self._client.get(url, params=params)
+            response = await retry_on_transient(
+                lambda: self._client.get(url, params=params),
+                max_retries=self._config.gupy_max_retries,
+                backoff_seconds=self._config.gupy_backoff_seconds,
+            )
             response.raise_for_status()
         except httpx.HTTPError as exc:
             raise SourceUnavailableError(f"gupy request failed: {exc}") from exc

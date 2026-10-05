@@ -120,47 +120,59 @@ async def sync_jobs(
     sources: dict[str, JobSource] | None = None,
     hours_old: int | None = None,
     delay_seconds: float | None = None,
+    sync_timeout_seconds: float | None = None,
 ) -> SyncOutcome:
     profile = load_profile(profile_path)
     classifier = build_classifier(profile)
     active = resolve_sources(source, sources)
     window = settings.hours_old if hours_old is None else hours_old
     pause = settings.sync_delay_seconds if delay_seconds is None else delay_seconds
+    timeout = (
+        settings.sync_timeout_seconds if sync_timeout_seconds is None else sync_timeout_seconds
+    )
     count = 0
     errors: dict[str, str] = {}
 
     per_keyword = max(1, limit // len(keywords))
-    for index, provider in enumerate(active):
-        if index and pause:
-            # Politeness between providers: a burst of back-to-back sources
-            # from one IP is what gets throttled (JobSpy-style site spacing).
-            await asyncio.sleep(pause)
-        try:
-            for keyword in keywords:
-                items = await provider.search(keyword, location, per_keyword)
-                for normalized in items[:per_keyword]:
-                    normalized = to_source_item(normalized, source=provider.name)
-                    if not is_fresh(normalized.get("posted_at"), window):
-                        continue  # outside the recency window — skip early
-                    if fetch_details:
-                        try:
-                            normalized = await provider.details(normalized)
-                        except Exception:
-                            # Partial-success: keep the search payload when
-                            # the detail fetch fails (any reason).
-                            pass
-                    upsert_job(db, normalized, classifier)
-                    count += 1
-        except SourceUnavailableError as exc:
-            # One dead source must not erase what the others delivered:
-            # results stay persisted and the failure is reported per source.
-            errors[provider.name] = str(exc)
-        except Exception as exc:
-            # Any other failure (parsing, DB, classifier) must also degrade
-            # only this source. CancelledError is BaseException, so deadline
-            # cancellation still propagates.
-            errors[provider.name] = f"unexpected error: {exc}"
-    return SyncOutcome(count=count, errors=errors)
+
+    async def _run_sync() -> SyncOutcome:
+        nonlocal count
+        for index, provider in enumerate(active):
+            if index and pause:
+                # Politeness between providers: a burst of back-to-back sources
+                # from one IP is what gets throttled (JobSpy-style site spacing).
+                await asyncio.sleep(pause)
+            try:
+                for keyword in keywords:
+                    items = await provider.search(keyword, location, per_keyword)
+                    for normalized in items[:per_keyword]:
+                        normalized = to_source_item(normalized, source=provider.name)
+                        if not is_fresh(normalized.get("posted_at"), window):
+                            continue  # outside the recency window — skip early
+                        if fetch_details:
+                            try:
+                                normalized = await provider.details(normalized)
+                            except Exception:
+                                # Partial-success: keep the search payload when
+                                # the detail fetch fails (any reason).
+                                pass
+                        upsert_job(db, normalized, classifier)
+                        count += 1
+            except SourceUnavailableError as exc:
+                # One dead source must not erase what the others delivered:
+                # results stay persisted and the failure is reported per source.
+                errors[provider.name] = str(exc)
+            except Exception as exc:
+                # Any other failure (parsing, DB, classifier) must also degrade
+                # only this source. CancelledError is BaseException, so deadline
+                # cancellation still propagates.
+                errors[provider.name] = f"unexpected error: {exc}"
+        return SyncOutcome(count=count, errors=errors)
+
+    if timeout and timeout > 0:
+        async with asyncio.timeout(timeout):
+            return await _run_sync()
+    return await _run_sync()
 
 
 def list_jobs(
