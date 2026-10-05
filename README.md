@@ -243,7 +243,7 @@ GUPY_BACKOFF_SECONDS=5.0
 
 # Indeed (API GraphQL pública; credencial e mercado vêm do .env)
 INDEED_API_KEY=
-INDEED_COUNTRY=BR
+INDEED_CO=BR
 INDEED_LOCALE=pt-BR
 INDEED_BASE_URL=https://apis.indeed.com
 INDEED_DELAY_SECONDS=1.0
