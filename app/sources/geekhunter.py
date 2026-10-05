@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 
 from app.config import Settings, settings
 from app.sources.base import SourceUnavailableError
+from app.sources.retry import retry_on_transient
 
 MODALITY_LABELS = {"Remoto", "Híbrido", "Presencial"}
 SENIORITY_LABELS = {
@@ -235,7 +236,11 @@ class GeekHunterSource:
 
     async def _get(self, url: str, params: dict | None = None) -> str:
         try:
-            response = await self._client.get(url, params=params)
+            response = await retry_on_transient(
+                lambda: self._client.get(url, params=params),
+                max_retries=self._config.geekhunter_max_retries,
+                backoff_seconds=self._config.geekhunter_backoff_seconds,
+            )
             response.raise_for_status()
         except httpx.HTTPError as exc:
             raise SourceUnavailableError(f"geekhunter request failed: {exc}") from exc

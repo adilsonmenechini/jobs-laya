@@ -114,6 +114,85 @@ async def test_search_wraps_network_errors():
         await source.search("SRE", "Brazil")
 
 
+# --------------------------------------------------------------------- retry
+
+
+@pytest.mark.asyncio
+async def test_search_retries_transient_failures_then_succeeds(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        if len(calls) < 3:
+            raise httpx.ConnectError("blip", request=request)
+        return httpx.Response(200, text=SEARCH)
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("app.sources.retry.random.uniform", lambda low, high: 0.0)
+
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 2
+    source._config.geekhunter_backoff_seconds = 5.0
+    items = await source.search("SRE", "Brazil", limit=5)
+
+    assert len(items) == 5
+    assert len(calls) == 3
+    assert slept == [5.0, 10.0]
+
+
+@pytest.mark.asyncio
+async def test_search_raises_after_exhausting_retries(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        raise httpx.ConnectError("down", request=request)
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("app.sources.retry.random.uniform", lambda low, high: 0.0)
+
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 2
+    source._config.geekhunter_backoff_seconds = 5.0
+    with pytest.raises(SourceUnavailableError, match="request failed"):
+        await source.search("SRE", "Brazil")
+
+    assert len(calls) == 3
+    assert slept == [5.0, 10.0]
+
+
+@pytest.mark.asyncio
+async def test_search_does_not_retry_permanent_errors(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(400, text="bad request")
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 3
+    source._config.geekhunter_backoff_seconds = 5.0
+
+    with pytest.raises(SourceUnavailableError):
+        await source.search("SRE", "Brazil")
+
+    assert len(calls) == 1
+    assert slept == []
+
+
 @pytest.mark.asyncio
 async def test_details_merges_without_wiping_search_data():
     def handler(request: httpx.Request) -> httpx.Response:

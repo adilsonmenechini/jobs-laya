@@ -339,3 +339,34 @@ def test_sync_endpoint_reports_unavailable_source(db):
 
     assert response.status_code == 503
     assert "geekhunter" in response.json()["detail"]
+
+
+# --------------------------------------------------------------------- deadline
+
+
+def test_sync_timeout_raises_when_deadline_exceeded(db):
+    """A slow source must not block the sync forever — deadline cancels it."""
+    import asyncio
+
+    class SlowSource:
+        name = "slow"
+
+        async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
+            await asyncio.sleep(10)
+            return []
+
+        async def details(self, item: dict) -> dict:
+            return item
+
+    with pytest.raises(TimeoutError):
+        run(db, "all", {"slow": SlowSource()}, sync_timeout_seconds=0.01)
+
+
+def test_sync_timeout_zero_disables_deadline(db):
+    """sync_timeout_seconds=0 must disable the timeout (no cancellation)."""
+    source = FakeSource("geekhunter", [gh_item("1")])
+
+    outcome = run(db, "all", {"geekhunter": source}, sync_timeout_seconds=0)
+
+    assert outcome.count == 1
+    assert outcome.errors == {}
