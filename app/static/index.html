@@ -5,32 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Job Classifier</title>
   <link rel="stylesheet" href="/static/style.css">
-  <style>
-    /* Abas de Configurações — apenas os tokens do design system existente.
-       style.css não é alterado nesta iteração; o estado ativo da aba é
-       controlado por aria-selected (mutado pelo hash router em app.js). */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin: 16px 22px 0;
-    }
-    .tab-btn {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-weight: 500;
-    }
-    .tab-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .tab-btn[aria-selected="true"] {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #04121f;
-      font-weight: 600;
-    }
-  </style>
 </head>
 <body>
   <header class="topbar">
