@@ -72,13 +72,8 @@ class LayaJobClassifier:
         seniority_value = SENIORITY_VALUE[min(2, max(0, view.seniority))]
         components["seniority"] = round(0.5 * components["seniority"] + 0.5 * seniority_value, 2)
 
-        # SPEC 202610051432: the weights now carry the `curriculum` component.
-        # Divide by the ACTIVE weights so a zeroed curriculum leaves the score
-        # exactly where it was before this change (CA1/CA6 — no 0.9x squeeze).
-        active = [key for key in components if key != "curriculum" or components[key]]
         score = round(
-            sum(components[key] * LayaInspiredClassifier.WEIGHTS[key] for key in active)
-            / sum(LayaInspiredClassifier.WEIGHTS[key] for key in active),
+            sum(components[key] * LayaInspiredClassifier.WEIGHTS[key] for key in components),
             2,
         )
         match = "high" if score >= 80 else "medium" if score >= 60 else "low"

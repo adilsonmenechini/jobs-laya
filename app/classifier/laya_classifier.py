@@ -24,20 +24,24 @@ class LayaInspiredClassifier:
     class later without changing the API or persistence layer.
     """
 
-    # SPEC 202610051432 (CA5): thresholds 80/60 stay fixed, `curriculum` is the
-    # new component and the original 7 weights are scaled by 0.9 so the sum
-    # remains exactly 1.0. The score divides by the sum of the ACTIVE weights:
-    # with no curriculum contribution the score is exactly the one before this
-    # change (CA1), and profile vs curriculum points stay auditable per source.
+    # SPEC 202610052324: the curriculum does NOT enter the score.
+    #
+    # Measured (plan/reviews/review-202610051432.md): a positive component
+    # moves every score up, pushing postings near the 80 threshold over it and
+    # emptying `medium` (2/5 -> 0/5). Filtering *which* skills counted did not
+    # help — the direction was the problem, not the aggregation. So the
+    # curriculum stays out of `WEIGHTS` entirely and surfaces in reasons/gaps,
+    # where it informs the decision without tilting it.
+    #
+    # These are the original weights, restored verbatim.
     WEIGHTS = {
-        "title": 0.18,
-        "seniority": 0.135,
-        "skills": 0.27,
-        "cloud": 0.09,
-        "experience": 0.09,
-        "ai": 0.045,
-        "remote": 0.09,
-        "curriculum": 0.10,
+        "title": 0.20,
+        "seniority": 0.15,
+        "skills": 0.30,
+        "cloud": 0.10,
+        "experience": 0.10,
+        "ai": 0.05,
+        "remote": 0.10,
     }
 
     # PT-BR → EN title mapping for common roles
@@ -293,7 +297,7 @@ class LayaInspiredClassifier:
 
         Only signals when BOTH sides state something: a level or years asked by
         the posting vs. the level/years verified by the curriculum. The profile
-        floor is never touched — this feeds `components["curriculum"]` only.
+        floor is never touched — this feeds `reasons` only.
         """
         if not curriculum.seniority and curriculum.years is None:
             return False, False
@@ -323,26 +327,22 @@ class LayaInspiredClassifier:
             return False, False
         return all(checks), True
 
-    def _curriculum_signals(self, matched_text: str) -> tuple[float, list[str], bool]:
-        """`components["curriculum"]`: curriculum skills/seniority vs. the job.
+    def _curriculum_context(self, matched_text: str) -> tuple[list[str], bool]:
+        """What the curriculum proves about this posting — narrative only.
 
-        Returns (score 0-100, matched skills, seniority met). Missing file or
-        no match => (0.0, [], False), which keeps score, reasons and gaps
-        identical to the pre-curriculum behaviour (CA1).
+        Returns (skills both sides share, seniority requirement met). These
+        feed `reasons`/`gaps`; they never reach `WEIGHTS` (see the note there
+        for the measurement that ruled out a score component). A missing file
+        or no overlap => ([], False), so the classification is byte-identical to
+        the pre-curriculum behaviour.
         """
         curriculum = load_curriculum(self.curriculum_path)
         if curriculum.version is None:
-            return 0.0, [], False
+            return [], False
 
-        matches = sorted(s for s in curriculum.skills if self._skill_in(matched_text, s))
-        seniority_met, seniority_available = self._curriculum_seniority(curriculum, matched_text)
-        # Same sizing as the profile skills component: a real posting names a
-        # handful of skills, so the denominator tracks the curriculum, capped.
-        denominator = min(5, len(curriculum.skills)) + (1 if seniority_available else 0)
-        if denominator == 0:
-            return 0.0, [], False
-        numerator = len(matches) + (1 if seniority_met else 0)
-        return round(min(100.0, 100.0 * numerator / denominator), 2), matches, seniority_met
+        shared = sorted(s for s in curriculum.skills if self._skill_in(matched_text, s))
+        seniority_met, _ = self._curriculum_seniority(curriculum, matched_text)
+        return shared, seniority_met
 
     def classify(self, job: dict) -> dict:
         title = self._norm(job.get("title", ""))
@@ -403,9 +403,8 @@ class LayaInspiredClassifier:
         remote_score = 100 if (remote or not self.profile.get("remote_required", False)) else 0
 
         excluded = self.exclusion_hits(matched_text)
-        curriculum_score, curriculum_matches, curriculum_seniority_met = self._curriculum_signals(
-            matched_text
-        )
+        # Context only: read after the score so it cannot influence it.
+        curriculum_matches, curriculum_seniority_met = self._curriculum_context(matched_text)
 
         components = {
             "title": round(title_score, 2),
@@ -415,17 +414,9 @@ class LayaInspiredClassifier:
             "experience": round(experience_score, 2),
             "ai": round(ai_score, 2),
             "remote": round(remote_score, 2),
-            "curriculum": curriculum_score,
         }
 
-        # Divide by the ACTIVE weights: when the curriculum contributes nothing
-        # it leaves the average and the score equals the pre-curriculum one.
-        active = [key for key in components if key != "curriculum" or components[key]]
-        score = round(
-            sum(components[key] * self.WEIGHTS[key] for key in active)
-            / sum(self.WEIGHTS[key] for key in active),
-            2,
-        )
+        score = round(sum(components[k] * self.WEIGHTS[k] for k in components), 2)
         if excluded:
             # Dealbreaker found: no score can rescue it — veto to low.
             score = min(score, 49.0)
@@ -443,11 +434,11 @@ class LayaInspiredClassifier:
         if ai_hits:
             reasons.append(f"AI/LLM relacionado: {', '.join(ai_hits[:8])}")
         # The origin must be explicit: the frontend cannot present these as
-        # profile findings (SPEC 202610051432 — "o reason cita a origem").
+        # profile findings. Curriculum context, never a score input.
         if curriculum_matches:
-            reasons.append(f"Currículo: {', '.join(curriculum_matches[:12])} presentes na vaga")
+            reasons.append(f"Currículo confirma: {', '.join(curriculum_matches[:12])}")
         if curriculum_seniority_met:
-            reasons.append("Currículo: senioridade verificada atende aos requisitos da vaga")
+            reasons.append("Currículo confirma: senioridade atende aos requisitos da vaga")
         if excluded:
             reasons.append(f"Exclusão do perfil atingida: {', '.join(excluded)}")
 

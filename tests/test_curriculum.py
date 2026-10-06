@@ -1,14 +1,22 @@
-"""Currículo Markdown como componente de score (SPEC 202610051432, caminho B).
+"""Currículo Markdown como contexto do classificador (SPEC 202610052324).
 
 O currículo nunca entra no `job_state()` do Laya: o modelo lê só a vaga. Ele é
-lido em `app/services/curriculum.py` e vira o componente `curriculum` do score,
-calculado em código depois do forward pass. Os testes abaixo travam os invariantes
-que o experimento de 202610051406 quebrou (ver `plan/reviews/review-202610051406.md`):
+lido em `app/services/curriculum.py` e aparece em `reasons`/`gaps` — **fora do
+score**.
 
-- CA1/CA10 — currículo ausente deixa o score idêntico;
+Por que fora do score (ver `plan/reviews/review-202610051432.md`): um componente
+positivo esvaziava a classe `medium` do eval (2/5 -> 0/5), porque qualquer sinal
+positivo empurra para cima as vagas perto do threshold 80. Filtrar *quais* skills
+contavam não resolveu (a opção "score por evidência" piorou: `low` 3/6 -> 2/6).
+A direção do empurrão era o problema, não a forma de agregar.
+
+Invariantes travados aqui:
+
+- CA1/CA10 — currículo ausente **ou presente** deixa o score idêntico;
+- CA6   — o currículo nunca cruza um threshold de classificação;
 - CA7   — nenhuma contaminação de sujeito (vaga fora do perfil não vira infra);
-- CA2   — a mudança de score cita a ORIGEM do sinal;
-- CA5   — thresholds 80/60 intactos e soma dos pesos em 1.0.
+- CA2   — o reason cita a ORIGEM do sinal (currículo, não profile);
+- CA5   — thresholds 80/60 intactos e `WEIGHTS` no formato original de 7 chaves.
 """
 
 import pytest
@@ -25,8 +33,8 @@ PROFILE = {
     "exclusions": ["inglês fluente"],
 }
 
-# Two profiles that differ ONLY in what the job asks for, so any score gap can
-# only come from the curriculum component.
+# Two postings that differ ONLY in what they ask for, so any score gap could
+# only come from the curriculum — which must never happen.
 HIGH_JOB = {
     "title": "Senior SRE",
     "company": "Acme",
@@ -75,56 +83,54 @@ def classify(job: dict, curriculum_path=None) -> dict:
 
 
 def test_missing_curriculum_leaves_the_score_untouched(curriculum_file):
-    """CA1/CA10: no file => component 0 and the pre-curriculum score, no raise."""
+    """CA1/CA10: no file => the pre-curriculum score, no raise, no reason."""
     assert not curriculum_file.exists()
 
     result = classify(HIGH_JOB, curriculum_file)
 
-    assert result["decision"]["score"]["components"]["curriculum"] == 0
-    # Without the curriculum the score equals the plain 7-weight average.
+    # The score is the plain 7-weight average — no curriculum component exists.
+    components = result["decision"]["score"]["components"]
+    assert "curriculum" not in components
     expected = round(
-        sum(
-            value * LayaInspiredClassifier.WEIGHTS[key]
-            for key, value in result["decision"]["score"]["components"].items()
-            if key != "curriculum"
-        )
-        / sum(
-            LayaInspiredClassifier.WEIGHTS[key]
-            for key in result["decision"]["score"]["components"]
-            if key != "curriculum"
-        ),
+        sum(value * LayaInspiredClassifier.WEIGHTS[key] for key, value in components.items()),
         2,
     )
     assert result["score"] == expected
     assert not any("Currículo" in reason for reason in result["reasons"])
 
 
-def test_curriculum_without_any_match_scores_zero(curriculum_file):
-    """A curriculum that names nothing from the posting adds no signal."""
+def test_curriculum_without_any_match_changes_nothing(curriculum_file):
+    """A curriculum naming nothing from the posting produces no context at all."""
     baseline = classify(HIGH_JOB)
     curriculum_file.write_text(IRRELEVANT_CURRICULUM, encoding="utf-8")
 
     result = classify(HIGH_JOB, curriculum_file)
 
-    assert result["decision"]["score"]["components"]["curriculum"] == 0
     assert result["score"] == baseline["score"]
+    assert result["match"] == baseline["match"]
+    assert not any("Currículo" in reason for reason in result["reasons"])
 
 
-def test_curriculum_with_match_changes_the_score_and_names_the_origin(curriculum_file):
-    """CA2: the reason must say the skills came from the CURRICULUM, not the profile."""
+def test_curriculum_names_the_origin_without_moving_the_score(curriculum_file):
+    """CA2: the reason cites the CURRICULUM as the source, and only that.
+
+    The reason must say the skills came from the curriculum, not the profile —
+    and, per SPEC 202610052324, the score must NOT move.
+    """
     baseline = classify(HIGH_JOB)
     curriculum_file.write_text(MATCHING_CURRICULUM, encoding="utf-8")
     result = classify(HIGH_JOB, curriculum_file)
 
-    assert result["decision"]["score"]["components"]["curriculum"] > 0
-    assert result["score"] > baseline["score"]
+    # CA6: context never tilts the decision.
+    assert result["score"] == baseline["score"]
+    assert result["match"] == baseline["match"]
+    assert "curriculum" not in result["decision"]["score"]["components"]
+
     curriculum_reasons = [r for r in result["reasons"] if r.startswith("Currículo")]
     assert curriculum_reasons
-    # The origin must be explicit, and the skills are the canonical lowercase
-    # vocabulary terms the crossing found (`kubernetes`, not the raw Markdown).
-    matching = [r for r in curriculum_reasons if "presentes na vaga" in r]
-    assert matching
-    assert "kubernetes" in matching[0]
+    # The skills are the canonical lowercase vocabulary terms the crossing
+    # found (`kubernetes`, not the raw Markdown).
+    assert "kubernetes" in curriculum_reasons[0]
 
 
 # --------------------------------------------------------------------------- #
@@ -195,10 +201,9 @@ def test_curriculum_does_not_touch_profile_skill_and_seniority_components(
     without = classify(HIGH_JOB)["decision"]["score"]["components"]
     with_curriculum = classify(HIGH_JOB, curriculum_file)["decision"]["score"]["components"]
 
-    assert with_curriculum["skills"] == without["skills"]
-    assert with_curriculum["seniority"] == without["seniority"]
-    assert with_curriculum["title"] == without["title"]
-    assert with_curriculum["curriculum"] > 0
+    assert with_curriculum == without
+    # The curriculum contributes no component at all (SPEC 202610052324).
+    assert "curriculum" not in with_curriculum
 
 
 # --------------------------------------------------------------------------- #
@@ -206,12 +211,21 @@ def test_curriculum_does_not_touch_profile_skill_and_seniority_components(
 # --------------------------------------------------------------------------- #
 
 
-def test_weights_sum_to_one_and_keep_the_new_component():
+def test_weights_are_the_original_seven_and_sum_to_one():
+    """CA5: the curriculum has NO weight — the score formula is untouched."""
     weights = LayaInspiredClassifier.WEIGHTS
 
     assert abs(sum(weights.values()) - 1.0) < 1e-9
-    assert weights["curriculum"] == 0.10
-    assert "skills" in weights and weights["skills"] > 0
+    assert "curriculum" not in weights
+    assert weights == {
+        "title": 0.20,
+        "seniority": 0.15,
+        "skills": 0.30,
+        "cloud": 0.10,
+        "experience": 0.10,
+        "ai": 0.05,
+        "remote": 0.10,
+    }
 
 
 def test_thresholds_are_80_and_60(curriculum_file):
@@ -349,7 +363,8 @@ def test_skill_match_respects_word_boundaries(curriculum_file):
 
     assert "go" in parsed.skills  # from "golang", not from a substring
     job = {**HIGH_JOB, "description": "Reaching going to market."}
-    assert classify(job, curriculum_file)["decision"]["score"]["components"]["curriculum"] == 0
+    result = classify(job, curriculum_file)
+    assert not any("Currículo" in reason for reason in result["reasons"])
 
 
 # --------------------------------------------------------------------------- #
@@ -370,14 +385,14 @@ def test_output_contract_is_unchanged(curriculum_file):
     assert abs(sum(result["decision"]["choice"]["probabilities"].values()) - 1.0) < 1e-6
 
 
-def test_curriculum_component_is_reported_in_the_decision(curriculum_file):
-    """The score must stay auditable: profile vs curriculum points are readable."""
+def test_the_decision_carries_no_curriculum_component(curriculum_file):
+    """SPEC 202610052324: the score components are the original seven."""
     curriculum_file.write_text(MATCHING_CURRICULUM, encoding="utf-8")
 
     components = classify(HIGH_JOB, curriculum_file)["decision"]["score"]["components"]
 
-    assert "curriculum" in components
-    assert components["curriculum"] > 0
+    assert "curriculum" not in components
+    assert set(components) == set(LayaInspiredClassifier.WEIGHTS)
 
 
 def test_classifier_reloads_the_curriculum_on_every_call(curriculum_file):
@@ -388,8 +403,10 @@ def test_classifier_reloads_the_curriculum_on_every_call(curriculum_file):
     curriculum_file.write_text(MATCHING_CURRICULUM, encoding="utf-8")
     after = classifier.classify(HIGH_JOB)
 
-    assert before["score"] != after["score"]
-    assert after["decision"]["score"]["components"]["curriculum"] > 0
+    # The score cannot move, but the context must appear immediately.
+    assert before["score"] == after["score"]
+    assert not any("Currículo" in reason for reason in before["reasons"])
+    assert any("Currículo" in reason for reason in after["reasons"])
 
 
 def test_curriculum_path_defaults_are_used_when_none_is_given():
@@ -397,7 +414,7 @@ def test_curriculum_path_defaults_are_used_when_none_is_given():
     parsed = LayaInspiredClassifier(PROFILE, None).classify(HIGH_JOB)
 
     assert 0 <= parsed["score"] <= 100
-    assert "curriculum" in parsed["decision"]["score"]["components"]
+    assert "curriculum" not in parsed["decision"]["score"]["components"]
 
 
 def test_profile_json_alone_still_classifies_without_a_curriculum(curriculum_file):
