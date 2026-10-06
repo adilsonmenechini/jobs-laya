@@ -1,7 +1,7 @@
 [project]
 name = "job-classifier"
-version = "0.1.0"
-description = "Multi-source job collector (LinkedIn, GeekHunter) and Laya-inspired classifier"
+version = "0.2.0"
+description = "Multi-source job collector (LinkedIn, GeekHunter, Gupy, Indeed, Glassdoor), Laya-backed classifier and application Kanban"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.115,<1",
