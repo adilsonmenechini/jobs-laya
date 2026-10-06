@@ -1,6 +1,10 @@
 import re
 import unicodedata
 from dataclasses import dataclass
+from pathlib import Path
+
+from app.services.curriculum import Curriculum
+from app.services.curriculum import load as load_curriculum
 
 
 @dataclass(frozen=True)
@@ -20,6 +24,16 @@ class LayaInspiredClassifier:
     class later without changing the API or persistence layer.
     """
 
+    # SPEC 202610052324: the curriculum does NOT enter the score.
+    #
+    # Measured (plan/reviews/review-202610051432.md): a positive component
+    # moves every score up, pushing postings near the 80 threshold over it and
+    # emptying `medium` (2/5 -> 0/5). Filtering *which* skills counted did not
+    # help — the direction was the problem, not the aggregation. So the
+    # curriculum stays out of `WEIGHTS` entirely and surfaces in reasons/gaps,
+    # where it informs the decision without tilting it.
+    #
+    # These are the original weights, restored verbatim.
     WEIGHTS = {
         "title": 0.20,
         "seniority": 0.15,
@@ -158,8 +172,11 @@ class LayaInspiredClassifier:
         "mcp": "mcp",
     }
 
-    def __init__(self, profile: dict):
+    def __init__(self, profile: dict, curriculum_path: str | Path | None = None):
         self.profile = profile
+        # Optional curriculum (path B): read on every classify() so a file save
+        # takes effect without rebuilding the classifier. None => default path.
+        self.curriculum_path = curriculum_path
         self.skills = {self._norm(x) for x in profile.get("skills", [])}
         self.titles = {self._norm(x) for x in profile.get("titles", [])}
         self.seniority = {self._norm(x) for x in profile.get("seniority", [])}
@@ -275,6 +292,58 @@ class LayaInspiredClassifier:
                 hits.append("5+ anos de experiência")
         return hits
 
+    def _curriculum_seniority(self, curriculum: Curriculum, matched_text: str) -> tuple[bool, bool]:
+        """(requirement met, confrontable) for the candidate's verified seniority.
+
+        Only signals when BOTH sides state something: a level or years asked by
+        the posting vs. the level/years verified by the curriculum. The profile
+        floor is never touched — this feeds `reasons` only.
+        """
+        if not curriculum.seniority and curriculum.years is None:
+            return False, False
+
+        folded = self._fold(matched_text)
+        job_levels = [
+            level
+            for word, level in self.SENIORITY_LEVELS.items()
+            if re.search(rf"(?<!\w){re.escape(self._fold(word))}(?!\w)", folded)
+        ]
+        job_years = [int(n) for n, _ in self.EXPERIENCE_PATTERN.findall(matched_text)]
+        candidate_level = max(
+            (
+                self.SENIORITY_LEVELS[term]
+                for term in curriculum.seniority
+                if term in self.SENIORITY_LEVELS
+            ),
+            default=None,
+        )
+
+        checks = []
+        if job_levels and candidate_level is not None:
+            checks.append(candidate_level >= max(job_levels))
+        if job_years and curriculum.years is not None:
+            checks.append(curriculum.years >= max(job_years))
+        if not checks:
+            return False, False
+        return all(checks), True
+
+    def _curriculum_context(self, matched_text: str) -> tuple[list[str], bool]:
+        """What the curriculum proves about this posting — narrative only.
+
+        Returns (skills both sides share, seniority requirement met). These
+        feed `reasons`/`gaps`; they never reach `WEIGHTS` (see the note there
+        for the measurement that ruled out a score component). A missing file
+        or no overlap => ([], False), so the classification is byte-identical to
+        the pre-curriculum behaviour.
+        """
+        curriculum = load_curriculum(self.curriculum_path)
+        if curriculum.version is None:
+            return [], False
+
+        shared = sorted(s for s in curriculum.skills if self._skill_in(matched_text, s))
+        seniority_met, _ = self._curriculum_seniority(curriculum, matched_text)
+        return shared, seniority_met
+
     def classify(self, job: dict) -> dict:
         title = self._norm(job.get("title", ""))
         description = self._norm(job.get("description", ""))
@@ -334,6 +403,8 @@ class LayaInspiredClassifier:
         remote_score = 100 if (remote or not self.profile.get("remote_required", False)) else 0
 
         excluded = self.exclusion_hits(matched_text)
+        # Context only: read after the score so it cannot influence it.
+        curriculum_matches, curriculum_seniority_met = self._curriculum_context(matched_text)
 
         components = {
             "title": round(title_score, 2),
@@ -362,6 +433,12 @@ class LayaInspiredClassifier:
             reasons.append("Vaga indica trabalho remoto")
         if ai_hits:
             reasons.append(f"AI/LLM relacionado: {', '.join(ai_hits[:8])}")
+        # The origin must be explicit: the frontend cannot present these as
+        # profile findings. Curriculum context, never a score input.
+        if curriculum_matches:
+            reasons.append(f"Currículo confirma: {', '.join(curriculum_matches[:12])}")
+        if curriculum_seniority_met:
+            reasons.append("Currículo confirma: senioridade atende aos requisitos da vaga")
         if excluded:
             reasons.append(f"Exclusão do perfil atingida: {', '.join(excluded)}")
 

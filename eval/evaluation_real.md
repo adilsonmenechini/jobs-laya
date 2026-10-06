@@ -5,18 +5,18 @@ Backend: `fake` — 67 vagas reais rotuladas
 
 | Screener | Exact matches | high | medium | low |
 |---|---|---|---|---|
-| Heuristics only | 38/67 | 17/35 | 5/12 | 16/20 |
-| Combined policy | 27/67 | 3/35 | 6/12 | 18/20 |
+| Heuristics only | 37/67 | 17/35 | 4/12 | 16/20 |
+| Combined policy | 27/67 | 3/35 | 7/12 | 17/20 |
 
 | Job | Source | Expected | Heuristics | Combined |
 |---|---|---|---|---|
-| geekhunter_ai-engin.json | geekhunter | high | high (94) | medium (76) ✗ |
+| geekhunter_ai-engin.json | geekhunter | high | high (84) | medium (74) ✗ |
 | geekhunter_analista.json | geekhunter | low | low (49) | low (49) |
-| geekhunter_desenvol.json | geekhunter | medium | medium (64) | medium (62) |
+| geekhunter_desenvol.json | geekhunter | medium | medium (76) | medium (70) |
 | geekhunter_deveops-.json | geekhunter | high | high (81) | medium (73) ✗ |
 | geekhunter_devops--.json | geekhunter | medium | high (91) ✗ | medium (73) |
 | geekhunter_devops-s.json | geekhunter | low | low (49) | low (49) |
-| geekhunter_engenhei.json | geekhunter | high | medium (66) ✗ | medium (62) ✗ |
+| geekhunter_engenhei.json | geekhunter | high | low (56) ✗ | medium (61) ✗ |
 | geekhunter_ml-engin.json | geekhunter | high | low (49) ✗ | low (49) ✗ |
 | geekhunter_platform.json | geekhunter | low | low (49) | low (49) |
 | geekhunter_principa.json | geekhunter | low | low (49) | low (48) |
@@ -33,7 +33,7 @@ Backend: `fake` — 67 vagas reais rotuladas
 | gupy_12421688.json | gupy | high | high (88) | medium (78) ✗ |
 | gupy_12455072.json | gupy | medium | high (92) ✗ | medium (74) |
 | gupy_12459907.json | gupy | high | medium (70) ✗ | medium (72) ✗ |
-| gupy_12498580.json | gupy | medium | medium (76) | medium (62) |
+| gupy_12498580.json | gupy | medium | high (88) ✗ | medium (70) |
 | gupy_12533478.json | gupy | high | medium (78) ✗ | medium (72) ✗ |
 | gupy_12534574.json | gupy | high | high (81) | medium (73) ✗ |
 | gupy_12566261.json | gupy | high | high (81) | medium (73) ✗ |
@@ -42,13 +42,13 @@ Backend: `fake` — 67 vagas reais rotuladas
 | gupy_12607005.json | gupy | medium | high (81) ✗ | high (80) ✗ |
 | gupy_12613042.json | gupy | high | high (88) | medium (70) ✗ |
 | gupy_12614793.json | gupy | high | high (92) | medium (74) ✗ |
-| gupy_12628069.json | gupy | medium | medium (61) | low (57) ✗ |
-| gupy_12640842.json | gupy | high | medium (80) ✗ | medium (66) ✗ |
+| gupy_12628069.json | gupy | medium | medium (74) | medium (66) |
+| gupy_12640842.json | gupy | high | medium (70) ✗ | medium (65) ✗ |
 | gupy_12650308.json | gupy | high | medium (78) ✗ | medium (64) ✗ |
-| gupy_12656910.json | gupy | low | medium (76) ✗ | low (56) |
+| gupy_12656910.json | gupy | low | medium (66) ✗ | low (54) |
 | gupy_12657833.json | gupy | high | low (49) ✗ | low (49) ✗ |
-| gupy_12659312.json | gupy | high | low (32) ✗ | low (31) ✗ |
-| gupy_12664961.json | gupy | medium | high (88) ✗ | low (58) ✗ |
+| gupy_12659312.json | gupy | high | low (22) ✗ | low (30) ✗ |
+| gupy_12664961.json | gupy | medium | medium (78) | low (58) ✗ |
 | indeed_013f671b.json | indeed | low | medium (61) ✗ | medium (64) ✗ |
 | indeed_0655c7aa.json | indeed | high | high (94) | high (91) |
 | indeed_0e73a4f4.json | indeed | low | low (31) | low (26) |
@@ -60,9 +60,9 @@ Backend: `fake` — 67 vagas reais rotuladas
 | indeed_61a28b15.json | indeed | high | low (49) ✗ | low (49) ✗ |
 | indeed_6a29acc2.json | indeed | high | high (92) | medium (74) ✗ |
 | indeed_6c93724c.json | indeed | high | high (91) | medium (73) ✗ |
-| indeed_7aefd65e.json | indeed | low | medium (68) ✗ | low (54) |
+| indeed_7aefd65e.json | indeed | low | high (81) ✗ | medium (63) ✗ |
 | indeed_827582ee.json | indeed | high | medium (70) ✗ | medium (62) ✗ |
-| indeed_89f7c633.json | indeed | medium | medium (78) | medium (64) |
+| indeed_89f7c633.json | indeed | medium | high (91) ✗ | medium (73) |
 | indeed_8f19678e.json | indeed | medium | low (32) ✗ | low (35) ✗ |
 | indeed_91ddb9a0.json | indeed | low | low (30) | low (18) |
 | indeed_aca2611e.json | indeed | low | medium (64) ✗ | low (48) |
@@ -70,7 +70,7 @@ Backend: `fake` — 67 vagas reais rotuladas
 | indeed_af7140d9.json | indeed | low | low (60) | medium (64) ✗ |
 | indeed_c010e7d1.json | indeed | low | low (57) | low (36) |
 | indeed_c42b3253.json | indeed | low | low (49) | low (49) |
-| indeed_cd668d69.json | indeed | high | medium (64) ✗ | medium (66) ✗ |
+| indeed_cd668d69.json | indeed | high | low (54) ✗ | medium (66) ✗ |
 | indeed_df875d8f.json | indeed | high | high (84) | high (81) |
 | indeed_e368d4f9.json | indeed | high | medium (69) ✗ | medium (68) ✗ |
 | indeed_edc225d7.json | indeed | high | medium (62) ✗ | medium (64) ✗ |

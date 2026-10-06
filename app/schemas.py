@@ -51,6 +51,18 @@ class ProfileOut(BaseModel):
     exclusions: list[str] = Field(default_factory=list)
 
 
+class CurriculumIn(BaseModel):
+    """PUT body: the raw markdown (a separate file from `profile.json`)."""
+
+    content: str = ""
+
+
+class CurriculumOut(BaseModel):
+    content: str
+    # sha256 of the bytes on disk; None when the file does not exist.
+    version: str | None = None
+
+
 class KanbanCreateIn(BaseModel):
     source: str = Field(max_length=32)
     source_id: str = Field(max_length=128)

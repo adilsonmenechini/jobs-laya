@@ -297,6 +297,9 @@ function listToTextarea(items) {
 }
 
 async function loadProfile() {
+  // A aba Perfil abre aqui (navigate → loadProfile): o currículo segue o
+  // mesmo gatilho, sem mexer no roteador de hash (item 11).
+  loadCurriculum();
   const status = $("#profile-status");
   status.textContent = "";
   try {
@@ -337,6 +340,39 @@ async function saveProfile(event) {
       body: JSON.stringify(payload),
     });
     status.textContent = "Perfil salvo com sucesso.";
+    status.className = "form-status ok";
+  } catch (err) {
+    status.textContent = `Erro: ${err.message}`;
+    status.className = "form-status error";
+  }
+}
+
+// ── Curriculum (Configurações → aba Perfil) ────────────────────────────────
+
+async function loadCurriculum() {
+  const status = $("#curriculum-status");
+  status.textContent = "";
+  try {
+    const data = await getJSON("/curriculum");
+    $("#curriculum-md").value = data.content || "";
+  } catch (err) {
+    status.textContent = `Erro ao carregar currículo: ${err.message}`;
+    status.className = "form-status error";
+  }
+}
+
+async function saveCurriculum(event) {
+  event.preventDefault();
+  const status = $("#curriculum-status");
+  status.className = "form-status";
+  status.textContent = "Salvando…";
+  try {
+    await getJSON("/curriculum", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: $("#curriculum-md").value }),
+    });
+    status.textContent = "Currículo salvo com sucesso.";
     status.className = "form-status ok";
   } catch (err) {
     status.textContent = `Erro: ${err.message}`;
@@ -498,6 +534,7 @@ $("#f-query").addEventListener("keydown", (event) => {
   if (event.key === "Enter") loadJobs();
 });
 $("#profile-form").addEventListener("submit", saveProfile);
+$("#curriculum-form").addEventListener("submit", saveCurriculum);
 $("#clean-btn").addEventListener("click", cleanJobs);
 window.addEventListener("hashchange", navigate);
 

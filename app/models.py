@@ -26,6 +26,10 @@ class Job(Base):
     decision: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     reasons: Mapped[list | None] = mapped_column(JSON, nullable=True)
     gaps: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # sha256 of data/curriculum.md at classify time (SPEC 202610051432, R8):
+    # stamping happens where the verdict is written; NULL when there was no
+    # curriculum. Editing the file never rewrites historical rows (R9).
+    curriculum_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     raw: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))

@@ -313,6 +313,20 @@ details .gaps li { color: var(--medium); }
 .form-status.ok { color: var(--high); }
 .form-status.error { color: var(--low); }
 
+/* ── Curriculum form (Configurações → aba Perfil) ───────────────────────── */
+
+#curriculum-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+#curriculum-md {
+  min-height: 220px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 /* ── Data page ──────────────────────────────────────────────────────────── */
 
 .data-summary {

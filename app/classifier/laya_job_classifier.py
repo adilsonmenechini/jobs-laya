@@ -8,6 +8,8 @@ code; the policy merges them into
 and tests do not care which engine produced the verdict.
 """
 
+from pathlib import Path
+
 from app.classifier.engine import Engine, EngineResult
 from app.classifier.laya_classifier import LayaInspiredClassifier
 from app.classifier.questions import job_state
@@ -18,13 +20,19 @@ ROLE_FAMILIES_IN_PROFILE = {"site_reliability", "devops", "platform_cloud", "ai_
 
 
 class LayaJobClassifier:
-    def __init__(self, profile: dict, engine: Engine, backend: str) -> None:
+    def __init__(
+        self,
+        profile: dict,
+        engine: Engine,
+        backend: str,
+        curriculum_path: str | Path | None = None,
+    ) -> None:
         self.profile = profile
         self.engine = engine
         # Provenance: which backend produced this decision. Required — a silent
         # default of "laya" is exactly the lie this parameter exists to prevent.
         self.backend = backend
-        self.signals = LayaInspiredClassifier(profile)
+        self.signals = LayaInspiredClassifier(profile, curriculum_path=curriculum_path)
 
     def classify(self, job: dict) -> dict:
         base = self.signals.classify(job)

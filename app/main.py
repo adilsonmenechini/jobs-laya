@@ -19,6 +19,8 @@ from app.linkedin.browser import close_session
 from app.linkedin.tools import TOOLS, LinkedInTools, ToolError, ToolNotFoundError, get_tools
 from app.models import Job, KanbanJob
 from app.schemas import (
+    CurriculumIn,
+    CurriculumOut,
     JobList,
     JobOut,
     JobSearchRequest,
@@ -32,6 +34,7 @@ from app.schemas import (
     ToolList,
     ToolSearchRequest,
 )
+from app.services import curriculum
 from app.services.jobs import list_jobs, load_profile, sync_jobs
 from app.services.kanban import create_kanban, job_without_kanban_card
 from app.sources import SourceUnavailableError, source_names
@@ -100,6 +103,48 @@ def update_profile(payload: ProfileOut):
         Path(tmp_name).unlink(missing_ok=True)
         raise
     return payload
+
+
+MAX_CURRICULUM_BYTES = 200 * 1024  # PUT /curriculum rejects anything above this
+
+
+@app.get("/curriculum", response_model=CurriculumOut)
+def get_curriculum():
+    """Current markdown plus its sha256 version.
+
+    The file is optional: absent means `content: ""` and `version: null`,
+    never 404 (SPEC 202610051432 — curriculum is optional).
+    """
+    return {"content": curriculum.read(), "version": curriculum.version()}
+
+
+@app.put("/curriculum", response_model=CurriculumOut)
+def put_curriculum(payload: CurriculumIn):
+    """Persist `data/curriculum.md` atomically (temp file + replace).
+
+    An oversized payload answers 422 before any file is touched. This writes
+    ONLY the curriculum file — `data/profile.json` lives behind PUT /profile
+    and is never involved (CA13).
+    """
+    size = len(payload.content.encode("utf-8"))
+    if size > MAX_CURRICULUM_BYTES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"currículo excede {MAX_CURRICULUM_BYTES} bytes",
+        )
+    path = Path(curriculum.DEFAULT_PATH)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Unique temp file in the same directory: os.replace stays atomic (same
+    # fs), and two concurrent saves cannot claim the same tmp path.
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(payload.content)
+        os.replace(tmp_name, path)
+    except BaseException:
+        Path(tmp_name).unlink(missing_ok=True)
+        raise
+    return {"content": payload.content, "version": curriculum.version()}
 
 
 @app.post("/jobs/sync")
