@@ -44,7 +44,8 @@ política local — probabilidades calibradas em vez de geração livre.
 | --- | --- |
 | **5 fontes + `all`** | LinkedIn e Glassdoor via browser local (Patchright); GeekHunter, Gupy e Indeed via HTTP público, sem login |
 | **Kanban de candidaturas** | Colunas `CHECK` / `RUNNING` / `DONE`, persistidas em `kanban_jobs`, com snapshot próprio — o card sobrevive ao clean |
-| **Classifier Laya** | 4 perguntas tipadas num único forward pass + sinais heurísticos, com fallback automático para heurística |
+| **Classifier Laya** | 5 perguntas tipadas num único forward pass + sinais heurísticos, com fallback automático para heurística |
+| **Currículo em Markdown** | Contexto opcional em `data/curriculum.md`, editável pelo dashboard; versionado por hash e citado em `reasons` — **não altera o score** |
 | **Deduplicação** | Por `(source, source_id)` — re-sincronizar atualiza, nunca duplica |
 | **API + dashboard** | FastAPI com filtros, `/health`, Swagger e frontend estático servido pela própria API |
 | **Tools locais** | Catálogo read-only de vagas no estilo `linkedin-mcp-server`, 100% local, sem MCP |
@@ -120,9 +121,19 @@ vaga **não volta a aparecer** lá enquanto estiver no Kanban.
 ### Configurações
 
 Aba **Perfil** para editar os dados usados pelo classifier (títulos, senioridade,
-skills, foco, exclusões, remoto obrigatório). Aba **Dados** para ver o total
-de vagas por fonte e limpar as vagas coletadas — o clean **preserva** tudo que
-está no Kanban.
+skills, foco, exclusões, remoto obrigatório) e o **currículo** em Markdown. Aba
+**Dados** para ver o total de vagas por fonte e limpar as vagas coletadas — o
+clean **preserva** tudo que está no Kanban.
+
+O currículo é opcional e fica em `data/curriculum.md`, **fora do git** (tem
+dados pessoais). O template está em `data/curriculum.example.md`.
+
+> **O currículo não muda o score.** Ele é contexto: o classifier extrai as
+> skills e a senioridade, compara com a vaga e escreve em `reasons`
+> ("Currículo confirma: kubernetes, terraform") e em `curriculum_version`
+> gravado na vaga. Fazer o Laya realmente usar esse contexto exige
+> fine-tuning — ver `plan/sdd/spec-202610052324.md` para a medição que motivou
+> a decisão.
 
 ![Configurações com as abas Perfil e Dados](docs/images/configuracoes.png)
 
@@ -353,6 +364,7 @@ GET /jobs?min_score=70
 GET /jobs?source=geekhunter
 GET /jobs/{job_id}
 GET /profile · PUT /profile
+GET /curriculum · PUT /curriculum
 GET /health
 ```
 
@@ -529,7 +541,9 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 ├── uv.lock
 ├── .env.example               # todas as variáveis de ambiente
 ├── data/
-│   └── profile.json           # perfil usado pelo classifier
+│   ├── profile.json           # perfil usado pelo classifier
+│   ├── curriculum.md          # currículo em Markdown (local, fora do git — PII)
+│   └── curriculum.example.md  # template do currículo
 ├── docs/images/               # prints do dashboard usados no README
 ├── eval/
 │   ├── evaluate.py            # ablação: heuristics only / laya only / combined
@@ -592,5 +606,9 @@ CI. O eval fica de fora por decisão (checkpoint de ~800 MB).
 - Conteúdo do GeekHunter é em PT-BR: skills/sênioridade podem mapear
   diferente do LinkedIn para o mesmo perfil.
 - Não há candidatura automática (nenhuma fonte tem tool de escrita).
-- A aba **Dados** é um container: a organização interna (currículo, tecnologias,
-  experiências, preferências) ainda não foi construída.
+- O **currículo** é contexto, não sinal: aparece em `reasons` mas não move o
+  score. Fazer o Laya usar isso de verdade exige fine-tuning — o checkpoint
+  atual erra `role_family` em casos limpos (6/18 no eval).
+- A aba **Dados** ainda é um container: a organização interna (tecnologias,
+  experiências, preferências) não foi construída. O currículo fica na aba
+  **Perfil**.
