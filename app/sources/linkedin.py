@@ -16,6 +16,10 @@ class LinkedInSource:
     def __init__(self, client: LinkedInBrowserClient | None = None) -> None:
         self._client = client or LinkedInBrowserClient()
 
+    async def aclose(self) -> None:
+        """No-op: the browser session is global and dies at the app lifespan."""
+        return None
+
     async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
         try:
             result = await self._client.search_jobs(keywords, location, limit)

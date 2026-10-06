@@ -8,6 +8,8 @@ code; the policy merges them into
 and tests do not care which engine produced the verdict.
 """
 
+from pathlib import Path
+
 from app.classifier.engine import Engine, EngineResult
 from app.classifier.laya_classifier import LayaInspiredClassifier
 from app.classifier.questions import job_state
@@ -18,10 +20,19 @@ ROLE_FAMILIES_IN_PROFILE = {"site_reliability", "devops", "platform_cloud", "ai_
 
 
 class LayaJobClassifier:
-    def __init__(self, profile: dict, engine: Engine) -> None:
+    def __init__(
+        self,
+        profile: dict,
+        engine: Engine,
+        backend: str,
+        curriculum_path: str | Path | None = None,
+    ) -> None:
         self.profile = profile
         self.engine = engine
-        self.signals = LayaInspiredClassifier(profile)
+        # Provenance: which backend produced this decision. Required — a silent
+        # default of "laya" is exactly the lie this parameter exists to prevent.
+        self.backend = backend
+        self.signals = LayaInspiredClassifier(profile, curriculum_path=curriculum_path)
 
     def classify(self, job: dict) -> dict:
         base = self.signals.classify(job)
@@ -44,16 +55,20 @@ class LayaJobClassifier:
         gaps = list(base["gaps"])
 
         # --- policy: Laya reads the language, code keeps the facts ---
+        # Remote: always use Laya's answer when profile requires it (binary signal)
         if self.profile.get("remote_required"):
             components["remote"] = round(view.remote * 100, 2)
 
+        # Title: 50/50 blend (Laya's role_family is useful but not fully trusted)
         if view.role_family in ROLE_FAMILIES_IN_PROFILE:
             components["title"] = round(max(components["title"], 75.0), 2)
         else:
             components["title"] = round(min(components["title"], 40.0), 2)
 
+        # Skills: 50/50 blend
         components["skills"] = round(0.5 * components["skills"] + 0.5 * view.skill_fit * 100, 2)
 
+        # Seniority: 50/50 blend
         seniority_value = SENIORITY_VALUE[min(2, max(0, view.seniority))]
         components["seniority"] = round(0.5 * components["seniority"] + 0.5 * seniority_value, 2)
 
@@ -76,7 +91,21 @@ class LayaJobClassifier:
         if view.seniority == 0:
             gaps.append("Laya: senioridade abaixo do esperado")
 
+        # Dealbreaker veto survives the model merge: exclusions are absolute.
+        # The heuristic base already recorded the dealbreaker in `reasons` and
+        # `gaps` — this block only re-applies the veto to the merged score.
+        excluded_block = base["decision"].get("excluded") or {"value": False, "terms": []}
+
+        # Laya exclusion veto: disabled until the model is fine-tuned with the
+        # exclusions question. The current checkpoint answers it unreliably.
+
         probabilities = LayaInspiredClassifier._match_probabilities(score)
+
+        if excluded_block.get("value"):
+            score = min(score, 49.0)
+            match = "low"
+            probabilities = LayaInspiredClassifier._match_probabilities(score)
+
         decision = {
             "choice": {
                 "value": match,
@@ -93,8 +122,9 @@ class LayaJobClassifier:
                 "confidence": round(view.remote_confidence, 4),
                 "probability_true": round(view.remote, 4),
             },
+            "excluded": excluded_block,
             "laya": {
-                "backend": "laya",
+                "backend": self.backend,
                 "model": result.model,
                 "latency_ms": round(result.latency_ms, 2),
                 "answers": {
@@ -107,6 +137,10 @@ class LayaJobClassifier:
                     "seniority": {
                         "score": view.seniority,
                         "probabilities": view.seniority_probs,
+                    },
+                    "exclusions": {
+                        "noul": view.exclusions,
+                        "confidence": round(view.exclusions_confidence, 4),
                     },
                 },
             },

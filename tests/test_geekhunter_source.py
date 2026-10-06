@@ -8,6 +8,7 @@ from app.sources import SourceUnavailableError
 from app.sources.geekhunter import GeekHunterSource
 from tests.fixtures_loader import fixture
 
+IDENTIFIER = "5a60a71c44bc345ec59d8f6900b2a91de5dbce415cc4d0d58ffd192d095ae420"
 SEARCH = fixture("geekhunter_search.html")
 DETAIL = fixture("geekhunter_job_detail.html")
 
@@ -39,7 +40,7 @@ async def test_search_returns_normalized_items():
 
     assert len(items) == 10
     assert items[0]["source"] == "geekhunter"
-    assert items[0]["source_id"] == "site-reliability-engineer--sre--3"
+    assert items[0]["source_id"] == "/pt/ntt-data/jobs/site-reliability-engineer--sre--3"
     assert "searchTerm=SRE" in seen[0]
     # Brazil is not a city: cityName must not be sent
     assert "cityName" not in seen[0]
@@ -114,6 +115,85 @@ async def test_search_wraps_network_errors():
         await source.search("SRE", "Brazil")
 
 
+# --------------------------------------------------------------------- retry
+
+
+@pytest.mark.asyncio
+async def test_search_retries_transient_failures_then_succeeds(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        if len(calls) < 3:
+            raise httpx.ConnectError("blip", request=request)
+        return httpx.Response(200, text=SEARCH)
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("app.sources.retry.random.uniform", lambda low, high: 0.0)
+
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 2
+    source._config.geekhunter_backoff_seconds = 5.0
+    items = await source.search("SRE", "Brazil", limit=5)
+
+    assert len(items) == 5
+    assert len(calls) == 3
+    assert slept == [5.0, 10.0]
+
+
+@pytest.mark.asyncio
+async def test_search_raises_after_exhausting_retries(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        raise httpx.ConnectError("down", request=request)
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("app.sources.retry.random.uniform", lambda low, high: 0.0)
+
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 2
+    source._config.geekhunter_backoff_seconds = 5.0
+    with pytest.raises(SourceUnavailableError, match="request failed"):
+        await source.search("SRE", "Brazil")
+
+    assert len(calls) == 3
+    assert slept == [5.0, 10.0]
+
+
+@pytest.mark.asyncio
+async def test_search_does_not_retry_permanent_errors(monkeypatch):
+    calls: list = []
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(400, text="bad request")
+
+    monkeypatch.setattr("app.sources.retry.asyncio.sleep", fake_sleep)
+    source = make_source(handler)
+    source._config.geekhunter_max_retries = 3
+    source._config.geekhunter_backoff_seconds = 5.0
+
+    with pytest.raises(SourceUnavailableError):
+        await source.search("SRE", "Brazil")
+
+    assert len(calls) == 1
+    assert slept == []
+
+
 @pytest.mark.asyncio
 async def test_details_merges_without_wiping_search_data():
     def handler(request: httpx.Request) -> httpx.Response:
@@ -139,6 +219,7 @@ async def test_details_merges_without_wiping_search_data():
     assert merged["location"] == "São Paulo, SP, Brasil"  # detail has none: kept
     assert merged["posted_at"] == "2026-09-30"  # ISO date from JobPosting wins
     assert merged["remote"] is True  # upgraded
+    assert merged["source_id"] == IDENTIFIER  # detail's stable id replaces the path
 
 
 @pytest.mark.asyncio

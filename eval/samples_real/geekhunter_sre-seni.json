@@ -1,0 +1,13 @@
+{
+  "title": "SRE Sênior",
+  "company": "Nava Tech for Business",
+  "location": "São Paulo, SP, Brasil",
+  "remote": false,
+  "description": "Requisitos 3+ anos de experiência na carreira SRE JMeter Dynatrace Observabilidade Linux AWS Python CloudWatch Conhecimentos Desejáveis Azure CI/CD ServiceNow Jira PowerShell Bash DevOps GCP Kubernetes OpenShift Tarefas e Responsabilidades Sobre a vaga Estamos em busca de um profissional de SRE (Site Reliability Engineering) com experiência em observabilidade e cloud para atuar em ambientes híbridos e de alta criticidade. Responsabilidades Atuar com práticas de SRE e DevOps para garantir a confiabilidade e a disponibilidade dos ambientes. Gerenciar infraestrutura na AWS , incluindo serviços. Realizar monitoramento de ambientes híbridos em AWS, Azure e GCP. Operar o Dynatrace : OneAgent, criação de dashboards, configuração de alertas e análise de PurePath. Executar testes de carga com JMeter . Realizar integrações com ServiceNow/Jira e pipelines de CI/CD. Desenvolver APIs e automações com Python, PowerShell ou Bash. Requisitos Experiência comprovada em SRE, observabilidade e cloud. Atuação com AWS: S3, EC2, RDS e CloudWatch. Conhecimento sólido em Linux . Experiência com JMeter e testes de carga. Experiência com Dynatrace: OneAgent, dashboards, alertas e análise de PurePath. Monitoramento de ambientes híbridos: AWS, Azure e GCP. Integração com ServiceNow/Jira e pipelines de CI/CD. Desenvolvimento de APIs e automações com Python, PowerShell ou Bash. Vivência com práticas DevOps e SRE. Diferenciais Experiência com Kubernetes/OpenShift. Certificação Dynatrace. Modelo de trabalho e local Modelo de trabalho híbrido 2x por semana em São Paulo/SP .",
+  "source": "geekhunter",
+  "source_id": "sre-senior-32",
+  "url": "https://www.geekhunter.com/pt/nava-technology-for-business-1/jobs/sre-senior-32",
+  "posted_at": "2026-09-25",
+  "score": 65.95,
+  "match": "medium"
+}

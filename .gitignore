@@ -23,3 +23,12 @@ data/*.sqlite
 data/*.sqlite3
 !data/profile.json
 opencode.json
+
+# Personal résumé (PII) — editable via the dashboard, never versioned.
+# data/curriculum.example.md is the tracked template.
+data/curriculum.md
+
+# Codemap (local only, gerado pela skill /codemap)
+codemap.md
+.slim/
+AGENTS.md

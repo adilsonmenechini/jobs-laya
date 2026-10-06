@@ -1,5 +1,7 @@
 """Fase 4 — sync dispatcher: per-source execution and fault isolation."""
 
+from datetime import date, datetime, timedelta
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -7,7 +9,7 @@ from sqlalchemy import select
 from app.db import SessionLocal, init_db
 from app.main import app
 from app.models import Job
-from app.services.jobs import resolve_sources, sync_jobs
+from app.services.jobs import is_fresh, resolve_sources, sync_jobs
 from app.sources import SourceUnavailableError
 
 PROFILE = "data/profile.json"
@@ -22,6 +24,15 @@ def fake_classifier_backend(monkeypatch):
     monkeypatch.setattr(settings, "classifier_backend", "fake")
 
 
+@pytest.fixture(autouse=True)
+def no_inter_source_pause(monkeypatch):
+    """The default politeness pause between sources would put real seconds
+    into every test; tests that exercise the pause pass it explicitly."""
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "sync_delay_seconds", 0.0)
+
+
 class FakeSource:
     """Scripted JobSource: fixed items, optional failure, records calls."""
 
@@ -30,6 +41,7 @@ class FakeSource:
         self.items = items
         self.fail = fail
         self.searches: list[tuple[str, str, int]] = []
+        self.closes = 0
 
     async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
         self.searches.append((keywords, location, limit))
@@ -39,6 +51,9 @@ class FakeSource:
 
     async def details(self, item: dict) -> dict:
         return item
+
+    async def aclose(self) -> None:
+        self.closes += 1
 
 
 def gh_item(source_id: str, title: str = "SRE") -> dict:
@@ -74,7 +89,8 @@ def db():
     session.close()
 
 
-def run(db, source: str, sources: dict):
+def run(db, source: str, sources: dict | None = None, **kwargs):
+    """`sources=None` mirrors the API path: sync_jobs builds the registry itself."""
     import asyncio
 
     return asyncio.run(
@@ -87,6 +103,7 @@ def run(db, source: str, sources: dict):
             profile_path=PROFILE,
             source=source,
             sources=sources,
+            **kwargs,
         )
     )
 
@@ -166,6 +183,144 @@ def test_sync_unknown_source_fails_loudly(db):
         run(db, "geekhunter", {"linkedin": FakeSource("linkedin", [])})
 
 
+# ------------------------------------------------------- client lifecycle
+
+
+def test_sync_closes_the_registry_it_built(db, monkeypatch):
+    """The leak fix: sources built by sync_jobs are closed when the run ends."""
+    from app.services import jobs as jobs_service
+
+    built = {"geekhunter": FakeSource("geekhunter", [gh_item("7")])}
+    monkeypatch.setattr(jobs_service, "build_sources", lambda config=None: built)
+
+    outcome = run(db, "geekhunter")  # no injected registry → sync_jobs builds it
+
+    assert outcome.count == 1
+    assert built["geekhunter"].closes == 1
+
+
+def test_sync_closes_the_registry_even_when_resolve_fails(db, monkeypatch):
+    """The 503 path must close too: a failed resolve used to discard a
+    freshly built registry without closing it."""
+    from app.services import jobs as jobs_service
+
+    built = {"linkedin": FakeSource("linkedin", [])}
+    monkeypatch.setattr(jobs_service, "build_sources", lambda config=None: built)
+
+    with pytest.raises(SourceUnavailableError):
+        run(db, "geekhunter")  # not registered → resolve fails loudly
+
+    assert built["linkedin"].closes == 1
+
+
+def test_sync_never_closes_an_injected_registry(db):
+    """Ownership: who injects the registry also closes it (test fakes, callers)."""
+    geekhunter = FakeSource("geekhunter", [gh_item("2")])
+
+    outcome = run(db, "geekhunter", {"geekhunter": geekhunter})
+
+    assert outcome.count == 1
+    assert geekhunter.closes == 0
+
+
+# -------------------------------------------------------------------- recency
+
+
+def test_is_fresh_keeps_recent_and_drops_stale_postings():
+    now = datetime(2026, 10, 2, 12, 0)
+
+    assert is_fresh("2026-10-01", 72, now=now)  # yesterday: inside the window
+    assert is_fresh("2026-09-29", 72, now=now)  # boundary day: kept (day precision)
+    assert not is_fresh("2026-09-28", 72, now=now)  # well past 72h: stale
+    assert not is_fresh("2026-01-01", 72, now=now)
+
+
+def test_is_fresh_keeps_undatable_postings():
+    """Sources without a date, or with relative text, must never be dropped."""
+    now = datetime(2026, 10, 2, 12, 0)
+
+    assert is_fresh(None, 72, now=now)  # no date sent at all
+    assert is_fresh("", 72, now=now)
+    # GeekHunter falls back to relative PT strings — undatable, keep
+    assert is_fresh("Publicada há 5 dias", 72, now=now)
+    # ISO datetime (Gupy: "…T13:23:13.263Z") parses through its date prefix
+    assert is_fresh("2026-10-01T13:23:13.263Z", 72, now=now)
+    assert not is_fresh("2026-09-01T13:23:13.263Z", 72, now=now)
+
+
+def test_is_fresh_window_zero_disables_the_filter():
+    assert is_fresh("2020-01-01", 0)
+    assert is_fresh("2020-01-01", -1)
+
+
+def test_sync_skips_postings_older_than_the_window(db):
+    stale = gh_item("stale")
+    stale["posted_at"] = (date.today() - timedelta(days=10)).isoformat()
+    fresh = gh_item("fresh")
+    fresh["posted_at"] = date.today().isoformat()
+
+    # window passed explicitly: the test must not shift with the default
+    outcome = run(db, "all", {"gupy": FakeSource("gupy", [stale, fresh])}, hours_old=72)
+
+    assert outcome.count == 1  # only the fresh posting landed
+    assert [job.source_id for job in db.scalars(select(Job)).all()] == ["fresh"]
+
+
+def test_sync_keeps_postings_without_a_date(db):
+    # gh_item carries posted_at=None by default: undated jobs must not vanish
+    outcome = run(db, "all", {"gupy": FakeSource("gupy", [gh_item("1")])})
+
+    assert outcome.count == 1
+    assert [job.source_id for job in db.scalars(select(Job)).all()] == ["1"]
+
+
+def test_sync_hours_old_zero_keeps_stale_postings(db):
+    stale = gh_item("stale")
+    stale["posted_at"] = (date.today() - timedelta(days=30)).isoformat()
+
+    outcome = run(db, "all", {"gupy": FakeSource("gupy", [stale])}, hours_old=0)
+
+    assert outcome.count == 1  # window disabled → everything is kept
+
+
+# ------------------------------------------------------- inter-source politeness
+
+
+def test_sync_all_pauses_between_sources(db, monkeypatch):
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    monkeypatch.setattr("app.services.jobs.asyncio.sleep", fake_sleep)
+    registry = {
+        "linkedin": FakeSource("linkedin", [li_item("1")]),
+        "geekhunter": FakeSource("geekhunter", [gh_item("2")]),
+    }
+
+    run(db, "all", registry, delay_seconds=1.5)
+
+    assert slept == [1.5]  # one pause, between the two providers
+
+
+def test_sync_single_source_never_pauses(db, monkeypatch):
+    slept: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        slept.append(seconds)
+
+    monkeypatch.setattr("app.services.jobs.asyncio.sleep", fake_sleep)
+
+    run(
+        db,
+        "geekhunter",
+        {"geekhunter": FakeSource("geekhunter", [gh_item("2")])},
+        delay_seconds=1.5,
+    )
+
+    assert slept == []  # nothing to be polite to
+
+
 def test_resolve_sources_all_returns_every_registry_entry():
     registry = {
         "linkedin": FakeSource("linkedin", []),
@@ -175,19 +330,39 @@ def test_resolve_sources_all_returns_every_registry_entry():
     assert [source.name for source in resolved] == ["linkedin", "geekhunter"]
 
 
-def test_sync_endpoint_default_source_is_linkedin(db):
-    """No `source` in the body must keep the old LinkedIn-only behavior."""
+def test_sync_endpoint_default_source_is_all(db):
+    """No `source` in the body must run every configured source."""
+    from app.services import jobs as jobs_service
+
     request: dict = {"keywords": ["SRE"], "limit": 5, "fetch_details": False}
-    # exercising validation only: the endpoint would launch the browser, so
-    # we assert the accepted contract instead of calling the real source.
-    with TestClient(app) as client:
-        bad = client.post("/jobs/sync", json={**request, "source": "indeed"})
-    assert bad.status_code == 422
+    registry = {
+        "geekhunter": FakeSource("geekhunter", []),
+        "gupy": FakeSource("gupy", []),
+    }
+    original = jobs_service.build_sources
+    jobs_service.build_sources = lambda config=None: registry
+    try:
+        # exercising the default only: fakes replace the real providers, so the
+        # browser never launches and nothing hits the network.
+        with TestClient(app) as client:
+            response = client.post("/jobs/sync", json=request)
+    finally:
+        jobs_service.build_sources = original
+
+    assert response.status_code == 200
+    # "all" resolved both registered sources (linkedin alone would be 0 searches)
+    assert all(len(source.searches) > 0 for source in registry.values())
 
 
 def test_sync_endpoint_rejects_unknown_source(db):
     with TestClient(app) as client:
-        response = client.post("/jobs/sync", json={"keywords": ["SRE"], "source": "indeed"})
+        response = client.post("/jobs/sync", json={"keywords": ["SRE"], "source": "brave"})
+    assert response.status_code == 422
+
+
+def test_sync_endpoint_rejects_negative_hours_old(db):
+    with TestClient(app) as client:
+        response = client.post("/jobs/sync", json={"keywords": ["SRE"], "hours_old": -1})
     assert response.status_code == 422
 
 
@@ -209,3 +384,34 @@ def test_sync_endpoint_reports_unavailable_source(db):
 
     assert response.status_code == 503
     assert "geekhunter" in response.json()["detail"]
+
+
+# --------------------------------------------------------------------- deadline
+
+
+def test_sync_timeout_raises_when_deadline_exceeded(db):
+    """A slow source must not block the sync forever — deadline cancels it."""
+    import asyncio
+
+    class SlowSource:
+        name = "slow"
+
+        async def search(self, keywords: str, location: str, limit: int = 25) -> list[dict]:
+            await asyncio.sleep(10)
+            return []
+
+        async def details(self, item: dict) -> dict:
+            return item
+
+    with pytest.raises(TimeoutError):
+        run(db, "all", {"slow": SlowSource()}, sync_timeout_seconds=0.01)
+
+
+def test_sync_timeout_zero_disables_deadline(db):
+    """sync_timeout_seconds=0 must disable the timeout (no cancellation)."""
+    source = FakeSource("geekhunter", [gh_item("1")])
+
+    outcome = run(db, "all", {"geekhunter": source}, sync_timeout_seconds=0)
+
+    assert outcome.count == 1
+    assert outcome.errors == {}

@@ -1,0 +1,404 @@
+[
+  {
+    "file": "geekhunter_ai-engin.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI Engineer + LangChain + remoto"
+  },
+  {
+    "file": "geekhunter_analista.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado"
+  },
+  {
+    "file": "geekhunter_desenvol.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "DevOps + GCP, mas pleno"
+  },
+  {
+    "file": "geekhunter_deveops-.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps + AWS + 5 anos"
+  },
+  {
+    "file": "geekhunter_devops--.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "SRE + Terraform + CI/CD + remoto, mas pleno (mesmo criterio das outras 5 vagas pleno)"
+  },
+  {
+    "file": "geekhunter_devops-s.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado"
+  },
+  {
+    "file": "geekhunter_engenhei.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI + LangChain + K8s"
+  },
+  {
+    "file": "geekhunter_ml-engin.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "ML + Terraform + K8s + AWS + remoto"
+  },
+  {
+    "file": "geekhunter_platform.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado"
+  },
+  {
+    "file": "geekhunter_principa.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado + pré-vendas"
+  },
+  {
+    "file": "geekhunter_qa-engin.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "QA fora do perfil"
+  },
+  {
+    "file": "geekhunter_senior-d.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado"
+  },
+  {
+    "file": "geekhunter_senior-m.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Exclusion: inglês avançado"
+  },
+  {
+    "file": "geekhunter_site-rel.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + K8s + observabilidade + remoto"
+  },
+  {
+    "file": "geekhunter_sre---en.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + observabilidade + remoto"
+  },
+  {
+    "file": "geekhunter_sre--sen.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + Terraform + K8s + Azure + remoto"
+  },
+  {
+    "file": "geekhunter_sre-seni.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + AWS + Python + observabilidade"
+  },
+  {
+    "file": "gupy_12198836.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps sênior"
+  },
+  {
+    "file": "gupy_12220389.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "Platform adjacente, dados"
+  },
+  {
+    "file": "gupy_12298004.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "Platform + principal"
+  },
+  {
+    "file": "gupy_12421688.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI + LLM + platform"
+  },
+  {
+    "file": "gupy_12455072.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "SRE + platform, mas pleno"
+  },
+  {
+    "file": "gupy_12459907.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "Platform + staff"
+  },
+  {
+    "file": "gupy_12498580.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "SRE, mas pleno"
+  },
+  {
+    "file": "gupy_12533478.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + remoto"
+  },
+  {
+    "file": "gupy_12534574.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps especialista"
+  },
+  {
+    "file": "gupy_12566261.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE sênior"
+  },
+  {
+    "file": "gupy_12571250.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE + DevOps + coordenação"
+  },
+  {
+    "file": "gupy_12590656.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps + AWS + Python + remoto"
+  },
+  {
+    "file": "gupy_12607005.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "DevOps, mas semi senior"
+  },
+  {
+    "file": "gupy_12613042.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI + LLM + platform + sênior"
+  },
+  {
+    "file": "gupy_12614793.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps + remoto"
+  },
+  {
+    "file": "gupy_12628069.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "SRE + observabilidade, mas analista"
+  },
+  {
+    "file": "gupy_12640842.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI Engineer Senior — modalidade nao e criterio de match (14 outros high nao sao remotos)"
+  },
+  {
+    "file": "gupy_12650308.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps + Azure + remoto"
+  },
+  {
+    "file": "gupy_12656910.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Júnior, fora do perfil sênior"
+  },
+  {
+    "file": "gupy_12657833.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI + agentes + remoto"
+  },
+  {
+    "file": "gupy_12659312.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI Engineer"
+  },
+  {
+    "file": "gupy_12664961.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "AI, mas fullstack"
+  },
+  {
+    "file": "indeed_013f671b.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "DBA fora do perfil"
+  },
+  {
+    "file": "indeed_0655c7aa.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "SRE + remoto"
+  },
+  {
+    "file": "indeed_0e73a4f4.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Rede/OT fora do perfil"
+  },
+  {
+    "file": "indeed_0fa714c2.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Vendas fora do perfil"
+  },
+  {
+    "file": "indeed_205c42ed.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "Config manager, não SRE/DevOps"
+  },
+  {
+    "file": "indeed_50292bec.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "DevOps + AWS + lead + remoto"
+  },
+  {
+    "file": "indeed_5d411b5d.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Estágio fora do perfil"
+  },
+  {
+    "file": "indeed_5ea5c7cf.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "Cloud sênior + remoto"
+  },
+  {
+    "file": "indeed_61a28b15.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "Cloud architect + remoto"
+  },
+  {
+    "file": "indeed_6a29acc2.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "SRE especialista"
+  },
+  {
+    "file": "indeed_6c93724c.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "DevOps + SRE + remoto"
+  },
+  {
+    "file": "indeed_7aefd65e.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "DBA fora do perfil"
+  },
+  {
+    "file": "indeed_827582ee.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "DevOps + AWS + chief + remoto"
+  },
+  {
+    "file": "indeed_89f7c633.json",
+    "lang": "pt",
+    "expected": "medium",
+    "note": "Cloud/SRE, mas pleno"
+  },
+  {
+    "file": "indeed_8f19678e.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "Manager de architects, não hands-on"
+  },
+  {
+    "file": "indeed_91ddb9a0.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Estágio fora do perfil"
+  },
+  {
+    "file": "indeed_aca2611e.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "DBA fora do perfil"
+  },
+  {
+    "file": "indeed_ae59986d.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Vendas fora do perfil"
+  },
+  {
+    "file": "indeed_af7140d9.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Java dev fora do perfil"
+  },
+  {
+    "file": "indeed_c010e7d1.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Backend fora do perfil"
+  },
+  {
+    "file": "indeed_c42b3253.json",
+    "lang": "en",
+    "expected": "low",
+    "note": "Data dev fora do perfil"
+  },
+  {
+    "file": "indeed_cd668d69.json",
+    "lang": "pt",
+    "expected": "high",
+    "note": "AI engineer"
+  },
+  {
+    "file": "indeed_df875d8f.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "AI/ML + Python + senior"
+  },
+  {
+    "file": "indeed_e368d4f9.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "SRE + Cloud + senior"
+  },
+  {
+    "file": "indeed_edc225d7.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "DevOps + AWS + chief"
+  },
+  {
+    "file": "indeed_edfeab7b.json",
+    "lang": "en",
+    "expected": "high",
+    "note": "DevOps + AWS + senior"
+  },
+  {
+    "file": "indeed_f0b55248.json",
+    "lang": "pt",
+    "expected": "low",
+    "note": "Dados fora do perfil"
+  },
+  {
+    "file": "indeed_f275e834.json",
+    "lang": "en",
+    "expected": "medium",
+    "note": "AI architect, não SRE/DevOps"
+  }
+]

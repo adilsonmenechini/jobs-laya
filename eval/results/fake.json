@@ -32,7 +32,7 @@
     "note": "plataforma/IaC dentro do perfil",
     "heuristics_only": {
       "match": "high",
-      "score": 87.25
+      "score": 86.0
     },
     "laya_only": {
       "match": "high",
@@ -40,7 +40,7 @@
     },
     "combined": {
       "match": "high",
-      "score": 84.75
+      "score": 83.5
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -58,7 +58,7 @@
     "note": "reliability no título do perfil, remoto",
     "heuristics_only": {
       "match": "high",
-      "score": 89.75
+      "score": 88.5
     },
     "laya_only": {
       "match": "high",
@@ -66,7 +66,7 @@
     },
     "combined": {
       "match": "high",
-      "score": 87.25
+      "score": 86.0
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -84,7 +84,7 @@
     "note": "AI Engineer + RAG/LLM no perfil",
     "heuristics_only": {
       "match": "high",
-      "score": 93.5
+      "score": 83.5
     },
     "laya_only": {
       "match": "high",
@@ -92,7 +92,7 @@
     },
     "combined": {
       "match": "high",
-      "score": 89.88
+      "score": 88.88
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -110,7 +110,7 @@
     "note": "cargo do perfil com stack completa",
     "heuristics_only": {
       "match": "high",
-      "score": 87.25
+      "score": 86.0
     },
     "laya_only": {
       "match": "high",
@@ -118,7 +118,7 @@
     },
     "combined": {
       "match": "high",
-      "score": 83.62
+      "score": 82.38
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -135,16 +135,16 @@
     "expected": "medium",
     "note": "cloud adjacente: cargo fora da lista de títulos, sem senioridade",
     "heuristics_only": {
-      "match": "medium",
-      "score": 69.5
+      "match": "high",
+      "score": 88.0
     },
     "laya_only": {
       "match": "medium",
       "score": 76.0
     },
     "combined": {
-      "match": "medium",
-      "score": 68.25
+      "match": "high",
+      "score": 80.0
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -162,7 +162,7 @@
     "note": "ai_ml do perfil mas sem senioridade sênior",
     "heuristics_only": {
       "match": "medium",
-      "score": 69.5
+      "score": 79.75
     },
     "laya_only": {
       "match": "medium",
@@ -170,7 +170,7 @@
     },
     "combined": {
       "match": "medium",
-      "score": 68.25
+      "score": 78.75
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -188,7 +188,7 @@
     "note": "cargo perfeito mas híbrido falha com remote_required",
     "heuristics_only": {
       "match": "medium",
-      "score": 75.5
+      "score": 78.5
     },
     "laya_only": {
       "match": "medium",
@@ -196,7 +196,7 @@
     },
     "combined": {
       "match": "medium",
-      "score": 75.38
+      "score": 76.88
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -214,15 +214,15 @@
     "note": "hard case: 'DevOps' no título e skills cloud na descrição, mas a vaga é comercial",
     "heuristics_only": {
       "match": "medium",
-      "score": 63.5
+      "score": 78.5
     },
     "laya_only": {
       "match": "low",
       "score": 49.33
     },
     "combined": {
-      "match": "low",
-      "score": 56.75
+      "match": "medium",
+      "score": 64.25
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -239,8 +239,8 @@
     "expected": "low",
     "note": "hard case: keyword spam de cloud em vaga de marketing",
     "heuristics_only": {
-      "match": "medium",
-      "score": 72.5
+      "match": "high",
+      "score": 88.0
     },
     "laya_only": {
       "match": "low",
@@ -248,7 +248,7 @@
     },
     "combined": {
       "match": "medium",
-      "score": 62.75
+      "score": 73.0
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -266,7 +266,7 @@
     "note": "remota mas nada de infra",
     "heuristics_only": {
       "match": "low",
-      "score": 29.75
+      "score": 41.0
     },
     "laya_only": {
       "match": "low",
@@ -274,7 +274,7 @@
     },
     "combined": {
       "match": "low",
-      "score": 34.0
+      "score": 41.5
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -292,7 +292,7 @@
     "note": "senior e remota, stack fora do perfil",
     "heuristics_only": {
       "match": "low",
-      "score": 42.25
+      "score": 41.0
     },
     "laya_only": {
       "match": "low",
@@ -300,7 +300,7 @@
     },
     "combined": {
       "match": "low",
-      "score": 41.62
+      "score": 40.38
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -369,8 +369,8 @@
     "expected": "medium",
     "note": "cloud remoto sem cargo exato do perfil e sem senioridade",
     "heuristics_only": {
-      "match": "medium",
-      "score": 72.5
+      "match": "high",
+      "score": 88.0
     },
     "laya_only": {
       "match": "low",
@@ -378,7 +378,7 @@
     },
     "combined": {
       "match": "medium",
-      "score": 62.75
+      "score": 73.0
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -395,8 +395,8 @@
     "expected": "medium",
     "note": "cargo e skills casam, senioridade pleno abaixo do perfil",
     "heuristics_only": {
-      "match": "medium",
-      "score": 76.0
+      "match": "high",
+      "score": 88.5
     },
     "laya_only": {
       "match": "medium",
@@ -404,7 +404,7 @@
     },
     "combined": {
       "match": "medium",
-      "score": 69.75
+      "score": 78.5
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -421,16 +421,16 @@
     "expected": "low",
     "note": "hard case: cargo e keywords casam mas júnior não atende o perfil",
     "heuristics_only": {
-      "match": "low",
-      "score": 55.5
+      "match": "medium",
+      "score": 73.5
     },
     "laya_only": {
       "match": "medium",
       "score": 76.0
     },
     "combined": {
-      "match": "low",
-      "score": 58.25
+      "match": "medium",
+      "score": 67.25
     },
     "model": "fake",
     "laya_ms": 1.0,
@@ -448,7 +448,7 @@
     "note": "controle: nada a ver com o perfil",
     "heuristics_only": {
       "match": "low",
-      "score": 19.75
+      "score": 18.5
     },
     "laya_only": {
       "match": "low",
@@ -456,7 +456,7 @@
     },
     "combined": {
       "match": "low",
-      "score": 18.5
+      "score": 17.25
     },
     "model": "fake",
     "laya_ms": 1.0,

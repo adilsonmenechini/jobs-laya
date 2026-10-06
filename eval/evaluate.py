@@ -86,7 +86,9 @@ def build_engine(backend: str, device: str | None) -> Engine | None:
     return FakeEngine() if backend == "fake" else LayaEngine(device=device)
 
 
-def evaluate(engine: Engine | None, profile: dict, labels: list[dict]) -> list[dict]:
+def evaluate(
+    engine: Engine | None, profile: dict, labels: list[dict], backend: str = "laya"
+) -> list[dict]:
     heuristics = LayaInspiredClassifier(profile)
     rows = []
     for label in labels:
@@ -102,7 +104,10 @@ def evaluate(engine: Engine | None, profile: dict, labels: list[dict]) -> list[d
             model, laya_ms = None, None
             l_match, l_score = None, None
             policy_engine = _NoEngine()
-        combined = LayaJobClassifier(profile, policy_engine).classify(job)
+        # `backend` is provenance: it records which engine produced the verdict
+        # (decision.laya.backend). Passing the requested backend keeps the eval
+        # honest about what it actually ran.
+        combined = LayaJobClassifier(profile, policy_engine, backend=backend).classify(job)
         rows.append(
             {
                 "file": label["file"],
@@ -216,7 +221,7 @@ def main() -> int:
     profile = json.loads((ROOT / "data" / "profile.json").read_text(encoding="utf-8"))
     engine = build_engine(args.backend, args.device)
 
-    rows = evaluate(engine, profile, labels)
+    rows = evaluate(engine, profile, labels, args.backend)
     device = getattr(engine, "device", None)
     markdown = report(rows, args.backend, device)
 

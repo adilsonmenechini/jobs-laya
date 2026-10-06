@@ -39,3 +39,11 @@ class JobSource(Protocol):
         job does not exist upstream.
         """
         ...
+
+    async def aclose(self) -> None:
+        """Release the resources this source owns (HTTP clients, engines).
+
+        Called by whoever built the source, once, after the run ends.
+        Shutdown must never raise.
+        """
+        ...

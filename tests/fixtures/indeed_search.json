@@ -1,0 +1,1483 @@
+{
+ "data": {
+  "jobSearch": {
+   "pageInfo": {
+    "nextCursor": "ABkAAQAZAAAAAAAAAAAAAAACZPApRAEBAQkocwxwpZ9lKbSvhQt0A8tNdoAWi4wZezfx8v9ttuymsWagHxWtcIieRwVM9G5CuZUcEeii5m7EIRXivvs="
+   },
+   "results": [
+    {
+     "job": {
+      "key": "f0b552481fbd4120",
+      "title": "Engenheiro de Dados (Sênior)",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790944005552,
+      "description": {
+       "html": "<div><p>Na <b>V&iacute;cio de uma Estudante</b>, dados j&aacute; fazem parte das nossas decis&otilde;es. Agora, queremos dar um pr&oacute;ximo passo: <b>construir a funda&ccedil;&atilde;o de dados que vai sustentar o nosso crescimento.</b></p>\n<p>Estamos buscando uma pessoa <b>Engenheira de Dados S&ecirc;nior</b> para assumir a constru&ccedil;&atilde;o e evolu&ccedil;&atilde;o da nossa arquitetura de dados, transformando diferentes fontes e sistemas em uma estrutura confi&aacute;vel, escal&aacute;vel e preparada para o futuro.</p>\nO que voc&ecirc; vai fazer\n<ul><li><p><b>Construir a arquitetura de dados da V&iacute;cio</b>, estruturando Data Lake, Data Warehouse e modelos anal&iacute;ticos que atendam &agrave;s necessidades do neg&oacute;cio.</p>\n</li><li><p><b>Modelar e integrar dados</b></p></div>"
+      },
+      "location": {
+       "city": "Fortaleza",
+       "admin1Code": "CE",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Fortaleza, CE",
+        "long": "Fortaleza, CE"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "37PAF",
+        "label": "Athena"
+       },
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       },
+       {
+        "key": "5HXBA",
+        "label": "Conformidade de dados"
+       }
+      ],
+      "employer": null,
+      "recruit": {
+       "viewJobUrl": "https://viciodeumaestudante.vagas.solides.com.br/vaga/931560?origem=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "6a29acc2c824b871",
+      "title": "Especialista em SRE",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790941263203,
+      "description": {
+       "html": "<div><div><div><p>Somos mais que uma m&aacute;quina, somos pessoas que transformam e <b>criam infinitas possibilidades.</b></p>\nTrabalhamos para <b>simplificar e impulsionar neg&oacute;cios para todas as pessoas</b>, oferecendo solu&ccedil;&otilde;es financeiras inteligentes. Aqui, investimos em <b>tecnologia</b>, promovemos <b>desenvolvimento</b> e fomentamos a <b>inova&ccedil;&atilde;o </b>para criar novos caminhos poss&iacute;veis e gerar impacto positivo no mundo.<br>\n<p>\nNa Cielo, a gente trabalha com <b>autonomia</b> para escrever nossa pr&oacute;pria jornada, <b>liberdade</b> para ser quem a gente &eacute;, e a oportunidade de <b>fazer acontecer</b>. Somos um time que <b>sonha no plural</b>, oferecendo uma experi&ecirc;ncia completa e focando no bem-estar f&iacute;sico e mental de n</p></div>"
+      },
+      "location": {
+       "city": "Barueri",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Barueri, SP",
+        "long": "Barueri, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "3P5PM",
+        "label": "Desenvolvimento de soluções"
+       },
+       {
+        "key": "4Z9KD",
+        "label": "Vale-refeição"
+       },
+       {
+        "key": "5395N",
+        "label": "Liderança em melhoria de desempenho"
+       },
+       {
+        "key": "6XHWW",
+        "label": "Vale-transporte"
+       }
+      ],
+      "employer": {
+       "name": "Cielo Pagamentos",
+       "relativeCompanyPageUrl": "/cmp/Cielo-Pagamentos"
+      },
+      "recruit": {
+       "viewJobUrl": "https://cielo.inhire.app/tecnologia/vagas/7a5a063e-7fd9-4165-a4a8-0684176e8804/especialista-em-sre?source=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "edc225d74d8d03b9",
+      "title": "Chief AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939580213,
+      "description": {
+       "html": "<div><p>We are looking for a <b>Chief AWS DevOps Engineer</b> to lead shared cloud platform services and deliver consistent developer experiences aligned with CCoE standards. You will treat the platform as a product, shipping reusable building blocks, paved roads, and golden paths across product and application teams.</p><p><b>\nResponsibilities</b></p><ul><li>\nDesign reusable platform capabilities, including shared services, standard compute patterns, and golden baselines, to enable safe and fast workload onboarding</li><li>\nOperate and improve centralized services such as logging, monitoring, secrets, identity, file transfers, and key management</li><li>\nCreate paved roads and golden paths in partnership with product teams, security, and operations</li><li>\nCoordinate with Cloud DevOps/Au</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "2V8EX",
+        "label": "CI/CD"
+       },
+       {
+        "key": "3H953",
+        "label": "SSO"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/bltxqcrvoq6ocijjfbc_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "827582ee25560e71",
+      "title": "Chief AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939575204,
+      "description": {
+       "html": "<div><p>We are looking for a <b>Chief AWS DevOps Engineer</b> to build and evolve shared AWS cloud platform services that product and application teams consume, treating the platform as a product with reusable building blocks and a consistent developer experience aligned with CCoE standards. You will shape paved roads, reliability, and secure-by-design guardrails.</p><p><b>\nResponsibilities</b></p><ul><li>\nDesign shared cloud platform services that application teams consume as reusable building blocks</li><li>\nBuild standard compute patterns and golden baselines to accelerate safe workload onboarding</li><li>\nEvolve paved roads and golden paths with product teams, security, and operations</li><li>\nMaintain centralized logging, monitoring, and alerting capabilities across the platform</li><</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       },
+       {
+        "key": "7NMSV",
+        "label": "Colaboração com partes interessadas"
+       },
+       {
+        "key": "9W8NM",
+        "label": "Infraestrutura como Código (IaC)"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/bltr73oawvhtvmtvjlr_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "50292bec61bb19d7",
+      "title": "Lead AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939573219,
+      "description": {
+       "html": "<div><p>We are looking for a <b>Lead AWS DevOps Engineer</b> to shape and evolve shared cloud platform services used across product and application teams. You will treat the platform as a product by delivering reusable building blocks, paved roads, and a consistent developer experience aligned with CCoE standards.</p><p><b>\nResponsibilities</b></p><ul><li>\nDesign reusable platform capabilities, including shared services, standard compute patterns, and golden baselines, to enable safe and fast workload onboarding</li><li>\nOperate and improve centralized services such as logging, monitoring, secrets, identity, file transfers, and key management</li><li>\nCreate paved roads and golden paths in partnership with product teams, security, and operations</li><li>\nCoordinate with Cloud DevOps/Automa</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "3H953",
+        "label": "SSO"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/blto570rhoxuem2dpyy_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "61a28b15d0862f75",
+      "title": "Cloud Architect",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939571095,
+      "description": {
+       "html": "<div><p>We are seeking a hands-on <b>Cloud Architect</b> to lead large-scale migrations of legacy and third-party applications into modern cloud and container platforms. You will shape target-state architecture, guide delivery teams, and align stakeholders on the best path forward.</p><p><b>\nResponsibilities</b></p><ul><li>\nLead application and infrastructure discovery to assess legacy and third-party workloads</li><li>\nDefine target-state systems architecture across AWS, Kubernetes, and private cloud options</li><li>\nFacilitate workshops with clients and architecture stakeholders to gather requirements</li><li>\nCreate migration plans and test plans aligned with business needs and risk constraints</li><li>\nDecide platform approach and landing zone integration based on workload requirements</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "297N4",
+        "label": "Facilitação"
+       },
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "4CKS3",
+        "label": "Comunicação com clientes"
+       },
+       {
+        "key": "4KFZT",
+        "label": "Migração de Sistemas"
+       },
+       {
+        "key": "7G572",
+        "label": "Levantamento técnico"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/bltm5g8geeuqq7vxwyx_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "edfeab7beafda7cd",
+      "title": "Senior AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939568920,
+      "description": {
+       "html": "<div><p>We are seeking a <b>Senior AWS DevOps Engineer</b> to design, build, and evolve shared cloud platform services consumed by product and application teams. This role treats the cloud platform as a product, delivering reusable building blocks, paved roads, and a consistent developer experience aligned with CCoE standards.</p><p><b>\nResponsibilities</b></p><ul><li>\nBuild reusable platform capabilities, including shared services, standard compute patterns, and golden baselines, that enable safe, rapid workload onboarding</li><li>\nMaintain and enhance centralized services such as logging, monitoring, secrets, identity, file transfers, and key management</li><li>\nCo-create paved roads and golden paths in partnership with product teams, security, and operations</li><li>\nCollaborate closely</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "3H953",
+        "label": "SSO"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/blti4dwilv4io7unu67_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "d8f475ebc7b59692",
+      "title": "Lead AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939567743,
+      "description": {
+       "html": "<div><p>We are looking for a <b>Lead AWS DevOps Engineer</b> to evolve shared AWS cloud platform services that application teams consume, treating the platform as a product with reusable building blocks and a consistent developer experience aligned with CCoE standards. You will shape paved roads, strengthen security-by-design, and raise reliability across the platform.</p><p><b>\nResponsibilities</b></p><ul><li>\nDesign reusable platform capabilities that enable safe, rapid workload onboarding</li><li>\nBuild standard compute patterns and golden baselines aligned with CCoE standards</li><li>\nEvolve centralized services for logging, monitoring, secrets, identity, file transfers, and key management</li><li>\nDefine platform APIs and interfaces that product and application teams can adopt consist</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "3CBW6",
+        "label": "Priorização do backlog"
+       },
+       {
+        "key": "3H953",
+        "label": "SSO"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/bltfk5nty62yfcqazzy_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "a4980a140e3a13be",
+      "title": "Senior AWS DevOps Engineer",
+      "datePublished": 1790917200000,
+      "dateOnIndeed": 1790939558036,
+      "description": {
+       "html": "<div><p>We are looking for a <b>Senior AWS DevOps Engineer</b> to design, build, and evolve shared cloud platform services that product and application teams consume. You will treat the cloud platform as a product by delivering reusable building blocks, paved roads, and a consistent developer experience aligned with CCoE standards.</p><p><b>\nResponsibilities</b></p><ul><li>\nDesign shared cloud platform services as reusable building blocks for product and application teams</li><li>\nBuild standard compute patterns and golden baselines to accelerate safe workload onboarding</li><li>\nMaintain centralized services for logging, monitoring, secrets management, identity, file transfers, and key management</li><li>\nDefine platform APIs and interfaces that enable consistent adoption across teams</li</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2AZXR",
+        "label": "Função como serviço (FaaS)"
+       },
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "2ME5U",
+        "label": "AWS IAM"
+       },
+       {
+        "key": "3CBW6",
+        "label": "Priorização do backlog"
+       },
+       {
+        "key": "3H953",
+        "label": "SSO"
+       },
+       {
+        "key": "3S5UC",
+        "label": "Priorização de funcionalidades"
+       }
+      ],
+      "employer": {
+       "name": "EPAM Systems",
+       "relativeCompanyPageUrl": "/cmp/Epam-Systems"
+      },
+      "recruit": {
+       "viewJobUrl": "https://careers.epam.com/en/vacancy/blt4dc9keb78iw20bg5_en?country=Brazil&utm_source=indeed&utm_medium=xml-job-feed&utm_campaign=ta",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "f09f2bd26c94be61",
+      "title": "Analista de Sistemas TMS",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790903232169,
+      "description": {
+       "html": "<div><p><b>Resumo da Posi&ccedil;&atilde;o</b></p><p>\nRespons&aacute;vel pelo suporte operacional e funcional de primeiro n&iacute;vel ao sistema TMS Benner garantindo o atendimento das demandas dos usu&aacute;rios com qualidade, agilidade e dentro dos n&iacute;veis de servi&ccedil;o definidos (SLA).</p><p>\nAtua na identifica&ccedil;&atilde;o, an&aacute;lise e resolu&ccedil;&atilde;o de incidentes realizando acompanhamento junto aos usu&aacute;rios, &aacute;reas de neg&oacute;cio e fornecedores. Apoio nas atividades de monitoramento, documenta&ccedil;&atilde;o e melhoria cont&iacute;nua dos processos de suporte.</p><p></p><p><b><br>\nRequisitos T&eacute;cnicos</b></p><p><b>\nForma&ccedil;&atilde;o</b></p><ul><li>\nEnsino superior cursando ou conclu&iacute;do em: Sistemas de Informa&ccedil;&at</p></div>"
+      },
+      "location": {
+       "city": "Barueri",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Barueri, SP",
+        "long": "Barueri, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2WE7P",
+        "label": "ITIL foundation"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "4C2ZW",
+        "label": "Participação nos lucros"
+       },
+       {
+        "key": "4Z9KD",
+        "label": "Vale-refeição"
+       },
+       {
+        "key": "5QWDV",
+        "label": "Efetivo CLT"
+       },
+       {
+        "key": "62427",
+        "label": "Sistemas de banco de dados"
+       }
+      ],
+      "employer": {
+       "name": "Active Tecnologia",
+       "relativeCompanyPageUrl": "/cmp/Active-Tecnologia"
+      },
+      "recruit": {
+       "viewJobUrl": "https://activetecnologia.pandape.com.br/Detail/3780662?ov=5&xtor=AL-366332663&source=Indeed&utm_source=indeed&utm_medium=referral&utm_campaign=feed&utm_term=organic&utm_content=ats",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "41713ea4b1054ca2",
+      "title": "Especialista SRE",
+      "datePublished": 1768024800000,
+      "dateOnIndeed": 1790898356835,
+      "description": {
+       "html": "<div><p><b>Sobre o Bradesco</b></p>\n<p>A gente acredita no poder da confian&ccedil;a. Confian&ccedil;a que aproxima, orienta e transforma a vida das pessoas no dia a dia. Entrar no Bradesco &eacute; fazer parte de um momento real de transforma&ccedil;&atilde;o. Um ambiente que combina a solidez de uma hist&oacute;ria constru&iacute;da ao longo de d&eacute;cadas com a evolu&ccedil;&atilde;o constante de quem est&aacute; sempre olhando para frente. Aqui, voc&ecirc; encontra espa&ccedil;o para aprender, crescer e assumir protagonismo na sua trajet&oacute;ria, com apoio, estrutura e oportunidades que acompanham o seu desenvolvimento. Mais do que trabalhar em uma grande institui&ccedil;&atilde;o, &eacute; sobre fazer parte de um time que impacta milh&otilde;es de pessoas, contribui para o desen</p></div>"
+      },
+      "location": {
+       "city": "Barueri",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Barueri, SP",
+        "long": "Barueri, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "4C2ZW",
+        "label": "Participação nos lucros"
+       },
+       {
+        "key": "4Z9KD",
+        "label": "Vale-refeição"
+       },
+       {
+        "key": "5RN3J",
+        "label": "Administração de Sistemas"
+       },
+       {
+        "key": "64VXT",
+        "label": "Azure"
+       },
+       {
+        "key": "6XHWW",
+        "label": "Vale-transporte"
+       }
+      ],
+      "employer": {
+       "name": "Banco Bradesco",
+       "relativeCompanyPageUrl": "/cmp/Banco-Bradesco-1b94657b"
+      },
+      "recruit": {
+       "viewJobUrl": "https://bradesco.csod.com/ux/ats/careersite/1/home/requisition/92702?c=bradesco",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "fcf7fa3c3e2d0ee1",
+      "title": "Pessoa Engenheira de Segurança GCP SR",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790891853787,
+      "description": {
+       "html": "<div><p><b>Estamos buscando uma pessoa que ouse protagonizar com a gente.</b></p><p><b>\nResponsabilidades e atribui&ccedil;&otilde;es:</b></p><ul><li>\nAtuar como refer&ecirc;ncia t&eacute;cnica na defini&ccedil;&atilde;o, arquitetura e implementa&ccedil;&atilde;o de estrat&eacute;gias de seguran&ccedil;a em ambientes de cloud, com foco em Google Cloud Platform (GCP)\n</li><li>Projetar e implementar pol&iacute;ticas de seguran&ccedil;a, garantindo prote&ccedil;&atilde;o de dados, governan&ccedil;a e conformidade regulat&oacute;ria\n</li><li>Conduzir an&aacute;lises de amea&ccedil;as e defini&ccedil;&atilde;o de estrat&eacute;gias de mitiga&ccedil;&atilde;o, utilizando ferramentas de SIEM como Google SecOps e Wiz\n</li><li>Trabalhar em conjunto com times de SOC/SecOps para monitoramento cont&ia</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3U37B",
+        "label": "Gerenciamento de identidade e acesso em nuvem (IAM)"
+       },
+       {
+        "key": "44AQZ",
+        "label": "Espanhol"
+       },
+       {
+        "key": "7FV9V",
+        "label": "Gestão de incidentes"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       },
+       {
+        "key": "7H7TF",
+        "label": "Orquestração de contêineres"
+       }
+      ],
+      "employer": {
+       "name": "Datum Software",
+       "relativeCompanyPageUrl": "/cmp/Datum-Software"
+      },
+      "recruit": {
+       "viewJobUrl": "https://datum.jobs.recrut.ai/apply/24FMSY?source=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "132777c51bc69705",
+      "title": "Engenheiro de Site Reliability Sênior - Remote Work",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790884891372,
+      "description": {
+       "html": "<div><p>H&aacute; mais de 15 anos, a BairesDev&reg; &eacute; l&iacute;der em projetos tecnol&oacute;gicos. Entregamos solu&ccedil;&otilde;es inovadoras para gigantes como Google e Rolls-Royce e as startups mais inovadoras do Vale do Sil&iacute;cio.</p>\n<p>\nTemos uma equipe diversa de mais de 4.000 profissionais formada pelo Top 1% dos talentos de tecnologia do mundo, trabalhando remotamente em cargos de impacto global.</p>\n<p>\nAo se candidatar para este cargo, voc&ecirc; est&aacute; dando o primeiro passo em um processo que vai al&eacute;m do comum. Nosso objetivo &eacute; alinhar suas paix&otilde;es, habilidades, e expectativas &agrave;s nossas vagas, colocando voc&ecirc; no caminho para desenvolver uma carreira de sucesso excepcional.</p>\nComo Engenheiro de Site Reliability S&ecirc;nior,</p></div>"
+      },
+      "location": {
+       "city": "Manaus",
+       "admin1Code": "AM",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Manaus, AM",
+        "long": "Manaus, AM"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "5RN3J",
+        "label": "Administração de Sistemas"
+       },
+       {
+        "key": "64VXT",
+        "label": "Azure"
+       },
+       {
+        "key": "7NMSV",
+        "label": "Colaboração com partes interessadas"
+       },
+       {
+        "key": "83B3K",
+        "label": "Otimização de desempenho"
+       },
+       {
+        "key": "8E8JS",
+        "label": "Ansible"
+       },
+       {
+        "key": "9W8NM",
+        "label": "Infraestrutura como Código (IaC)"
+       }
+      ],
+      "employer": {
+       "name": "BairesDev",
+       "relativeCompanyPageUrl": "/cmp/Bairesdev"
+      },
+      "recruit": {
+       "viewJobUrl": "https://applicants.bairesdev.com/job/966/304417/apply?utm_source=indeedjobposting&utm_medium=erp&utm_campaign=erp_links",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "25b736b9c417e4cc",
+      "title": "Engenheiro de Site Reliability Sênior - Remote Work",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790884890302,
+      "description": {
+       "html": "<div><p>H&aacute; mais de 15 anos, a BairesDev&reg; &eacute; l&iacute;der em projetos tecnol&oacute;gicos. Entregamos solu&ccedil;&otilde;es inovadoras para gigantes como Google e Rolls-Royce e as startups mais inovadoras do Vale do Sil&iacute;cio.</p>\n<p>\nTemos uma equipe diversa de mais de 4.000 profissionais formada pelo Top 1% dos talentos de tecnologia do mundo, trabalhando remotamente em cargos de impacto global.</p>\n<p>\nAo se candidatar para este cargo, voc&ecirc; est&aacute; dando o primeiro passo em um processo que vai al&eacute;m do comum. Nosso objetivo &eacute; alinhar suas paix&otilde;es, habilidades, e expectativas &agrave;s nossas vagas, colocando voc&ecirc; no caminho para desenvolver uma carreira de sucesso excepcional.</p>\nComo Engenheiro de Site Reliability S&ecirc;nior,</p></div>"
+      },
+      "location": {
+       "city": "São José dos Campos",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São José dos Campos, SP",
+        "long": "São José dos Campos, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "5RN3J",
+        "label": "Administração de Sistemas"
+       },
+       {
+        "key": "64VXT",
+        "label": "Azure"
+       },
+       {
+        "key": "7NMSV",
+        "label": "Colaboração com partes interessadas"
+       },
+       {
+        "key": "83B3K",
+        "label": "Otimização de desempenho"
+       },
+       {
+        "key": "8E8JS",
+        "label": "Ansible"
+       },
+       {
+        "key": "9W8NM",
+        "label": "Infraestrutura como Código (IaC)"
+       }
+      ],
+      "employer": {
+       "name": "BairesDev",
+       "relativeCompanyPageUrl": "/cmp/Bairesdev"
+      },
+      "recruit": {
+       "viewJobUrl": "https://applicants.bairesdev.com/job/966/304418/apply?utm_source=indeedjobposting&utm_medium=erp&utm_campaign=erp_links",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "44a5be7851255902",
+      "title": "Engenheiro de Dados Sênior (Data Ops)",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790883697279,
+      "description": {
+       "html": "<div><p><b>Ol&aacute;! Ficamos felizes com o seu interesse em uma de nossas oportunidades.\n</b></p><p><b>Na ArcelorMittal acreditamos que uma escolha de carreira vai al&eacute;m da posi&ccedil;&atilde;o. &Eacute; sobre fazer parte de um ambiente que valoriza pessoas, promove o desenvolvimento cont&iacute;nuo e, acima de tudo, coloca a Seguran&ccedil;a como um valor inegoci&aacute;vel em todas as decis&otilde;es.\n</b></p><p><b>A seguir, voc&ecirc; encontrar&aacute; mais detalhes sobre a ArcelorMittal, a oportunidade, o que oferecemos e o que buscamos nas pessoas que querem construir essa jornada conosco.<br>\n</b></p><p></p><p><b>Quem somos?<br>\n</b></p><p></p><p>Somos a ArcelorMittal, maior produtora de a&ccedil;o do Brasil e uma empresa global que atua com o prop&oacute;sito de <b>produzir</p></div>"
+      },
+      "location": {
+       "city": "Belo Horizonte",
+       "admin1Code": "MG",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Belo Horizonte, MG",
+        "long": "Belo Horizonte, MG"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "47KNR",
+        "label": "Ajuste de Desempenho"
+       },
+       {
+        "key": "5BYE6",
+        "label": "Desenvolvimento de automação de testes de QA"
+       },
+       {
+        "key": "5F3M7",
+        "label": "Databricks"
+       },
+       {
+        "key": "64VXT",
+        "label": "Azure"
+       }
+      ],
+      "employer": {
+       "name": "ArcelorMittal",
+       "relativeCompanyPageUrl": "/cmp/Arcelormittal"
+      },
+      "recruit": {
+       "viewJobUrl": "https://emfg.fa.em4.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/41732",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "b8e7cdab76db280a",
+      "title": "Analista SRE (Pleno ou Sênior)",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790879968862,
+      "description": {
+       "html": "<div></div><div><div><div><div><div><div><div><div>S&atilde;o Paulo\n</div><div>Efetivo\n</div><div>H&iacute;brido\n</div></div></div><div><p>Estamos em busca de um(a) <b>Analista SRE Pleno ou S&ecirc;nior</b> para atuar em um ambiente de alta complexidade, contribuindo diretamente para a <b>disponibilidade, confiabilidade, performance e evolu&ccedil;&atilde;o dos ambientes tecnol&oacute;gicos</b>.\n<br>\nSe voc&ecirc; possui experi&ecirc;ncia com <b>AWS, Cloud, CI/CD, Observabilidade e troubleshooting</b>, essa oportunidade pode fazer sentido para voc&ecirc;!<br>\n<br>\n</p><h3 class=\"jobSectionHeader\"><b>O que voc&ecirc; ir&aacute; fazer:</b></h3>\n<ul><li>Atuar na <b>sustenta&ccedil;&atilde;o e evolu&ccedil;&atilde;o de ambientes AWS</b>, garantindo alta disponibilidade e confiabilidade;</li>\n<</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP",
+        "long": "São Paulo, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2AZXR",
+        "label": "Função como serviço (FaaS)"
+       },
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "3P5PM",
+        "label": "Desenvolvimento de soluções"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       }
+      ],
+      "employer": {
+       "name": "Ebix Latin America",
+       "relativeCompanyPageUrl": "/cmp/Ebix-Latin-America"
+      },
+      "recruit": {
+       "viewJobUrl": "https://www.ebixlatinamerica.com.br/vagas/analista-sre-pleno-ou-senior/",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "6af9a0cd2645e3d5",
+      "title": "Analista SRE (Semi Senior o Senior)",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790879946276,
+      "description": {
+       "html": "<div></div><div><div><div><div><div><div><div><div>S&atilde;o Paulo\n</div><div>Vacante efectiva\n</div><div>H&iacute;brido\n</div></div></div><div><p>Estamos buscando un(a) <b>Analista SRE Semi Senior o Senior</b> para trabajar en un entorno de alta complejidad, contribuyendo directamente a la <b>disponibilidad, confiabilidad, rendimiento y evoluci&oacute;n de los entornos tecnol&oacute;gicos</b>.</p>\n<p>Si tienes experiencia con <b>AWS, Cloud, CI/CD, Observabilidad y Troubleshooting</b>, esta oportunidad puede ser para ti.</p>\n<h3 class=\"jobSectionHeader\"><b>&iquest;Qu&eacute; har&aacute;s?</b></h3>\n<ul><li>Trabajar en el <b>soporte y evoluci&oacute;n de entornos AWS</b>, garantizando alta disponibilidad y confiabilidad;</li>\n<li>Implementar y mantener <b>pipelines de CI/CD</b>, integrados </p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP",
+        "long": "São Paulo, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2AZXR",
+        "label": "Função como serviço (FaaS)"
+       },
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       },
+       {
+        "key": "7H7TF",
+        "label": "Orquestração de contêineres"
+       }
+      ],
+      "employer": {
+       "name": "Ebix Latin America",
+       "relativeCompanyPageUrl": "/cmp/Ebix-Latin-America"
+      },
+      "recruit": {
+       "viewJobUrl": "https://www.ebixlatinamerica.com.br/es/vagas/analista-sre-semi-senior-o-senior/",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "35085d06c76e197e",
+      "title": "ESPECIALISTA DE CLOUD",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790879877330,
+      "description": {
+       "html": "<div><p><b>Vem ser #TORRACART&Atilde;O﻿!\n </b></p><p>Voc&ecirc; est&aacute; pronto para dar um passo decisivo na sua carreira?</p>\n <p>A Torra Cart&atilde;o, uma das institui&ccedil;&otilde;es de pagamentos que mais cresce no Brasil, busca talentos experientes que desejam moldar o futuro de pagamentos!</p>\n <p>Com mais de 2 milh&otilde;es de cart&otilde;es private label emitidos e uma forte presen&ccedil;a em mais de 87 lojas no Brasil, nossa miss&atilde;o &eacute; clara: <b>oferecer uma experi&ecirc;ncia de pagamento descomplicada e cheia de possibilidades</b>.</p>\n <p>Nossa equipe, composta por mais de <b>150 profissionais</b> dedicados, trabalha para oferecer uma ampla gama de produtos e servi&ccedil;os, incluindo cart&otilde;es, seguros, assist&ecirc;ncias e muito mais.</p>\n Buscamos u</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP",
+        "long": "São Paulo, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "6H8NX",
+        "label": "Arquitetura de Nuvem"
+       },
+       {
+        "key": "6XHWW",
+        "label": "Vale-transporte"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       },
+       {
+        "key": "7H7TF",
+        "label": "Orquestração de contêineres"
+       }
+      ],
+      "employer": {
+       "name": "Lojas Torra",
+       "relativeCompanyPageUrl": "/cmp/Lojas-Torra"
+      },
+      "recruit": {
+       "viewJobUrl": "https://lojastorra.gupy.io/job/eyJqb2JJZCI6MTI2NTk2MTksInNvdXJjZSI6ImluZGVlZCJ9?jobBoardSource=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "45a1ff31271e36ea",
+      "title": "HEAD DE HYBRID CLOUD OPERATIONS",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790872008636,
+      "description": {
+       "html": "<div><p>A SGA atua na sustenta&ccedil;&atilde;o de sistemas corporativos cr&iacute;ticos para empresas de m&eacute;dio e grande porte.</p>\n<p>Nosso prop&oacute;sito &eacute; redefinir o padr&atilde;o de efici&ecirc;ncia digital no mercado, elevando o cuidado tecnol&oacute;gico &agrave; categoria de estrat&eacute;gia, a partir de uma atua&ccedil;&atilde;o Cloud-Smart, Secure-Always e AI-Ready. Sustentamos a base digital que permite que as empresas operem com estabilidade, efici&ecirc;ncia e seguran&ccedil;a, hoje e no futuro.</p><p><br>\n</p><p><b>Sobre a Oportunidade</b></p>\n<p>Buscamos uma lideran&ccedil;a para a frente de Hybrid Cloud Operation (HCO), que atue como facilitador(a) e garanta o equil&iacute;brio entre o desenvolvimento humano e a excel&ecirc;ncia operacional, apoiando squads</p></div>"
+      },
+      "location": {
+       "city": "Belo Horizonte",
+       "admin1Code": "MG",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Belo Horizonte, MG",
+        "long": "Belo Horizonte, MG"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "223C8",
+        "label": "Microsoft Windows Server"
+       },
+       {
+        "key": "297N4",
+        "label": "Facilitação"
+       },
+       {
+        "key": "2KQBW",
+        "label": "Experiência em gestão no setor de tecnologia"
+       },
+       {
+        "key": "2UT2Y",
+        "label": "Planejamento de desenvolvimento profissional"
+       },
+       {
+        "key": "2V8EX",
+        "label": "CI/CD"
+       },
+       {
+        "key": "3YXX6",
+        "label": "Gestão de metas da equipe"
+       }
+      ],
+      "employer": {
+       "name": "SGA Tecnologia Inteligente",
+       "relativeCompanyPageUrl": "/cmp/Sga-Tecnologia-Inteligente"
+      },
+      "recruit": {
+       "viewJobUrl": "https://sga.vagas.solides.com.br/vaga/930995?origem=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "564f7550bee409c2",
+      "title": "Unix Systems Administrator (Linux/Unix)",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790871401971,
+      "description": {
+       "html": "<div><div><div><div><h2 class=\"jobSectionHeader\"><b>CAPGEMINI ENGINEERING</b></h2>\n</div><div><p>At Capgemini Engineering, the world leader in engineering services, we bring together a global team of engineers, scientists, and architects to help the world&rsquo;s most innovative companies unleash their potential. From autonomous cars to life-saving robots, our digital and software technology experts think outside the box as they provide unique R&amp;D and engineering services across all industries. Join us for a career full of opportunities. Where can you make a difference. Where no two days are the same.</p>\n</div></div><div><div><h2 class=\"jobSectionHeader\"><b>YOUR ROLE</b></h2>\n</div><div><p>As Unix Systems Administrator (Linux/Unix) you will be part of a cross functional and multicultu</p></div>"
+      },
+      "location": {
+       "city": "Colombo",
+       "admin1Code": "PR",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Colombo, PR",
+        "long": "Colombo, PR"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2GB9E",
+        "label": "Sistemas de conteinerização"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "6XNCP",
+        "label": "Ciência da Computação"
+       },
+       {
+        "key": "8CSNZ",
+        "label": "AIX"
+       },
+       {
+        "key": "8E8JS",
+        "label": "Ansible"
+       },
+       {
+        "key": "AA24C",
+        "label": "DevOps"
+       }
+      ],
+      "employer": {
+       "name": "Capgemini Engineering",
+       "relativeCompanyPageUrl": "/cmp/Capgemini-Engineering"
+      },
+      "recruit": {
+       "viewJobUrl": "https://www.capgemini.com/jobs/570692-en_US_SAPBTP/",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "245ca2cc4b5246ff",
+      "title": "Arquiteto de Soluções | Cresol Confederação",
+      "datePublished": 1790830800000,
+      "dateOnIndeed": 1790858088873,
+      "description": {
+       "html": "<div><p>Venha fazer a diferen&ccedil;a com a gente!<br>\n</p><p></p><br>\n<p>Estamos em busca de um(a) <b>Arquiteto de Solu&ccedil;&otilde;es</b> para fortalecer ainda mais o nosso time!</p><p></p><p><br>\nSe voc&ecirc; acredita no poder do trabalho em equipe, na constru&ccedil;&atilde;o de um ambiente colaborativo e no impacto positivo que pode gerar na comunidade, essa oportunidade &eacute; para voc&ecirc;!</p><p>\nAqui na Cresol, crescimento &eacute; sobre desenvolver talentos, fortalecer conex&otilde;es e criar um ambiente onde cada pessoa se sinta valorizada. Se voc&ecirc; est&aacute; pronto(a) para esse desafio e quer fazer parte de algo grandioso, vem para a Cresol e embarque na onda laranja!<br>\n</p><p></p><br>\n<p>Juntos, vamos mais longe!<br>\n</p><br>\n<br>\n<b>Responsabilidades e atrib</p></div>"
+      },
+      "location": {
+       "city": "Remoto",
+       "admin1Code": null,
+       "countryCode": "BR",
+       "formatted": {
+        "short": "Remoto",
+        "long": "Remoto"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2QBEV",
+        "label": "Spring Boot"
+       },
+       {
+        "key": "4MPYW",
+        "label": "Engajamento de partes interessadas"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       },
+       {
+        "key": "64VXT",
+        "label": "Azure"
+       },
+       {
+        "key": "6XHWW",
+        "label": "Vale-transporte"
+       },
+       {
+        "key": "75GKK",
+        "label": "Meio período"
+       }
+      ],
+      "employer": {
+       "name": "Cresol",
+       "relativeCompanyPageUrl": "/cmp/Cresol-5"
+      },
+      "recruit": {
+       "viewJobUrl": "https://cresolcarreiras.gupy.io/job/eyJqb2JJZCI6MTI1ODQzNTcsInNvdXJjZSI6ImluZGVlZCJ9?jobBoardSource=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "a9877877a3bcc2ff",
+      "title": "[Cloud] Especialista de Banco de Dados - DBA (Afirmativa para Mulheres)",
+      "datePublished": 1790744400000,
+      "dateOnIndeed": 1790818795969,
+      "description": {
+       "html": "<div><div><div><h1 class=\"jobSectionHeader\"><b>[Cloud] Especialista de Banco de Dados - DBA (Afirmativa para Mulheres)</b></h1>\n<p>TOTVS | S&atilde;o Paulo - SP | H&iacute;brido</p>\n</div><div></div><p>Descri&ccedil;&atilde;o da vaga</p>\n<div><div><b>Miss&atilde;o do cargo</b>\n<br>\n</div><div>Atuar como refer&ecirc;ncia t&eacute;cnica em arquitetura, administra&ccedil;&atilde;o e evolu&ccedil;&atilde;o de <b>bancos de dados</b> em ambientes h&iacute;bridos e multicloud, garantindo alta disponibilidade, seguran&ccedil;a e performance.\n<br>\nLiderar iniciativas de automa&ccedil;&atilde;o, provisionamento e ciclo de vida de bancos por meio de IaC, pipelines CI/CD e pr&aacute;ticas DevOps.\n<br>\nConduzir migra&ccedil;&otilde;es complexas, tuning e troubleshooting de ambientes <b>Oracle, SQL Serv</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP 02511-000",
+        "long": "São Paulo, SP 02511-000"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "47KNR",
+        "label": "Ajuste de Desempenho"
+       },
+       {
+        "key": "4KFZT",
+        "label": "Migração de Sistemas"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       },
+       {
+        "key": "4Z9KD",
+        "label": "Vale-refeição"
+       }
+      ],
+      "employer": {
+       "name": "TOTVS",
+       "relativeCompanyPageUrl": "/cmp/Totvs"
+      },
+      "recruit": {
+       "viewJobUrl": "https://atracaodetalentos.totvs.app/vempratotvs/12516/cloud-especialista-de-banco-de-dados-dba-afirmativa-para-mulheres",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "4a151aa91ed423f2",
+      "title": "[Cloud] Especialista de Banco de Dados - DBA",
+      "datePublished": 1790744400000,
+      "dateOnIndeed": 1790818796053,
+      "description": {
+       "html": "<div><div><div><h1 class=\"jobSectionHeader\"><b>[Cloud] Especialista de Banco de Dados - DBA</b></h1>\n<p>TOTVS | S&atilde;o Paulo - SP | H&iacute;brido</p>\n</div><div></div><p>Descri&ccedil;&atilde;o da vaga</p>\n<div><div><b>Miss&atilde;o do cargo</b>\n<br>\n</div><div>Atuar como refer&ecirc;ncia t&eacute;cnica em arquitetura, administra&ccedil;&atilde;o e evolu&ccedil;&atilde;o de <b>bancos de dados</b> em ambientes h&iacute;bridos e multicloud, garantindo alta disponibilidade, seguran&ccedil;a e performance.\n<br>\nLiderar iniciativas de automa&ccedil;&atilde;o, provisionamento e ciclo de vida de bancos por meio de IaC, pipelines CI/CD e pr&aacute;ticas DevOps.\n<br>\nConduzir migra&ccedil;&otilde;es complexas, tuning e troubleshooting de ambientes <b>Oracle, SQL Server, MySQL/MariaDB e Postgre</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP 02511-000",
+        "long": "São Paulo, SP 02511-000"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3N6YN",
+        "label": "Solução de problemas técnicos"
+       },
+       {
+        "key": "47KNR",
+        "label": "Ajuste de Desempenho"
+       },
+       {
+        "key": "4KFZT",
+        "label": "Migração de Sistemas"
+       },
+       {
+        "key": "4MZ9H",
+        "label": "Integração de sistemas"
+       },
+       {
+        "key": "4Z9KD",
+        "label": "Vale-refeição"
+       }
+      ],
+      "employer": {
+       "name": "TOTVS",
+       "relativeCompanyPageUrl": "/cmp/Totvs"
+      },
+      "recruit": {
+       "viewJobUrl": "https://atracaodetalentos.totvs.app/vempratotvs/12520/cloud-especialista-de-banco-de-dados-dba",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "09e6a47b3653f5ae",
+      "title": "3630: Cientista de dados",
+      "datePublished": 1790744400000,
+      "dateOnIndeed": 1790811761844,
+      "description": {
+       "html": "<div><p>Profisisonal com s&oacute;lida experi&ecirc;ncia como Cientista de Dados com perfil altamente anal&iacute;tico, t&eacute;cnico e hands-on, capaz de atuar de ponta a ponta em todo o ciclo de dados &mdash; desde a ingest&atilde;o e prepara&ccedil;&atilde;o, at&eacute; a modelagem estat&iacute;stica, experimenta&ccedil;&atilde;o e implementa&ccedil;&atilde;o desolu&ccedil;&otilde;es do b&aacute;sico ao avan&ccedil;ado de ci&ecirc;ncia de dados e intelig&ecirc;ncia artificial. Deve ter mais de 4 anos de experi&ecirc;ncia comprovada em empresas e em projetos de Data Science e IA aplicados a &aacute;reas como Recursos Humanos, Log&iacute;stica, Finan&ccedil;as e Comercial, com dom&iacute;nio de t&eacute;cnicas estat&iacute;sticas, constru&ccedil;&atilde;o de modelos preditivos e desenvol</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP",
+        "long": "São Paulo, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "2CNT5",
+        "label": "Scikit-learn"
+       },
+       {
+        "key": "2EMK6",
+        "label": "Relatórios de painel de desempenho"
+       },
+       {
+        "key": "2Y2NS",
+        "label": "Uso do Power BI (aplicativos do Microsoft Office)"
+       },
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3R24N",
+        "label": "Desenvolvimento de dashboards"
+       },
+       {
+        "key": "4PKK5",
+        "label": "Serviços de análise de dados em nuvem"
+       }
+      ],
+      "employer": {
+       "name": "Mazzatech",
+       "relativeCompanyPageUrl": "/cmp/Mazzatech"
+      },
+      "recruit": {
+       "viewJobUrl": "https://mazzatech.inhire.app/vagas/c89feead-69b8-4c6a-9747-f301f9b2c7ff/3630-cientista-de-dados?source=indeed",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    },
+    {
+     "job": {
+      "key": "83d57617ded5a8fb",
+      "title": "HEAD Data Plataform",
+      "datePublished": 1790744400000,
+      "dateOnIndeed": 1790808989287,
+      "description": {
+       "html": "<div><p><b>Como o time de DADOS constr&oacute;i a Loft:\n</b></p><p>As principais miss&otilde;es do nosso time s&atilde;o garantir que a Loft tome as melhores decis&otilde;es baseadas em dados e extrair o m&aacute;ximo valor de dados, analytics, machine learning e IA para gerar impacto real de neg&oacute;cio. Somos respons&aacute;veis por construir e evoluir a plataforma de dados da empresa, garantindo qualidade, escalabilidade, governan&ccedil;a e democratiza&ccedil;&atilde;o do acesso &agrave; informa&ccedil;&atilde;o.\n</p><p>Nosso time atua desde a ingest&atilde;o e modelagem de dados at&eacute; a disponibiliza&ccedil;&atilde;o de indicadores confi&aacute;veis para toda a companhia, viabilizando produtos anal&iacute;ticos, experimentos, proje&ccedil;&otilde;es e solu&ccedil;&otilde;es or</p></div>"
+      },
+      "location": {
+       "city": "São Paulo",
+       "admin1Code": "SP",
+       "countryCode": "BR",
+       "formatted": {
+        "short": "São Paulo, SP",
+        "long": "São Paulo, SP"
+       }
+      },
+      "compensation": {
+       "currencyCode": null,
+       "baseSalary": null
+      },
+      "attributes": [
+       {
+        "key": "3GPEM",
+        "label": "Controle de versão"
+       },
+       {
+        "key": "3JGNJ",
+        "label": "Verificações de qualidade de dados"
+       },
+       {
+        "key": "5NTUN",
+        "label": "Proficiência em software de visualização de dados"
+       },
+       {
+        "key": "5S44E",
+        "label": "Gestão de privacidade de dados"
+       },
+       {
+        "key": "6K3WM",
+        "label": "Business intelligence"
+       },
+       {
+        "key": "7GRMV",
+        "label": "Implementação de entrega contínua (CD)"
+       }
+      ],
+      "employer": {
+       "name": "Loft",
+       "relativeCompanyPageUrl": "/cmp/Loft-575163e5"
+      },
+      "recruit": {
+       "viewJobUrl": "https://loft.teamtailor.com/jobs/8481596-head-data-plataform",
+       "detailedSalary": null,
+       "workSchedule": null
+      }
+     }
+    }
+   ]
+  }
+ }
+}

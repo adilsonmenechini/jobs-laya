@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -8,7 +9,10 @@ class JobSearchRequest(BaseModel):
     location: str = "Brazil"
     limit: int = Field(default=25, ge=1, le=100)
     fetch_details: bool = True
-    source: Literal["linkedin", "geekhunter", "gupy", "glassdoor", "all"] = "linkedin"
+    source: Literal["linkedin", "geekhunter", "gupy", "indeed", "glassdoor", "all"] = "all"
+    # recency window in hours (0 = keep everything); the front presets are
+    # 1d=24 · 72h=72 · 7d=168 · 30d=720 (default) · sem filtro=0
+    hours_old: int = Field(default=720, ge=0, le=8760)
 
 
 class JobOut(BaseModel):
@@ -23,6 +27,7 @@ class JobOut(BaseModel):
     remote: bool
     url: str | None
     description: str
+    posted_at: str | None
     match: str | None
     score: float | None
     decision: dict | None
@@ -43,6 +48,50 @@ class ProfileOut(BaseModel):
     remote_required: bool
     skills: list[str]
     focus: list[str]
+    exclusions: list[str] = Field(default_factory=list)
+
+
+class CurriculumIn(BaseModel):
+    """PUT body: the raw markdown (a separate file from `profile.json`)."""
+
+    content: str = ""
+
+
+class CurriculumOut(BaseModel):
+    content: str
+    # sha256 of the bytes on disk; None when the file does not exist.
+    version: str | None = None
+
+
+class KanbanCreateIn(BaseModel):
+    source: str = Field(max_length=32)
+    source_id: str = Field(max_length=128)
+
+
+class KanbanPatchIn(BaseModel):
+    status: Literal["CHECK", "RUNNING", "DONE"]
+
+
+class KanbanOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    source: str
+    source_id: str
+    title: str | None
+    company: str | None
+    location: str | None
+    url: str | None
+    remote: bool | None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    applied_at: datetime | None
+
+
+class KanbanList(BaseModel):
+    total: int
+    items: list[KanbanOut]
 
 
 class ToolDescriptorOut(BaseModel):

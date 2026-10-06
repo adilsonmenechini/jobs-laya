@@ -17,7 +17,7 @@
       "score": 72.17
     },
     "model": "english",
-    "laya_ms": 386.1,
+    "laya_ms": 948.1,
     "laya_answers": {
       "role_family": "other",
       "remote": 0.651,
@@ -43,7 +43,7 @@
       "score": 80.07
     },
     "model": "english",
-    "laya_ms": 362.1,
+    "laya_ms": 818.3,
     "laya_answers": {
       "role_family": "platform_cloud",
       "remote": 0.719,
@@ -69,7 +69,7 @@
       "score": 77.76
     },
     "model": "english",
-    "laya_ms": 355.8,
+    "laya_ms": 918.7,
     "laya_answers": {
       "role_family": "site_reliability",
       "remote": 0.501,
@@ -95,7 +95,7 @@
       "score": 80.56
     },
     "model": "english",
-    "laya_ms": 364.4,
+    "laya_ms": 938.2,
     "laya_answers": {
       "role_family": "ai_ml",
       "remote": 0.543,
@@ -121,7 +121,7 @@
       "score": 79.89
     },
     "model": "english",
-    "laya_ms": 367.7,
+    "laya_ms": 897.1,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.73,
@@ -147,7 +147,7 @@
       "score": 70.76
     },
     "model": "english",
-    "laya_ms": 348.7,
+    "laya_ms": 811.5,
     "laya_answers": {
       "role_family": "platform_cloud",
       "remote": 0.623,
@@ -173,7 +173,7 @@
       "score": 71.08
     },
     "model": "english",
-    "laya_ms": 342.2,
+    "laya_ms": 821.8,
     "laya_answers": {
       "role_family": "ai_ml",
       "remote": 0.739,
@@ -199,7 +199,7 @@
       "score": 75.14
     },
     "model": "english",
-    "laya_ms": 384.4,
+    "laya_ms": 864.7,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.36,
@@ -225,7 +225,7 @@
       "score": 65.3
     },
     "model": "english",
-    "laya_ms": 351.7,
+    "laya_ms": 932.5,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.597,
@@ -251,7 +251,7 @@
       "score": 69.18
     },
     "model": "english",
-    "laya_ms": 366.5,
+    "laya_ms": 822.2,
     "laya_answers": {
       "role_family": "platform_cloud",
       "remote": 0.622,
@@ -277,7 +277,7 @@
       "score": 30.67
     },
     "model": "english",
-    "laya_ms": 326.4,
+    "laya_ms": 773.7,
     "laya_answers": {
       "role_family": "other",
       "remote": 0.66,
@@ -303,7 +303,7 @@
       "score": 55.87
     },
     "model": "english",
-    "laya_ms": 314.0,
+    "laya_ms": 776.2,
     "laya_answers": {
       "role_family": "platform_cloud",
       "remote": 0.814,
@@ -329,7 +329,7 @@
       "score": 78.51
     },
     "model": "multilingual",
-    "laya_ms": 3172.3,
+    "laya_ms": 2921.2,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.764,
@@ -355,7 +355,7 @@
       "score": 82.0
     },
     "model": "multilingual",
-    "laya_ms": 160.7,
+    "laya_ms": 385.7,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.771,
@@ -381,7 +381,7 @@
       "score": 73.99
     },
     "model": "multilingual",
-    "laya_ms": 159.3,
+    "laya_ms": 363.2,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.744,
@@ -407,7 +407,7 @@
       "score": 74.93
     },
     "model": "multilingual",
-    "laya_ms": 154.8,
+    "laya_ms": 322.1,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.871,
@@ -433,7 +433,7 @@
       "score": 58.63
     },
     "model": "multilingual",
-    "laya_ms": 137.0,
+    "laya_ms": 279.1,
     "laya_answers": {
       "role_family": "devops",
       "remote": 0.93,
@@ -459,7 +459,7 @@
       "score": 45.34
     },
     "model": "multilingual",
-    "laya_ms": 142.5,
+    "laya_ms": 300.3,
     "laya_answers": {
       "role_family": "site_reliability",
       "remote": 0.109,

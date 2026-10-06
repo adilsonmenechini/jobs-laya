@@ -1,0 +1,13 @@
+{
+  "title": "Analista - Site Reliability Engineer (SRE)",
+  "company": "NTT DATA",
+  "location": null,
+  "remote": true,
+  "description": "Requisitos 4+ anos de experiência na carreira dynatrace Kubernetes e observabilidade (Grafana, Loki) SRE: SLOs, SLIs, automação de confiabilidade Observabilidade Tarefas e Responsabilidades Sobre a vaga Estamos buscando um(a) Site Reliability Engineer (SRE) para atuar na implementação de práticas de SRE, observabilidade e confiabilidade utilizando Dynatrace Managed e SaaS . Responsabilidades Implementar práticas de SRE, observabilidade e confiabilidade utilizando Dynatrace Managed e SaaS. Monitorar APIs e jornadas financeiras críticas, incluindo PIX, Open Finance, SPB, TED, DOC e carteiras digitais. Aplicar SLIs/SLOs e realizar análise de latência, throughput, erros e disponibilidade. Desenvolver dashboards e alertas para operações e Command Center. Atuar com automação, self-healing e práticas de resiliência, visando a redução de MTTR, alta disponibilidade e escalabilidade.",
+  "source": "geekhunter",
+  "source_id": "site-reliability-engineer--sre--3",
+  "url": "https://www.geekhunter.com/pt/ntt-data/jobs/site-reliability-engineer--sre--3",
+  "posted_at": "2026-09-30",
+  "score": 63.79,
+  "match": "medium"
+}

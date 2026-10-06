@@ -1,0 +1,13 @@
+{
+  "title": "SRE  Sênior",
+  "company": "NTT DATA",
+  "location": null,
+  "remote": true,
+  "description": "Requisitos 5+ anos de experiência na carreira Azure Infraestrutura como Código Terraform CI/CD Azure Pipelines Python Observabilidade Kubernetes New Relic Conhecimentos Desejáveis PostgreSQL Kafka Azure Functions Kotlin Arquitetura Cloud SLI/SLO Gestão de Incidentes Melhoria Contínua Tarefas e Responsabilidades Sobre a vaga Buscamos um SRE / DevOps Sênior para atuar em um projeto de plataforma cloud, com foco em evoluir a infraestrutura em Azure e amadurecer a observabilidade do ambiente. É uma posição mão na massa, para quem tem autonomia, senso de dono e vivência real de produção. Responsabilidades Evoluir e padronizar a infraestrutura Azure usando Terraform, preparando o ambiente para escalar e replicar. Manter e melhorar as esteiras de CI/CD em Azure Pipelines. Sustentar ambientes Kubernetes em produção. Evoluir a observabilidade com New Relic: monitoramento, dashboards, alertas e troubleshooting de ponta a ponta. Automatizar tarefas repetitivas, atuar em incidentes e garantir estabilidade e disponibilidade. Comunicar riscos e bloqueios cedo e com clareza para times técnicos e de negócio. Requisitos Experiência sólida como SRE ou DevOps, com vivência real de produção. Azure no dia a dia. Terraform e prática de infraestrutura como código. Kubernetes. CI/CD, de preferência com Azure Pipelines. Automação. Observabilidade com New Relic. Python e Kotlin para automações e leitura de código — não é uma vaga de desenvolvimento. Diferenciais Azure Functions. Kafka. PostgreSQL em PaaS. Arquitetura cloud. Definição de SLI/SLO. Gestão de incidentes e melhoria contínua. Competências comportamentais Perfil sênior mão na massa e autônomo. Senso de dono. Capacidade de investigar problemas até o fim sem necessidade de direcionamento constante. Boa comunicação com times técnicos e de negócio. Benefícios Pacote de benefícios da NTT DATA para contratação em regime CLT. Modelo de trabalho e local Trabalho 100% remoto, de qualquer lugar do Brasil. Processo seletivo Inscrições abertas para contratação CLT. Se você tem o perfil e a experiência descritos, candidate-se para conversarmos.",
+  "source": "geekhunter",
+  "source_id": "sre--senior-1",
+  "url": "https://www.geekhunter.com/pt/ntt-data/jobs/sre--senior-1",
+  "posted_at": "2026-09-09",
+  "score": 68.23,
+  "match": "medium"
+}

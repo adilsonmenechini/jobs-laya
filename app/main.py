@@ -1,10 +1,15 @@
+import json
+import os
+import tempfile
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from app.classifier.engine import peek_engine
@@ -12,18 +17,26 @@ from app.config import settings
 from app.db import get_db, init_db
 from app.linkedin.browser import close_session
 from app.linkedin.tools import TOOLS, LinkedInTools, ToolError, ToolNotFoundError, get_tools
-from app.models import Job
+from app.models import Job, KanbanJob
 from app.schemas import (
+    CurriculumIn,
+    CurriculumOut,
     JobList,
     JobOut,
     JobSearchRequest,
+    KanbanCreateIn,
+    KanbanList,
+    KanbanOut,
+    KanbanPatchIn,
     ProfileOut,
     ToolItem,
     ToolItems,
     ToolList,
     ToolSearchRequest,
 )
+from app.services import curriculum
 from app.services.jobs import list_jobs, load_profile, sync_jobs
+from app.services.kanban import create_kanban, job_without_kanban_card
 from app.sources import SourceUnavailableError, source_names
 
 DbSession = Annotated[Session, Depends(get_db)]
@@ -70,6 +83,70 @@ def profile():
     return load_profile(settings.profile_path)
 
 
+@app.put("/profile", response_model=ProfileOut)
+def update_profile(payload: ProfileOut):
+    """Persist `data/profile.json` atomically (temp file + replace).
+
+    FastAPI validates the body against `ProfileOut` before this runs, so an
+    invalid payload answers 422 without ever touching the file on disk.
+    """
+    path = Path(settings.profile_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Unique temp file in the same directory: os.replace stays atomic (same
+    # fs), and two concurrent saves cannot claim the same tmp path.
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload.model_dump(), ensure_ascii=False, indent=2) + "\n")
+        os.replace(tmp_name, path)
+    except BaseException:
+        Path(tmp_name).unlink(missing_ok=True)
+        raise
+    return payload
+
+
+MAX_CURRICULUM_BYTES = 200 * 1024  # PUT /curriculum rejects anything above this
+
+
+@app.get("/curriculum", response_model=CurriculumOut)
+def get_curriculum():
+    """Current markdown plus its sha256 version.
+
+    The file is optional: absent means `content: ""` and `version: null`,
+    never 404 (SPEC 202610051432 — curriculum is optional).
+    """
+    return {"content": curriculum.read(), "version": curriculum.version()}
+
+
+@app.put("/curriculum", response_model=CurriculumOut)
+def put_curriculum(payload: CurriculumIn):
+    """Persist `data/curriculum.md` atomically (temp file + replace).
+
+    An oversized payload answers 422 before any file is touched. This writes
+    ONLY the curriculum file — `data/profile.json` lives behind PUT /profile
+    and is never involved (CA13).
+    """
+    size = len(payload.content.encode("utf-8"))
+    if size > MAX_CURRICULUM_BYTES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"currículo excede {MAX_CURRICULUM_BYTES} bytes",
+        )
+    path = Path(curriculum.DEFAULT_PATH)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Unique temp file in the same directory: os.replace stays atomic (same
+    # fs), and two concurrent saves cannot claim the same tmp path.
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(payload.content)
+        os.replace(tmp_name, path)
+    except BaseException:
+        Path(tmp_name).unlink(missing_ok=True)
+        raise
+    return {"content": payload.content, "version": curriculum.version()}
+
+
 @app.post("/jobs/sync")
 async def sync(request: JobSearchRequest, db: DbSession):
     try:
@@ -81,6 +158,7 @@ async def sync(request: JobSearchRequest, db: DbSession):
             fetch_details=request.fetch_details,
             profile_path=settings.profile_path,
             source=request.source,
+            hours_old=request.hours_old,
         )
     except SourceUnavailableError as exc:
         # Requested a source the registry does not have (e.g. geekhunter
@@ -94,13 +172,16 @@ def jobs(
     db: DbSession,
     match: Annotated[str | None, Query(pattern="^(high|medium|low)$")] = None,
     remote: bool | None = None,
+    location: str | None = None,
     query: str | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
-    source: Annotated[str | None, Query(pattern="^(linkedin|geekhunter|gupy|glassdoor)$")] = None,
+    source: Annotated[
+        str | None, Query(pattern="^(linkedin|geekhunter|gupy|indeed|glassdoor)$")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):
-    items, total = list_jobs(db, match, remote, query, min_score, source, limit, offset)
+    items, total = list_jobs(db, match, remote, location, query, min_score, source, limit, offset)
     return {"total": total, "items": items}
 
 
@@ -110,6 +191,60 @@ def job(job_id: int, db: DbSession):
     if not item:
         raise HTTPException(status_code=404, detail="Job not found")
     return item
+
+
+@app.delete("/jobs")
+def clean_jobs(db: DbSession):
+    """Wipe the collected jobs outside the Kanban — cards keep their snapshot."""
+    result = db.execute(delete(Job).where(job_without_kanban_card()))
+    deleted = result.rowcount
+    kept = db.scalar(select(func.count()).select_from(KanbanJob)) or 0
+    db.commit()
+    return {"deleted": deleted, "kept": kept}
+
+
+@app.post("/kanban", response_model=KanbanOut)
+def create_kanban_job(payload: KanbanCreateIn, db: DbSession, response: Response):
+    """Idempotente: repetir o POST devolve a linha existente (SPEC R3)."""
+    card, existed = create_kanban(db, payload.source, payload.source_id)
+    response.headers["X-Already-Existed"] = "true" if existed else "false"
+    return card
+
+
+@app.get("/kanban", response_model=KanbanList)
+def list_kanban_jobs(
+    db: DbSession,
+    status: Annotated[str | None, Query(pattern="^(CHECK|RUNNING|DONE)$")] = None,
+):
+    stmt = select(KanbanJob)
+    if status:
+        stmt = stmt.where(KanbanJob.status == status)
+    stmt = stmt.order_by(KanbanJob.created_at.desc(), KanbanJob.id.desc())
+    items = db.scalars(stmt).all()
+    return {"total": len(items), "items": items}
+
+
+@app.patch("/kanban/{kanban_id}", response_model=KanbanOut)
+def patch_kanban_job(kanban_id: int, payload: KanbanPatchIn, db: DbSession):
+    card = db.get(KanbanJob, kanban_id)
+    if card is None:
+        raise HTTPException(status_code=404, detail="Kanban job not found")
+    if payload.status == "DONE" and card.applied_at is None:
+        card.applied_at = datetime.now(UTC)  # primeira entrada em DONE
+    card.status = payload.status
+    db.commit()
+    db.refresh(card)
+    return card
+
+
+@app.delete("/kanban/{kanban_id}")
+def delete_kanban_job(kanban_id: int, db: DbSession):
+    card = db.get(KanbanJob, kanban_id)
+    if card is None:
+        raise HTTPException(status_code=404, detail="Kanban job not found")
+    db.delete(card)
+    db.commit()
+    return {"deleted": kanban_id}
 
 
 async def run_tool(awaitable):

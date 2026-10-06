@@ -6,9 +6,9 @@
   --text: #e6edf3;
   --muted: #8b949e;
   --accent: #4d9fec;
-  --high: #2ea043;
+  --high: #56d364;
   --medium: #d29922;
-  --low: #f85149;
+  --low: #ff7b72;
 }
 
 * { box-sizing: border-box; }
@@ -48,6 +48,44 @@ body {
 .badge.bad { color: var(--low); border-color: var(--low); }
 .badge.neutral { color: var(--muted); }
 
+/* ── Layout: sidebar + main ─────────────────────────────────────────────── */
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 53px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-link:hover { background: var(--card); color: var(--text); }
+.sidebar-link.active { background: var(--accent); color: #04121f; }
+
+main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+
 .panel {
   display: flex;
   flex-wrap: wrap;
@@ -58,6 +96,13 @@ body {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
+}
+
+.panel h2 {
+  width: 100%;
+  font-size: 15px;
+  margin: 0 0 4px;
+  color: var(--text);
 }
 
 input, select, button {
@@ -79,7 +124,15 @@ button {
 button:disabled { opacity: 0.6; cursor: wait; }
 .filters button { background: var(--card); color: var(--text); border-color: var(--border); }
 
+button.danger {
+  background: var(--low);
+  border-color: var(--low);
+  color: #1a0505;
+}
+
 .status { color: var(--muted); font-size: 13px; }
+
+/* ── Jobs grid ──────────────────────────────────────────────────────────── */
 
 #jobs {
   display: grid;
@@ -120,9 +173,25 @@ button:disabled { opacity: 0.6; cursor: wait; }
   border-radius: 999px;
   flex-shrink: 0;
 }
-.match.high { background: rgba(46, 160, 67, 0.18); color: var(--high); }
+.match.high { background: rgba(86, 211, 100, 0.18); color: var(--high); }
 .match.medium { background: rgba(210, 153, 34, 0.18); color: var(--medium); }
-.match.low, .match.unknown { background: rgba(248, 81, 73, 0.15); color: var(--low); }
+.match.low, .match.unknown { background: rgba(255, 123, 114, 0.15); color: var(--low); }
+
+.card.low-match {
+  border-color: var(--low);
+  border-width: 2px;
+}
+
+.low-indicator {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 123, 114, 0.12);
+  border: 1px solid var(--low);
+  border-radius: 6px;
+  color: var(--low);
+  font-size: 13px;
+  font-weight: 500;
+}
 
 .meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
 
@@ -183,3 +252,253 @@ details ul { margin: 0; padding-left: 18px; font-size: 13px; }
 details .reasons li { color: var(--text); }
 details .gaps li { color: var(--medium); }
 .laya { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+
+/* ── Profile form ───────────────────────────────────────────────────────── */
+
+#profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.form-field textarea {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-field input[type="text"] {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.form-field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-field-inline input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.form-status {
+  font-size: 13px;
+  min-height: 18px;
+}
+.form-status.ok { color: var(--high); }
+.form-status.error { color: var(--low); }
+
+/* ── Curriculum form (Configurações → aba Perfil) ───────────────────────── */
+
+#curriculum-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+#curriculum-md {
+  min-height: 220px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ── Data page ──────────────────────────────────────────────────────────── */
+
+.data-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.data-total {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.data-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.data-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.source-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.source-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.source-label {
+  color: var(--muted);
+}
+
+.source-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ── Kanban page ─────────────────────────────────────────────────────────── */
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.kanban-column {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 200px;
+}
+
+.kanban-col-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.kanban-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kanban-empty {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.kanban-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.kanban-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.kanban-card-title a { color: var(--text); text-decoration: none; }
+.kanban-card-title a:hover { color: var(--accent); }
+
+.kanban-card-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.kanban-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kanban-card-controls .kanban-move {
+  padding: 4px 10px;
+  font-size: 14px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.kanban-status-select {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* ── + Add button on job cards ──────────────────────────────────────────── */
+
+.add-btn {
+  margin-top: 10px;
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--card);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.add-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #04121f;
+}
+.add-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ── Configurações tabs ────────────────────────────────────────────────────── */
+
+/* O estado ativo é controlado por aria-selected, mutado pelo hash router. */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 16px 22px 0;
+}
+.tab-btn {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+.tab-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tab-btn[aria-selected="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #04121f;
+  font-weight: 600;
+}
