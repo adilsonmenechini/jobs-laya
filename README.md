@@ -16,7 +16,8 @@
 [API](#api) •
 [Testes, linter e CI](#testes-linter-e-ci) •
 [Estrutura](#estrutura-do-projeto) •
-[Limitações](#limitações-do-mvp)
+[Limitações](#limitações-do-mvp) •
+[Changelog](CHANGELOG.md)
 
 ---
 
